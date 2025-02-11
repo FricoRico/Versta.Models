@@ -119,8 +119,8 @@ def main(
     tokenizer_files_optimized = optimize_vocabulary(tokenizer_files, language_output_dir)
 
     # Step 3: Quantize the encoder and decoder models
-    quantize_model(converted_dir, "encoder_model.onnx", quantization_dir)
-    quantize_model(converted_dir, "decoder_model_merged.onnx", quantization_dir)
+    quantize_model(converted_dir, "encoder_model_olive.onnx", quantization_dir)
+    quantize_model(converted_dir, "decoder_model_merged_olive.onnx", quantization_dir)
 
     # Step 4: Convert the quantized models to ORT format
     ort_files = convert_model_to_ort(quantization_dir, language_output_dir)

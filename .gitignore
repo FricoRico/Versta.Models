@@ -178,3 +178,6 @@ cython_debug/
 /**/output
 /**/tmp
 /**/pyenv.cfg
+
+# Olive cache
+/**/.olive-cache
