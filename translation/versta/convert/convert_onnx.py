@@ -18,7 +18,6 @@ def convert_model_to_onnx(model_name: str, export_dir: Path):
         output=export_dir,
         task=task,
         framework="pt",
-        for_ort=True,
         opset=20,
         library_name="transformers",
     )
