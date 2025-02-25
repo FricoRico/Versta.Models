@@ -6,22 +6,22 @@ The Versta mobile app uses translation models based on [Helsinki-NLP's](https://
 
 Follow this guide to convert the PyTorch models to ORT format, which are compatible with the app.
 
-### Converting ONNX to ORT
+### Exporting ONNX to ORT
 To convert to ORT format, we use the [onnxruntime-tools](https://pypi.org/project/onnxruntime-tools/) package. This means you need to have Python installed on your system. If you don't have Python installed, you can download it from [here](https://www.python.org/downloads/).
 
 1. Install the required packages:
 ```bash
 pip install -r requirements.txt
 ```
-2. Run the conversion using the CLI:
+2. Run the exporting using the CLI:
 ```bash
-python -m verta.convert --model $HUGGING_FACE_MODEL_NAME --output_dir $OUTPUT_DIR
+python -m verta.export --model $HUGGING_FACE_MODEL_NAME --output_dir $OUTPUT_DIR
 ```
 
 Replace `$HUGGING_FACE_MODEL_NAME` with the model of choice (eg. `Helsinki-NLP/opus-mt-nl-en`) `$OUTPUT_DIR` with the directory where you want the ORT models to be saved. After conversion, you will have the ORT models in the specified output directory inside the specific language folder. If no output directory is specified, the models will be saved in the `./output` directory.
 
 ### Bundling Models
-After converting the models to ORT format, we need to bundle them to be used in the Android application. The models are side-loaded by the user during runtime. To make it convenient for the user to do so, we intent to bundle the assets required for the models into a tarball. This can conveniently be done using the custom CLI tool.
+After exporting the models to ORT format, we need to bundle them to be used in the Android application. The models are side-loaded by the user during runtime. To make it convenient for the user to do so, we intent to bundle the assets required for the models into a tarball. This can conveniently be done using the custom CLI tool.
 
 1. Install the required packages:
 ```bash
@@ -41,8 +41,8 @@ This is an example workflow to convert the models and bundle them for the Androi
 
 1. Convert the models to ORT format models:
 ```bash
-python -m verta.convert --model Helsinki-NLP/opus-mt-nl-en --output_dir ./output
-python -m verta.convert --model Helsinki-NLP/opus-mt-en-nl --output_dir ./output
+python -m verta.export --model Helsinki-NLP/opus-mt-nl-en --output_dir ./output
+python -m verta.export --model Helsinki-NLP/opus-mt-en-nl --output_dir ./output
 ```
 2. Bundle the models:
 ```bash
