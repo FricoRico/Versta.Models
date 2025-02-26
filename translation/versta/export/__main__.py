@@ -2,6 +2,7 @@ import os
 
 from argparse import ArgumentParser
 from pathlib import Path
+from huggingface_hub.constants import default_cache_path
 
 from .config import get_source_language, get_target_language, get_architecture
 from .tokenizer import save_tokenizer, optimize_vocabulary
@@ -9,6 +10,7 @@ from .quantize import quantize_model
 from .convert_onnx import convert_model_to_onnx
 from .convert_ort import convert_model_to_ort
 from .metadata import generate_metadata
+from .minimize import minimize
 from .utils import remove_folder
 
 with open(Path(__file__).parent / ".." / "version.txt", "r") as version_file:
@@ -48,6 +50,14 @@ def parse_args():
         "This will default to False if not specified.",
     )
 
+    parser.add_argument(
+        "--clear_cache",
+        action="store_true",
+        default=False,
+        help="Whether to remove the downloaded files from HuggingFace cache."
+             "This will default to False if not specified.",
+    )
+
     parsed_args = parser.parse_args()
     return parsed_args
 
@@ -55,6 +65,7 @@ def main(
     model: str,
     output_dir: Path,
     keep_intermediates: bool = False,
+    clear_cache: bool = False,
 ):
     """
     Main function to handle the model exporting, tokenization, and quantization process.
@@ -93,10 +104,18 @@ def main(
     # Step 5: Create metadata file for the model
     generate_metadata(version, language_output_dir, model, source_language, target_language, architectures, tokenizer_files_optimized, ort_files)
 
-    # Step 6: Remove intermediate files if specified
-    if keep_intermediates == False:
+    # Step 6: Remove unused files
+    minimize(language_output_dir)
+
+    # Step 7: Remove intermediate files if specified
+    if not keep_intermediates:
         remove_folder(intermediates_dir)
         print("Intermediates files cleaned.")
+
+    # Step 8: Clear the cache if specified
+    if clear_cache:
+        remove_folder(Path(default_cache_path) / f"models/{model}".replace("/", "--"))
+        print("HuggingFace cache cleaned.")
 
 if __name__ == "__main__":
     args = parse_args()
@@ -104,4 +123,5 @@ if __name__ == "__main__":
         model=args.model,
         output_dir=args.output_dir,
         keep_intermediates=args.keep_intermediates,
+        clear_cache=args.clear_cache,
     )

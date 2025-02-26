@@ -9,7 +9,6 @@ class TokenizerFiles(TypedDict):
     vocabulary: Path
     source: Path
     target: Path
-    vocabulary_optimized: Path
 
 def save_tokenizer(model_name: str, export_dir: Path) -> TokenizerFiles:
     """
@@ -68,7 +67,7 @@ def optimize_vocabulary(tokenizer_files: TokenizerFiles, export_dir: Path) -> To
     of the vocabulary on mobile devices. Each word is null-terminated, followed by a 4-byte integer index.
     """
     source_vocabulary = _load_vocabulary(export_dir / tokenizer_files["vocabulary"])
-    optimized_vocabulary = export_dir / "vocab_optimized.bin"
+    optimized_vocabulary = export_dir / "vocab.bin"
 
     with open(optimized_vocabulary, 'wb') as f:
         for word, index in source_vocabulary.items():
@@ -78,7 +77,7 @@ def optimize_vocabulary(tokenizer_files: TokenizerFiles, export_dir: Path) -> To
             f.write(pack('<I', index))
 
 
-    tokenizer_files["vocabulary_optimized"] = optimized_vocabulary.name
+    tokenizer_files["vocabulary"] = optimized_vocabulary.name
 
     return tokenizer_files
 

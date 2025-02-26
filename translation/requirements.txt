@@ -4,5 +4,6 @@ onnxruntime-tools>=1.7,<1.8
 sacremoses>=0.1,<0.2
 optimum[exporters]>=1.24,<1.25
 transformers>=4.47,<4.48
+sentencepiece>=0.2,<0.3
 
 pycountry>=24.6,<24.7

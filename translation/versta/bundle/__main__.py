@@ -68,6 +68,14 @@ def parse_args():
         "This will default to False if not specified.",
     )
 
+    parser.add_argument(
+        "--keep_input",
+        action="store_true",
+        default=False,
+        help="Whether to remove input file directories after bundeling."
+             "This will default to False if not specified.",
+    )
+
     parsed_args = parser.parse_args()
     return parsed_args
 
@@ -75,7 +83,8 @@ def main(
     input_dirs: List[Path],
     output_dir: Path,
     bidirectional: bool = True,
-    keep_intermediates: bool = False
+    keep_intermediates: bool = False,
+    keep_input: bool = False,
 ):
     """
     Main function to bundle multiple translation models into a single tarball file.
@@ -119,9 +128,16 @@ def main(
     bundle_files(output_files, output_archive)
 
     # Step 8: Remove intermediate files if specified
-    if keep_intermediates == False:
+    if not keep_intermediates:
         remove_folder(intermediates_dir)
         print("Intermediates files cleaned.")
+
+    # Step 9: Remove input directories if specified
+    if not keep_input:
+        for input_dir in input_dirs:
+            remove_folder(input_dir)
+
+        print(f"Input directories removed.")
 
 if __name__ == "__main__":
     args = parse_args()
@@ -130,4 +146,5 @@ if __name__ == "__main__":
         output_dir=args.output_dir,
         bidirectional=args.bidirectional,
         keep_intermediates=args.keep_intermediates,
+        keep_input=args.keep_input,
     )
