@@ -66,7 +66,7 @@ def main(
     output_dir: Path,
     keep_intermediates: bool = False,
     clear_cache: bool = False,
-):
+) -> Path:
     """
     Main function to handle the model exporting, tokenization, and quantization process.
     This function manages the overall workflow from exporting the model to ONNX, saving the tokenizer,
@@ -116,6 +116,8 @@ def main(
     if clear_cache:
         remove_folder(Path(default_cache_path) / f"models/{model}".replace("/", "--"))
         print("HuggingFace cache cleaned.")
+
+    return language_output_dir
 
 if __name__ == "__main__":
     args = parse_args()
