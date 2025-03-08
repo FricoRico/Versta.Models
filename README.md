@@ -6,8 +6,24 @@ The Versta mobile app uses translation models based on [Helsinki-NLP's](https://
 
 Follow this guide to convert the PyTorch models to ORT format, which are compatible with the app.
 
+### Converting MarianMT to Pythorch
+The models are trained using the MarianMT framework, which is not directly compatible with the ONNX format. We need to convert the models to PyTorch format first. This can be done using the following commands. If you don't have Python installed, you can download it from [here](https://www.python.org/downloads/).
+
+1. Install the required packages:
+```bash
+pip install -r requirements.txt
+```
+2. Run the conversion using the CLI:
+```bash
+python -m versta.convert --model_uri $OPUS_MODEL_URI --export_dir $EXPORT_DIR
+```
+
+If you are not using Opus Tatoeba models, make sure to pass `--model_type opus` argument to the CLI. Replace `$OPUS_MODEL_URI` with the model URI of choice (eg. `https://object.pouta.csc.fi/Tatoeba-MT-models/eng-nld/opus-2021-02-18.zip`) and `$EXPORT_DIR` with the directory where you want the PyTorch models to be saved. After conversion, you will have the PyTorch models in the specified export directory.
+
+After the model is converted, make sure to upload it to Hugging Face to be able to use the export functionality.
+
 ### Exporting ONNX to ORT
-To convert to ORT format, we use the [onnxruntime-tools](https://pypi.org/project/onnxruntime-tools/) package. This means you need to have Python installed on your system. If you don't have Python installed, you can download it from [here](https://www.python.org/downloads/).
+To convert to ORT format, we use the [onnxruntime-tools](https://pypi.org/project/onnxruntime-tools/) package. This means you need to have Python installed on your system.
 
 1. Install the required packages:
 ```bash
