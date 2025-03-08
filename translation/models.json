@@ -211,6 +211,14 @@
   ],
   [
     {
+      "source": "ko",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-ko-en",
+      "link": "https://models.versta.app/en-ko-bundle.tar.gz"
+    }
+  ],
+  [
+    {
       "source": "lv",
       "target": "en",
       "model": "Helsinki-NLP/opus-mt-lv-en",
