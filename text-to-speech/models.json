@@ -1,0 +1,42 @@
+[
+  {
+    "kokoro": {
+      "name": "Kokoro",
+      "model": "hexgrad/Kokoro-82M",
+      "voices": {
+        "en": [
+          "male",
+          "female"
+        ],
+        "es": [
+          "male",
+          "female"
+        ],
+        "fr": [
+          "female"
+        ],
+        "hi": [
+          "male",
+          "female"
+        ],
+        "it": [
+          "male",
+          "female"
+        ],
+        "ja": [
+          "male",
+          "female"
+        ],
+        "pt": [
+          "male",
+          "female"
+        ],
+        "zh": [
+          "male",
+          "female"
+        ]
+      },
+      "link": "https://models.versta.app/kokoro-bundle.tar.gz"
+    }
+  }
+]
