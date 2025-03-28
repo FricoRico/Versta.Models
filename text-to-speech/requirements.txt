@@ -1,0 +1,12 @@
+setuptools
+wheel
+
+onnxruntime>=1.20,<1.21
+onnxruntime-tools>=1.7,<1.8
+
+optimum[exporters]>=1.24,<1.25
+transformers>=4.47,<4.48
+
+pycountry>=24.6,<24.7
+
+kokoro>=0.8,<0.9

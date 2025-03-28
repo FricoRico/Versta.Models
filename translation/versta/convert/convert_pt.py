@@ -3,6 +3,7 @@ import torch
 
 from transformers.models.marian.convert_marian_to_pytorch import convert
 from transformers.models.marian.convert_marian_tatoeba_to_pytorch import convert as convert_tatoeba
+from .convert_firefox_pt import convert as convert_firefox
 from pathlib import Path
 from sentencepiece import SentencePieceProcessor, SentencePieceTrainer
 
@@ -24,6 +25,8 @@ def convert_model_to_pt(model_path: Path, export_dir: Path, type: str) -> Path:
         _convert_model_to_pt(model_path, export_dir)
     elif type == "opus-tatoeba":
         _convert_tatoeba_model_to_pt(model_path, export_dir)
+    elif type == "firefox":
+        _convert_firefox_model_to_pt(model_path, export_dir)
     else:
         raise ValueError(f"Invalid model type: {type}")
 
@@ -50,6 +53,16 @@ def _convert_tatoeba_model_to_pt(model_path: Path, export_dir: Path):
         export_dir (Path): Path to the directory where the PyTorch model will be saved.
     """
     convert_tatoeba(Path(model_path), export_dir)
+
+def _convert_firefox_model_to_pt(model_path: Path, export_dir: Path):
+    """
+    Converts the specified Firefox pre-trained model to PyTorch format and saves it in the export directory.
+
+    Args:
+        model_path (Path): Path to downloaded pre-trained numpy model.
+        export_dir (Path): Path to the directory where the PyTorch model will be saved.
+    """
+    convert_firefox(Path(model_path), export_dir)
 
 def _run_translation_test(export_dir: Path):
     """
