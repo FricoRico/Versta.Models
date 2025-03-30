@@ -15,6 +15,20 @@
   ],
   [
     {
+      "source": "hy",
+      "target": "en",
+      "model": "Neurora/opus-tatoeba-hye-eng-bt",
+      "link": "https://models.versta.app/en-hy-bundle.tar.gz"
+    },
+    {
+      "source": "en",
+      "target": "hy",
+      "model": "Neurora/opus-tatoeba-eng-hye",
+      "link": "https://models.versta.app/en-hy-bundle.tar.gz"
+    }
+  ],
+  [
+    {
       "source": "bg",
       "target": "en",
       "model": "Helsinki-NLP/opus-mt-bg-en",
@@ -113,6 +127,20 @@
   ],
   [
     {
+      "source": "fa",
+      "target": "en",
+      "model": "Neurora/opus-tatoeba-fas-eng",
+      "link": "https://models.versta.app/en-fa-bundle.tar.gz"
+    },
+    {
+      "source": "en",
+      "target": "fa",
+      "model": "Neurora/opus-tatoeba-eng-fas",
+      "link": "https://models.versta.app/en-fa-bundle.tar.gz"
+    }
+  ],
+  [
+    {
       "source": "fi",
       "target": "en",
       "model": "Neurora/opus-tatoeba-fin-eng",
@@ -165,6 +193,20 @@
       "target": "en",
       "model": "Neurora/opus-tatoeba-ell-eng",
       "link": "https://models.versta.app/el-en-bundle.tar.gz"
+    }
+  ],
+  [
+    {
+      "source": "he",
+      "target": "en",
+      "model": "Neurora/opus-tatoeba-heb-eng",
+      "link": "https://models.versta.app/en-he-bundle.tar.gz"
+    },
+    {
+      "source": "en",
+      "target": "he",
+      "model": "Neurora/opus-tatoeba-eng-heb",
+      "link": "https://models.versta.app/en-he-bundle.tar.gz"
     }
   ],
   [
