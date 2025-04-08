@@ -1,314 +1,438 @@
 [
   [
     {
-      "base_model": "Neurora/opus-tatoeba-ara-eng",
-      "score": 44.9
+      "source": "ar",
+      "target": "en",
+      "model": "Neurora/opus-tatoeba-ara-eng",
+      "link": "https://models.versta.app/ar-en-bundle.tar.gz"
     },
     {
-      "base_model": "Neurora/opus-tatoeba-eng-ara",
-      "score": 14.0
+      "source": "en",
+      "target": "ar",
+      "model": "Neurora/opus-tatoeba-eng-ara",
+      "link": "https://models.versta.app/ar-en-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Neurora/opus-tatoeba-hye-eng",
-      "score": 34.6
+      "source": "hy",
+      "target": "en",
+      "model": "Neurora/opus-tatoeba-hye-eng-bt",
+      "link": "https://models.versta.app/en-hy-bundle.tar.gz"
     },
     {
-      "base_model": "Neurora/opus-tatoeba-eng-hye",
-      "score": 16.6
+      "source": "en",
+      "target": "hy",
+      "model": "Neurora/opus-tatoeba-eng-hye",
+      "link": "https://models.versta.app/en-hy-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-bg-en",
-      "score": 59.4
+      "source": "bg",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-bg-en",
+      "link": "https://models.versta.app/bg-en-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-bg",
-      "score": 50.6
+      "source": "en",
+      "target": "bg",
+      "model": "Helsinki-NLP/opus-mt-en-bg",
+      "link": "https://models.versta.app/bg-en-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-ca-en",
-      "score": 51.4
+      "source": "ca",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-ca-en",
+      "link": "https://models.versta.app/ca-en-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-ca",
-      "score": 47.4
+      "source": "en",
+      "target": "ca",
+      "model": "Helsinki-NLP/opus-mt-en-ca",
+      "link": "https://models.versta.app/ca-en-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-zh-en",
-      "score": 36.1
+      "source": "zh",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-zh-en",
+      "link": "https://models.versta.app/en-zh-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-zh",
-      "score": 31.4
+      "source": "en",
+      "target": "zh",
+      "model": "Helsinki-NLP/opus-mt-en-zh",
+      "link": "https://models.versta.app/en-zh-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-cs-en",
-      "score": 58.0
+      "source": "cs",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-cs-en",
+      "link": "https://models.versta.app/cs-en-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-cs",
-      "score": 46.1
+      "source": "en",
+      "target": "cs",
+      "model": "Helsinki-NLP/opus-mt-en-cs",
+      "link": "https://models.versta.app/cs-en-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-da-en",
-      "score": 63.6
+      "source": "da",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-da-en",
+      "link": "https://models.versta.app/da-en-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-da",
-      "score": 60.4
+      "source": "en",
+      "target": "da",
+      "model": "Helsinki-NLP/opus-mt-en-da",
+      "link": "https://models.versta.app/da-en-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-nl-en",
-      "score": 60.9
+      "source": "nl",
+      "target": "en",
+      "model": "Neurora/opus-tatoeba-eng-nld",
+      "link": "https://models.versta.app/en-nl-bundle.tar.gz"
     },
     {
-      "base_model": "Neurora/opus-tatoeba-eng-nld",
-      "score": 57.2
+      "source": "en",
+      "target": "nl",
+      "model": "Neurora/opus-tatoeba-nld-eng",
+      "link": "https://models.versta.app/en-nl-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-et-en",
-      "score": 59.9
+      "source": "et",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-et-en",
+      "link": "https://models.versta.app/en-et-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-et",
-      "score": 54.0
+      "source": "en",
+      "target": "et",
+      "model": "Helsinki-NLP/opus-mt-en-et",
+      "link": "https://models.versta.app/en-et-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Neurora/opus-tatoeba-fas-eng",
-      "score": 38.2
+      "source": "fa",
+      "target": "en",
+      "model": "Neurora/opus-tatoeba-fas-eng",
+      "link": "https://models.versta.app/en-fa-bundle.tar.gz"
     },
     {
-      "base_model": "Neurora/opus-tatoeba-eng-fas",
-      "score": 11.8
+      "source": "en",
+      "target": "fa",
+      "model": "Neurora/opus-tatoeba-eng-fas",
+      "link": "https://models.versta.app/en-fa-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Neurora/opus-tatoeba-fin-eng",
-      "score": 53.4
+      "source": "fi",
+      "target": "en",
+      "model": "Neurora/opus-tatoeba-fin-eng",
+      "link": "https://models.versta.app/en-fi-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-fi",
-      "score": 43.2
+      "source": "en",
+      "target": "fi",
+      "model": "Neurora/opus-tatoeba-eng-fin",
+      "link": "https://models.versta.app/en-fi-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-fr-en",
-      "score": 57.5
+      "source": "fr",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-fr-en",
+      "link": "https://models.versta.app/en-fr-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-fr",
-      "score": 50.5
+      "source": "en",
+      "target": "fr",
+      "model": "Helsinki-NLP/opus-mt-en-fr",
+      "link": "https://models.versta.app/en-fr-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-de-en",
-      "score": 55.4
+      "source": "de",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-de-en",
+      "link": "https://models.versta.app/de-en-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-de",
-      "score": 47.3
+      "source": "en",
+      "target": "de",
+      "model": "Helsinki-NLP/opus-mt-en-de",
+      "link": "https://models.versta.app/de-en-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-el",
-      "score": 56.4
+      "source": "en",
+      "target": "el",
+      "model": "Helsinki-NLP/opus-mt-en-el",
+      "link": "https://models.versta.app/el-en-bundle.tar.gz"
     },
     {
-      "base_model": "Neurora/opus-tatoeba-ell-eng",
-      "score": 69.2
+      "source": "el",
+      "target": "en",
+      "model": "Neurora/opus-tatoeba-ell-eng",
+      "link": "https://models.versta.app/el-en-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Neurora/opus-tatoeba-heb-eng",
-      "score": 52.0
+      "source": "he",
+      "target": "en",
+      "model": "Neurora/opus-tatoeba-heb-eng",
+      "link": "https://models.versta.app/en-he-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-he",
-      "score": 40.1
+      "source": "en",
+      "target": "he",
+      "model": "Neurora/opus-tatoeba-eng-heb",
+      "link": "https://models.versta.app/en-he-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-hu-en",
-      "score": 52.9
+      "source": "hu",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-hu-en",
+      "link": "https://models.versta.app/en-hu-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-hu",
-      "score": 40.1
+      "source": "en",
+      "target": "hu",
+      "model": "Helsinki-NLP/opus-mt-en-hu",
+      "link": "https://models.versta.app/en-hu-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-id-en",
-      "score": 47.7
+      "source": "id",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-id-en",
+      "link": "https://models.versta.app/en-id-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-id",
-      "score": 38.3
+      "source": "en",
+      "target": "id",
+      "model": "Helsinki-NLP/opus-mt-en-id",
+      "link": "https://models.versta.app/en-id-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-it-en",
-      "score": 70.9
+      "source": "it",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-it-en",
+      "link": "https://models.versta.app/en-it-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-it",
-      "score": 48.2
+      "source": "en",
+      "target": "it",
+      "model": "Helsinki-NLP/opus-mt-en-it",
+      "link": "https://models.versta.app/en-it-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Mitsua/elan-mt-bt-ja-en",
-      "score": 55.0
+      "source": "ja",
+      "target": "en",
+      "model": "Mitsua/elan-mt-bt-ja-en",
+      "link": "https://models.versta.app/en-ja-bundle.tar.gz"
     },
     {
-      "base_model": "Mitsua/elan-mt-bt-en-ja",
-      "score": 38.4
+      "source": "en",
+      "target": "ja",
+      "model": "Mitsua/elan-mt-bt-en-ja",
+      "link": "https://models.versta.app/en-ja-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-ko-en",
-      "score": 41.3
+      "source": "ko",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-ko-en",
+      "link": "https://models.versta.app/en-ko-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-lv-en",
-      "score": 53.3
+      "source": "lv",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-lv-en",
+      "link": "https://models.versta.app/en-lv-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-pl-en",
-      "score": 54.9
+      "source": "pl",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-pl-en",
+      "link": "https://models.versta.app/en-pl-bundle.tar.gz"
     },
     {
-      "base_model": "Neurora/opus-tatoeba-eng-pol",
-      "score": 47.5
+      "source": "en",
+      "target": "pl",
+      "model": "Neurora/opus-tatoeba-eng-pol",
+      "link": "https://models.versta.app/en-pl-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Neurora/opus-tatoeba-por-eng",
-      "score": 62.7
+      "source": "pt",
+      "target": "en",
+      "model": "Neurora/opus-tatoeba-por-eng",
+      "link": "https://models.versta.app/en-pt-bundle.tar.gz"
     },
     {
-      "base_model": "Neurora/opus-tatoeba-eng-por",
-      "score": 43.9
+      "source": "en",
+      "target": "pt",
+      "model": "Neurora/opus-tatoeba-eng-por",
+      "link": "https://models.versta.app/en-pt-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Neurora/opus-tatoeba-ron-eng",
-      "score": 59.3
+      "source": "ro",
+      "target": "en",
+      "model": "Neurora/opus-tatoeba-ron-eng",
+      "link": "https://models.versta.app/en-ro-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-ro",
-      "score": 45.3
+      "source": "en",
+      "target": "ro",
+      "model": "Neurora/opus-tatoeba-eng-ron",
+      "link": "https://models.versta.app/en-ro-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-ru-en",
-      "score": 61.1
+      "source": "ru",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-ru-en",
+      "link": "https://models.versta.app/en-ru-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-ru",
-      "score": 48.4
+      "source": "en",
+      "target": "ru",
+      "model": "Helsinki-NLP/opus-mt-en-ru",
+      "link": "https://models.versta.app/en-ru-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-sk-en",
-      "score": 42.2
+      "source": "sk",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-sk-en",
+      "link": "https://models.versta.app/en-sk-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-sk",
-      "score": 36.8
+      "source": "en",
+      "target": "sk",
+      "model": "Helsinki-NLP/opus-mt-en-sk",
+      "link": "https://models.versta.app/en-sk-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Neurora/opus-tatoeba-slv-eng",
-      "score": 24.6
+      "source": "sl",
+      "target": "en",
+      "model": "Neurora/opus-tatoeba-slv-eng",
+      "link": "https://models.versta.app/en-sl-bundle.tar.gz"
     },
     {
-      "base_model": "Neurora/opus-tatoeba-eng-slv-bt",
-      "score": 19.8
+      "source": "en",
+      "target": "sl",
+      "model": "Neurora/opus-tatoeba-eng-slv-bt",
+      "link": "https://models.versta.app/en-sl-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-es-en",
-      "score": 59.6
+      "source": "es",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-es-en",
+      "link": "https://models.versta.app/en-es-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-es",
-      "score": 54.9
+      "source": "en",
+      "target": "es",
+      "model": "Helsinki-NLP/opus-mt-en-es",
+      "link": "https://models.versta.app/en-es-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-sv-en",
-      "score": 64.5
+      "source": "sv",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-sv-en",
+      "link": "https://models.versta.app/en-sv-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-sv",
-      "score": 60.1
+      "source": "en",
+      "target": "sv",
+      "model": "Helsinki-NLP/opus-mt-en-sv",
+      "link": "https://models.versta.app/en-sv-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-tr-en",
-      "score": 63.5
+      "source": "tr",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-tr-en",
+      "link": "https://models.versta.app/en-tr-bundle.tar.gz"
     },
     {
-      "base_model": "Neurora/opus-tatoeba-eng-tur-bt",
-      "score": 41.5
+      "source": "en",
+      "target": "tr",
+      "model": "Neurora/opus-tatoeba-eng-tur-bt",
+      "link": "https://models.versta.app/en-tr-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-uk-en",
-      "score": 64.1
+      "source": "uk",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-uk-en",
+      "link": "https://models.versta.app/en-uk-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-uk",
-      "score": 50.2
+      "source": "en",
+      "target": "uk",
+      "model": "Helsinki-NLP/opus-mt-en-uk",
+      "link": "https://models.versta.app/en-uk-bundle.tar.gz"
     }
   ],
   [
     {
-      "base_model": "Helsinki-NLP/opus-mt-vi-en",
-      "score": 42.8
+      "source": "vi",
+      "target": "en",
+      "model": "Helsinki-NLP/opus-mt-vi-en",
+      "link": "https://models.versta.app/en-vi-bundle.tar.gz"
     },
     {
-      "base_model": "Helsinki-NLP/opus-mt-en-vi",
-      "score": 37.2
+      "source": "en",
+      "target": "vi",
+      "model": "Helsinki-NLP/opus-mt-en-vi",
+      "link": "https://models.versta.app/en-vi-bundle.tar.gz"
     }
   ]
 ]
