@@ -1,10 +1,8 @@
 from transformers import MarianMTModel, MarianTokenizer
-import torch
 
 from transformers.models.marian.convert_marian_to_pytorch import convert
 from transformers.models.marian.convert_marian_tatoeba_to_pytorch import convert as convert_tatoeba
 from pathlib import Path
-from sentencepiece import SentencePieceProcessor, SentencePieceTrainer
 
 def convert_model_to_pt(model_path: Path, export_dir: Path, type: str) -> Path:
     """

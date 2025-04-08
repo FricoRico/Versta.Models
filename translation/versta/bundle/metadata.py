@@ -1,12 +1,10 @@
 import json
 
 from pathlib import Path
-from typing import List, TypedDict
+from typing import List
 
-class BundleMetadata(TypedDict):
-    directory: Path
-    source_language: str
-    target_language: str
+from .typing import BundleMetadata
+
 
 def load_metadata(model_dir: Path) -> BundleMetadata:
     """
@@ -68,7 +66,7 @@ def generate_metadata(version: str, output_dir: Path, languages: List[str], lang
         version (str): Version of the model conversion process.
         output_dir (Path): Path to the directory where the metadata file will be saved.
         languages (List[str]): List of languages supported by the model.
-        metadata (List[BundleMetadata]): List of BundleMetadata dictionaries containing source and target language pairs.
+        language_metadata (List[BundleMetadata]): List of BundleMetadata dictionaries containing source and target language pairs.
         bidirectional (bool): Flag to indicate if the metadata contains bidirectional language pairs.
     """
     metadata = {
@@ -79,13 +77,13 @@ def generate_metadata(version: str, output_dir: Path, languages: List[str], lang
     }
 
     # Define the path for the metadata.json file
-    metadata_file_path = output_dir / "metadata.json"
+    metadata_file = output_dir / "metadata.json"
 
     # Write the metadata to a JSON file
-    with open(metadata_file_path, "w") as metadata_file:
-        json.dump(metadata, metadata_file, default=serialize_metadata, indent=4)
+    with open(metadata_file, "w") as f:
+        json.dump(metadata, f, default=serialize_metadata, indent=4)
 
-    return metadata_file_path
+    return metadata_file
 
 # Custom serialization function to handle non-serializable objects (like Path)
 def serialize_metadata(obj: BundleMetadata) -> dict:

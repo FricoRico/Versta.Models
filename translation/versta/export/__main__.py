@@ -2,6 +2,8 @@ import os
 
 from argparse import ArgumentParser
 from pathlib import Path
+from typing import TypedDict
+
 from huggingface_hub.constants import default_cache_path
 
 from .config import get_source_language, get_target_language, get_architecture
@@ -12,6 +14,10 @@ from .convert_ort import convert_model_to_ort
 from .metadata import generate_metadata
 from .minimize import minimize
 from .utils import remove_folder
+
+class Output(TypedDict):
+    path: Path
+    metadata: Path
 
 with open(Path(__file__).parent / ".." / "version.txt", "r") as version_file:
     version = version_file.read().strip()
@@ -43,6 +49,14 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--score",
+        type=float,
+        default=0.0,
+        help="Provide the score of the model to be converted. "
+        "This score will be used to determine the quality of the model and will be included in the metadata file.",
+    )
+
+    parser.add_argument(
         "--keep_intermediates",
         action="store_true",
         default=False,
@@ -64,13 +78,24 @@ def parse_args():
 def main(
     model: str,
     output_dir: Path,
+    score: float = 0.0,
     keep_intermediates: bool = False,
     clear_cache: bool = False,
-) -> Path:
+) -> Output:
     """
     Main function to handle the model exporting, tokenization, and quantization process.
     This function manages the overall workflow from exporting the model to ONNX, saving the tokenizer,
     and quantizing the model components. After the model is quantized, it is converted to ORT format.
+
+    Args:
+        model (str): The name of the pre-trained model to convert.
+        output_dir (Path): The output directory for the converted model and configuration file.
+        score (float): The score of the model to be converted. This will be included in the metadata file.
+        keep_intermediates (bool): Whether to remove intermediate files created during the conversion process.
+        clear_cache (bool): Whether to remove the downloaded files from HuggingFace cache.
+
+    Returns:
+        Output: A dictionary containing the path to the exported model and metadata file.
     """
     source_language = get_source_language(model)
     target_language = get_target_language(model)
@@ -102,7 +127,7 @@ def main(
     ort_files = convert_model_to_ort(quantization_dir, language_output_dir)
 
     # Step 5: Create metadata file for the model
-    generate_metadata(version, language_output_dir, model, source_language, target_language, architectures, tokenizer_files_optimized, ort_files)
+    generate_metadata(version, language_output_dir, model, source_language, target_language, architectures, score, tokenizer_files_optimized, ort_files)
 
     # Step 6: Remove unused files
     minimize(language_output_dir)
@@ -117,13 +142,17 @@ def main(
         remove_folder(Path(default_cache_path) / f"models/{model}".replace("/", "--"))
         print("HuggingFace cache cleaned.")
 
-    return language_output_dir
+    return Output(
+        path=language_output_dir,
+        metadata=language_output_dir / "metadata.json",
+    )
 
 if __name__ == "__main__":
     args = parse_args()
     main(
         model=args.model,
         output_dir=args.output_dir,
+        score=args.score,
         keep_intermediates=args.keep_intermediates,
         clear_cache=args.clear_cache,
     )

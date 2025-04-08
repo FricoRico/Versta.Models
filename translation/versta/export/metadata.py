@@ -6,15 +6,18 @@ from typing import List
 from .tokenizer import TokenizerFiles
 from .convert_ort import ORTFiles
 
-def generate_metadata(version: str, output_dir: Path, model: str, source_language: str, target_language: str, architectures: List[str], tokenizer_files: TokenizerFiles, ort_files: ORTFiles) -> str:
+def generate_metadata(version: str, output_dir: Path, model: str, source_language: str, target_language: str, architectures: List[str], score: float, tokenizer_files: TokenizerFiles, ort_files: ORTFiles) -> str:
     """
     Generates a metadata file for the model conversion process.
 
     Args:
         version (str): Version of the model conversion process.
         output_dir (Path): Path to the directory where the metadata file will be saved.
+        model (str): Name of the model to be converted.
         source_language (str): Source language for the translation model.
         target_language (str): Target language for the translation model.
+        architectures (List[str]): List of architectures used in the model.
+        score (float): Score of the model to be converted.
         tokenizer_files (TokenizerFiles): Dictionary containing the file paths for the tokenizer files.
         ort_files (ORTFiles): Dictionary containing the file paths for the encoder and decoder ORT files.
     """
@@ -24,6 +27,7 @@ def generate_metadata(version: str, output_dir: Path, model: str, source_languag
         "source_language": source_language,
         "target_language": target_language,
         "architectures": architectures,
+        "score": score,
         "files": {
             "tokenizer": tokenizer_files or {},
             "inference": ort_files or {}
@@ -31,10 +35,10 @@ def generate_metadata(version: str, output_dir: Path, model: str, source_languag
     }
 
     # Define the path for the metadata.json file
-    metadata_file_path = output_dir / "metadata.json"
+    metadata_file = output_dir / "metadata.json"
 
     # Write the metadata to a JSON file
-    with open(metadata_file_path, "w") as metadata_file:
-        json.dump(metadata, metadata_file, indent=4)
+    with open(metadata_file, "w") as f:
+        json.dump(metadata, f, indent=4)
 
-    return metadata_file_path
+    return metadata_file

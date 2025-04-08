@@ -4,11 +4,8 @@ from typing import TypedDict, Tuple
 from struct import pack
 from json import load
 
-class TokenizerFiles(TypedDict):
-    config: Path
-    vocabulary: Path
-    source: Path
-    target: Path
+from .typing import TokenizerFiles
+
 
 def save_tokenizer(model_name: str, export_dir: Path) -> TokenizerFiles:
     """

@@ -5,9 +5,8 @@ from onnxruntime.tools.convert_onnx_models_to_ort import (
 from pathlib import Path
 from typing import TypedDict
 
-class ORTFiles(TypedDict):
-    encoder: Path
-    decoder: Path
+from .typing import ORTFiles
+
 
 def convert_model_to_ort(input_dir: Path, output_dir: Path) -> ORTFiles:
     """

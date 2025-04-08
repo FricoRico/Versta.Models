@@ -4,26 +4,8 @@ from pathlib import Path
 from typing import List, Tuple, TypedDict
 
 from .metadata import BundleMetadata
+from .typing import LanguageMetadata
 
-class LanguageTokenizerFiles(TypedDict):
-    config: Path
-    vocabulary: Path
-    source: Path
-    target: Path
-
-class LanguageORTFiles(TypedDict):
-    encoder: Path
-    decoder: Path
-
-class LanguageFiles(TypedDict):
-    tokenizer: LanguageTokenizerFiles
-    inference: LanguageORTFiles
-
-class LanguageMetadata(TypedDict):
-    source_language: str
-    target_language: str
-    architectures: List[str]
-    files: LanguageFiles
 
 def validate_translation_pairs(metadata_list: List[BundleMetadata]) -> List[Tuple[str, str]]:
     """
