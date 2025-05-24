@@ -2,15 +2,22 @@ import os
 
 from argparse import ArgumentParser, ArgumentTypeError
 from pathlib import Path
-from typing import List
+from typing import List, TypedDict
 
 from .metadata import load_metadata_for_input_dirs, generate_metadata
 from .language import validate_translation_pairs, extract_unique_languages, update_metadata_file
-from .bundle_tar import bundle_files
+from .bundle_tar import bundle_files, create_checksum
 from .utils import copy_folders, remove_folder
+
+
+class Output(TypedDict):
+    bundle: Path
+    checksum: Path
+
 
 with open(Path(__file__).parent / ".." / "version.txt", "r") as version_file:
     version = version_file.read().strip()
+
 
 def parse_args():
     parser = ArgumentParser(
@@ -19,6 +26,12 @@ def parse_args():
         The tarball is directly deployable to the Versta application for translation purposes.
         The provided models should first have been converted using the 'convert' module.
         """,
+    )
+
+    parser.add_argument(
+        "--unique_id",
+        type=str,
+        help="Provide a unique identifier for the model. This will be used to generate the metadata file.",
     )
 
     parser.add_argument(
@@ -58,6 +71,7 @@ def parse_args():
     return parsed_args
 
 def main(
+    unique_id: str,
     input_dir: Path,
     output_dir: Path,
     keep_intermediates: bool = False,
@@ -86,13 +100,14 @@ def main(
     copy_folders(input_dir, intermediates_dir)
 
     # Step 3: Generate metadata for the model conversion process
-    generate_metadata(version, intermediates_dir, metadata)
+    generate_metadata(unique_id, version, intermediates_dir, metadata)
 
     # Step 4: Bundle the folders into a single .tar.gz file
     output_archive = bundle_output_dir / f"{name}-bundle.tar.gz"
     output_files = list(intermediates_dir.iterdir())
 
-    bundle_files(output_files, output_archive)
+    bundle_file = bundle_files(output_files, output_archive)
+    checksum_file = create_checksum(bundle_file)
 
     # Step 5: Remove intermediate files if specified
     if not keep_intermediates:
@@ -104,9 +119,15 @@ def main(
         remove_folder(input_dir)
         print(f"Input directories removed.")
 
+    return Output(
+        bundle=bundle_file,
+        checksum=checksum_file,
+    )
+
 if __name__ == "__main__":
     args = parse_args()
     main(
+        unique_id=args.unique_id,
         input_dir=args.input_dir,
         output_dir=args.output_dir,
         keep_intermediates=args.keep_intermediates,

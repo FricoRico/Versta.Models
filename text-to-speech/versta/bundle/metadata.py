@@ -49,16 +49,18 @@ def load_metadata_for_input_dirs(input_dir: Path) -> BundleMetadata:
 
     return metadata
 
-def generate_metadata(version: str, output_dir: Path, metadata: BundleMetadata) -> Path:
+def generate_metadata(id: str, version: str, output_dir: Path, metadata: BundleMetadata) -> Path:
     """
     Generates a metadata file for the model conversion process.
 
     Args:
+        id (str): Unique identifier for the model conversion process.
         version (str): Version of the model conversion process.
         output_dir (Path): Path to the directory where the metadata file will be saved.
         metadata (BundleMetadata): List of BundleMetadata dictionaries containing source and target language pairs.
     """
     metadata = {
+        "id": id,
         "version": version,
         "metadata": metadata
     }

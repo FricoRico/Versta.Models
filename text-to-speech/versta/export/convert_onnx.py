@@ -17,7 +17,7 @@ def convert_model_to_onnx(model_name: str, export_dir: Path):
     print(f"Exporting {model_name} to ONNX format...")
 
     modelConfig = hf_hub_download(model_name, "config.json")
-    modelCheckpoints = hf_hub_download(model_name, "kokoro-v1_1-zh.pth")
+    modelCheckpoints = hf_hub_download(model_name, KModel.MODEL_NAMES[model_name])
 
     kokoroModel = KModel(config=modelConfig, model=modelCheckpoints, disable_complex=True)
     model = KModelForONNX(kokoroModel).eval()

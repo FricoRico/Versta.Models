@@ -75,12 +75,12 @@ def main(
     converted_dir.mkdir(parents=True, exist_ok=True)
     quantization_dir.mkdir(parents=True, exist_ok=True)
 
-    # # Step 1: Convert the model to ONNX format
+    # Step 1: Convert the model to ONNX format
     # convert_model_to_onnx(model, converted_dir)
-    #
-    # # Step 2: Quantize the model
+
+    # Step 2: Quantize the model
     # quantize_model(converted_dir, "model.onnx", quantization_dir)
-    #
+
     # Step 3: Convert the quantized models to ORT format
     ort_files = convert_model_to_ort(quantization_dir, output_dir)
 
