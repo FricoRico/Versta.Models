@@ -3,26 +3,32 @@ import os
 
 from argparse import ArgumentParser
 from pathlib import Path
+from requests import head
+
+from huggingface_hub import snapshot_download
 
 from .download import download_model
 from .convert_pt import convert_model_to_pt
+from .convert_vocabulary import convert_vocabulary
+from .convert_sentence_piece import convert_sentence_piece_files
+from .metadata import create_decoder_file
 from .utils import remove_folder
 
 def parse_args():
     parser = ArgumentParser(
         os.path.basename(__file__),
         description="""Convert a model from HuggingFace model hub to ONNX format and then to ORT format.
-        The converter is intended to be used with Helsinki-NLP's Opus-MT translation models, but might work with other models as well.
+        The converter is intended to be used with MarianMT translation models, but might work with other models as well.
         This function manages the overall workflow from exporting the model to ONNX, saving the tokenizer, and quantizing the model components.
         After the model is quantized, it is converted to ORT format for deployment on ARM devices.
         """,
     )
 
     parser.add_argument(
-        "--model_uri",
+        "--model",
         type=str,
         help="Provide the name of the pre-trained model to convert."
-        "For the moment, only Helsinki-NLP's Opus-MT translation models are supported.",
+        "For the moment, only MarianMT translation models are supported.",
         required=True,
     )
 
@@ -61,8 +67,13 @@ def parse_args():
     parsed_args = parser.parse_args()
     return parsed_args
 
+def repository_exists(repo_name):
+    url = f"https://huggingface.co/{repo_name}"
+    response = head(url)
+    return response.status_code == 200
+
 def main(
-    model_uri: str,
+    model: str,
     export_dir: Path,
     temp_dir: Path,
     keep_intermediates: bool = False,
@@ -77,17 +88,32 @@ def main(
     download_dir.mkdir(parents=True, exist_ok=True)
     export_dir.mkdir(parents=True, exist_ok=True)
 
-    # Check if the model is a direct download
-    if model_uri.startswith("https") == False:
-        raise ValueError("The model URI must be a direct download link.")
+    model_path = Path(model)
 
     # Step 1: Download the model files
-    downloaded_files = download_model(model_uri, download_dir)
+    if model.startswith("https"):
+        model_path = download_model(model, download_dir)
 
-    # Step 2: Convert the model to PyTorch format
-    convert_model_to_pt(downloaded_files, export_dir, model_format)
+    if repository_exists(model):
+        output = snapshot_download(repo_id=model, local_dir_use_symlinks=False)
+        model_path = Path(output)
 
-    # Step 3: Remove intermediate files if specified
+    if not model_path.exists():
+        raise FileNotFoundError(f"Model file {model_path} does not exist. Please check the model URI.")
+
+    # Step 2: Convert the vocabulary to a format compatible with PyTorch
+    convert_vocabulary(model_path)
+
+    # Step 3: Convert the sentence piece files to the expected format
+    convert_sentence_piece_files(model_path)
+
+    # Step 4: Create a decoder configuration file if it does not exist
+    create_decoder_file(model_path)
+
+    # Step 5: Convert the model to PyTorch format
+    convert_model_to_pt(model_path, export_dir, model_format)
+
+    # Step 6: Remove intermediate files if specified
     if keep_intermediates == False:
         remove_folder(download_dir)
         print("Intermediates files cleaned.")
@@ -95,7 +121,7 @@ def main(
 if __name__ == "__main__":
     args = parse_args()
     main(
-        model_uri=args.model_uri,
+        model=args.model,
         export_dir=args.export_dir,
         temp_dir=args.temp_dir,
         keep_intermediates=args.keep_intermediates,

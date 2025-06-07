@@ -1,6 +1,6 @@
-from transformers import AutoTokenizer
+from transformers import MarianTokenizer
 from pathlib import Path
-from typing import TypedDict, Tuple
+from typing import Tuple
 from struct import pack
 from json import load
 
@@ -15,7 +15,7 @@ def save_tokenizer(model_name: str, export_dir: Path) -> TokenizerFiles:
         model_name (str): Name of the pre-trained model.
         export_dir (Path): Path to the directory where tokenizer will be saved.
     """
-    tokenizer = AutoTokenizer.from_pretrained(model_name, clean_up_tokenization_spaces=False)
+    tokenizer = MarianTokenizer.from_pretrained(model_name, clean_up_tokenization_spaces=False)
     output_files = tokenizer.save_pretrained(export_dir)
 
     # Get the file paths for the tokenizer configuration, vocabulary, source, and target files

@@ -1,7 +1,12 @@
 from optimum.onnxruntime import ORTQuantizer, AutoQuantizationConfig
 from pathlib import Path
 
-QuantizeConfiguration = AutoQuantizationConfig.arm64(is_static=False, use_symmetric_activations=True, use_symmetric_weights=True, per_channel=False)
+QuantizeConfiguration = AutoQuantizationConfig.arm64(
+    is_static=False,
+    use_symmetric_activations=True,
+    use_symmetric_weights=True,
+    per_channel=False,
+)
 
 def quantize_model(export_dir: Path, model_filename: str, quantization_dir: Path):
     """

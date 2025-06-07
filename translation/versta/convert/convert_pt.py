@@ -1,8 +1,9 @@
+from pathlib import Path
+
 from transformers import MarianMTModel, MarianTokenizer
 
 from transformers.models.marian.convert_marian_to_pytorch import convert
 from transformers.models.marian.convert_marian_tatoeba_to_pytorch import convert as convert_tatoeba
-from pathlib import Path
 
 def convert_model_to_pt(model_path: Path, export_dir: Path, type: str) -> Path:
     """
@@ -28,7 +29,7 @@ def convert_model_to_pt(model_path: Path, export_dir: Path, type: str) -> Path:
     _run_translation_test(export_dir)
     
     return export_dir
-    
+
 def _convert_model_to_pt(model_path: Path, export_dir: Path):
     """
     Converts the specified pre-trained model to PyTorch format and saves it in the export directory.
@@ -60,7 +61,8 @@ def _run_translation_test(export_dir: Path):
     model = MarianMTModel.from_pretrained(export_dir)
     tokenizer = MarianTokenizer.from_pretrained(export_dir)
 
-    src_text = "Israeli Prime Minister Netanyahu is consulting with his defense top over Hamas’s decision to stop the release of hostages indefinitely. Tomorrow morning the Israeli security cabinet will meet, a meeting that would originally be held in the afternoon. It is unclear what comes out. Defense Minister Katz has brought the Israeli army in Gaza to the highest state of readiness."
+    src_text = "우크라이나 젤렌스키 대통령은 러시아가 \"드디어 전쟁 종식을 고려하고 있다\"는 것은 긍정적인 신호라고 하면서도, 협상이 아닌 휴전이 다음 단계가 되어야 한다고 강조했습니다. 그는 X에 올린 메시지에서 어젯밤 푸틴 대통령의 제안에 답했습니다. 언론에 출연한 젤렌스키 대통령은 다음 주 목요일 터키 이스탄불에서 협상을 제안했습니다."
+    src_text = "Ukrainian President Zelensky calls it a positive sign that the Russians are \"finally thinking about ending the war\", but states that not negotiations but a ceasefire should be the next step. In a message on X he responds to a proposal from Putin last night. In a media appearance, the Russian president proposed negotiations in Istanbul, Turkey, next Thursday."
     translated = model.generate(**tokenizer(src_text, return_tensors='pt'))
 
     print(f"Translated: {tokenizer.decode(translated[0], skip_special_tokens=True)}")
