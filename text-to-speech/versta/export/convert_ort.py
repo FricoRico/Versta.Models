@@ -24,6 +24,7 @@ def convert_model_to_ort(input_dir: Path, output_dir: Path) -> ORTFiles:
         output_dir,
         optimization_styles=[OptimizationStyle.Fixed],
         target_platform="arm",
+        enable_type_reduction=True,
         allow_conversion_failures=True
     )
 

@@ -53,7 +53,7 @@ def parse_args():
         type=str,
         default="opus-tatoeba",
         help="Specify the format of the model to convert."
-        "This could be either 'opus' or 'opus-tatoeba' at the moment, defaulting to 'opus'."
+        "This could be either 'opus' or 'opus-tatoeba' at the moment, defaulting to 'opus-tatoeba'."
     )
 
     parser.add_argument(

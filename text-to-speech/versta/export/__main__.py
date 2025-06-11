@@ -40,6 +40,14 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--model_format",
+        type=str,
+        default="kokoro",
+        help="Specify the format of the model to convert."
+             "This could be either 'kokoro' or 'piper' at the moment, defaulting to 'kokoro'."
+    )
+
+    parser.add_argument(
         "--keep_intermediates",
         action="store_true",
         default=False,
@@ -63,6 +71,7 @@ def main(
         output_dir: Path,
         keep_intermediates: bool = False,
         clear_cache: bool = False,
+        model_format: str = "kokoro",
 ):
     print("Exporting the model...")
 
@@ -76,10 +85,10 @@ def main(
     quantization_dir.mkdir(parents=True, exist_ok=True)
 
     # Step 1: Convert the model to ONNX format
-    # convert_model_to_onnx(model, converted_dir)
+    convert_model_to_onnx(model, converted_dir, model_format)
 
     # Step 2: Quantize the model
-    # quantize_model(converted_dir, "model.onnx", quantization_dir)
+    quantize_model(converted_dir, "model.onnx", quantization_dir)
 
     # Step 3: Convert the quantized models to ORT format
     ort_files = convert_model_to_ort(quantization_dir, output_dir)
@@ -107,4 +116,5 @@ if __name__ == "__main__":
         output_dir=args.output_dir,
         keep_intermediates=args.keep_intermediates,
         clear_cache=args.clear_cache,
+        model_format=args.model_format,
     )
