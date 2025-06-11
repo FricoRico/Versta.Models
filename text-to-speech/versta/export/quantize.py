@@ -1,16 +1,16 @@
 from typing import Set
 
-from onnxruntime.quantization import QuantType, QuantizationMode
+from onnxruntime.quantization import quantize_dynamic, QuantType, quant_pre_process
 from onnxruntime.quantization.registry import IntegerOpsRegistry
-from onnxruntime.quantization.onnx_quantizer import ONNXQuantizer
 from os import path
 import onnx
 
 from pathlib import Path
 
-BLOCKED_OPS=(
+BLOCKED_OPS = (
 
 )
+
 
 def quantize_model(export_dir: Path, model_filename: str, quantization_dir: Path):
     """
@@ -22,39 +22,39 @@ def quantize_model(export_dir: Path, model_filename: str, quantization_dir: Path
         quantization_dir (Path): Path to the directory where the quantized model will be saved.
         config (AutoQuantizationConfig): Configuration for the quantization process.
     """
-    model = onnx.load_model(export_dir / model_filename)
+
     file_name_without_extension = path.splitext(path.basename(model_filename))[0]
+
+    input = export_dir / model_filename
+    preprocessed = export_dir / f"{file_name_without_extension}_preprocessed.onnx"
+    output = quantization_dir / f"{file_name_without_extension}_quantized.onnx"
 
     op_types_to_quantize = set(IntegerOpsRegistry.keys())
     if BLOCKED_OPS is not None:
         op_types_to_quantize.difference_update(BLOCKED_OPS)
 
-    quantizer = ONNXQuantizer(
-        model,
+    print(f"Preprocessing {model_filename} for quantization...")
+    quant_pre_process(
+        input_model=input,
+        output_model_path=preprocessed,
+        skip_symbolic_shape=True,
+    )
+
+    print(f"Quantizing {preprocessed}...")
+    quantize_dynamic(
+        model_input=preprocessed,
+        model_output=output,
         per_channel=True,
-        reduce_range=True,
-        mode=QuantizationMode.IntegerOps,
-        static=False,
-        weight_qType=QuantType.QUInt8,
-        activation_qType=QuantType.QUInt8,
-        tensors_range=None,
-        nodes_to_quantize=[],
-        nodes_to_exclude=[],
-        op_types_to_quantize=op_types_to_quantize,
-        extra_options=dict(
-            EnableSubgraph=True,
-            MatMulConstBOnly=True,
-        ),
-    )
-    quantizer.quantize_model()
-
-    onnx.save(
-        quantizer.model.model,
-        quantization_dir / f"{file_name_without_extension}_quantized.onnx",
-        convert_attribute=True,
+        reduce_range=False,
+        weight_type=QuantType.QUInt8,
+        extra_options={
+            "ForceQuantizeNoInputCheck": True,
+            "MatMulConstBOnly": True,
+        },
     )
 
-def get_operators(model: onnx.ModelProto) -> Set[str]:
+
+def _get_operators(model: onnx.ModelProto) -> Set[str]:
     operators = set()
 
     def traverse_graph(graph):

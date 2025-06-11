@@ -13,6 +13,8 @@ def convert_model_to_pt(model_path: Path, export_dir: Path, type: str) -> Path:
         model_path (Path): Path to downloaded pre-trained numpy model.
         export_dir (Path): Path to the directory where the PyTorch model will be saved.
         type (str): Type of the pre-trained model to convert (e.g., "opus" "opus-tatoeba").
+    Returns:
+        Path: Path to the directory where the PyTorch model is saved.
     """
     model_path = Path("." / model_path)
     export_dir = "." / export_dir
