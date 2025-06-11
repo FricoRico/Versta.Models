@@ -1,12 +1,11 @@
+from pathlib import Path
+
 from onnxruntime.tools.convert_onnx_models_to_ort import (
     OptimizationStyle,
     convert_onnx_models_to_ort
 )
-from pathlib import Path
-from typing import TypedDict
 
-class ORTFiles(TypedDict):
-    model: Path
+from .typing import ORTFiles
 
 def convert_model_to_ort(input_dir: Path, output_dir: Path) -> ORTFiles:
     """
@@ -24,7 +23,8 @@ def convert_model_to_ort(input_dir: Path, output_dir: Path) -> ORTFiles:
         output_dir,
         optimization_styles=[OptimizationStyle.Fixed],
         target_platform="arm",
-        allow_conversion_failures=True
+        enable_type_reduction=True,
+        allow_conversion_failures=True,
     )
 
     # Get the file paths for the encoder and decoder ORT files

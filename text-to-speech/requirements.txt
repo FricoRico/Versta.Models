@@ -9,4 +9,4 @@ transformers>=4.47,<4.48
 
 pycountry>=24.6,<24.7
 
-kokoro>=0.8,<0.9
+kokoro==0.8.4

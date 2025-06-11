@@ -3,7 +3,6 @@ from onnxruntime.tools.convert_onnx_models_to_ort import (
     convert_onnx_models_to_ort
 )
 from pathlib import Path
-from typing import TypedDict
 
 from .typing import ORTFiles
 

@@ -4,9 +4,9 @@ from pathlib import Path
 from typing import List
 from os import listdir, path
 
-from .convert_ort import ORTFiles
+from .typing import ORTFiles, TokenizerFiles
 
-def generate_metadata(version: str, output_dir: Path, model: str, architectures: List[str], ort_files: ORTFiles, voices: List[str]) -> Path:
+def generate_metadata(version: str, output_dir: Path, model: str, architectures: List[str], ort_files: ORTFiles, tokenizer_files: TokenizerFiles, voices: List[str]) -> Path:
     """
     Generates a metadata file for the model conversion process.
 
@@ -16,6 +16,7 @@ def generate_metadata(version: str, output_dir: Path, model: str, architectures:
         architectures (List[str]): List of architectures used in the model.
         output_dir (Path): Path to the directory where the metadata file will be saved.
         ort_files (ORTFiles): Dictionary containing the file paths for the encoder and decoder ORT files.
+        tokenizer_files (TokenizerFiles): Dictionary containing the file paths for the tokenizer files.
         voices (List[str]): List of voices available for the model.
     """
     metadata = {
@@ -24,18 +25,19 @@ def generate_metadata(version: str, output_dir: Path, model: str, architectures:
         "architectures": architectures,
         "files": {
             "inference": ort_files or {},
+            "tokenizer": tokenizer_files or {},
             "voices": voices or []
         }
     }
 
     # Define the path for the metadata.json file
-    metadata_file_path = output_dir / "metadata.json"
+    metadata_file = output_dir / "metadata.json"
 
     # Write the metadata to a JSON file
-    with open(metadata_file_path, "w") as metadata_file:
-        json.dump(metadata, metadata_file, indent=4)
+    with open(metadata_file, "w") as f:
+        json.dump(metadata, f, indent=4)
 
-    return metadata_file_path
+    return metadata_file
 
 def get_voices(directory: Path) -> List[str]:
     """

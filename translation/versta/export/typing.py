@@ -1,12 +1,11 @@
-from pathlib import Path
 from typing import TypedDict
 
 class ORTFiles(TypedDict):
-    encoder: Path
-    decoder: Path
+    encoder: str
+    decoder: str
 
 class TokenizerFiles(TypedDict):
-    config: Path
-    vocabulary: Path
-    source: Path
-    target: Path
+    config: str
+    vocabulary: str
+    source: str
+    target: str
