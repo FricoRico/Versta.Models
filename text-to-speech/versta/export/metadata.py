@@ -21,6 +21,7 @@ def generate_metadata(version: str, output_dir: Path, model: str, architectures:
     """
     metadata = {
         "version": version,
+        "type": "voice",
         "base_model": model,
         "architectures": architectures,
         "files": {

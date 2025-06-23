@@ -1,42 +1,85 @@
 [
   {
-    "kokoro": {
-      "name": "Kokoro",
-      "model": "hexgrad/Kokoro-82M",
-      "voices": {
-        "en": [
-          "male",
-          "female"
-        ],
-        "es": [
-          "male",
-          "female"
-        ],
-        "fr": [
-          "female"
-        ],
-        "hi": [
-          "male",
-          "female"
-        ],
-        "it": [
-          "male",
-          "female"
-        ],
-        "ja": [
-          "male",
-          "female"
-        ],
-        "pt": [
-          "male",
-          "female"
-        ],
-        "zh": [
-          "male",
-          "female"
-        ]
+    "id": "versta-tts-data",
+    "name": "Text-to-Speech Data",
+    "base_model": "Neurora/versta-tts-data",
+    "size": 32784814,
+    "version": "v1.2.0",
+    "bundle": "https://models.versta.app/text-to-speech/v1.2.0/versta-tts-data-bundle.tar.gz",
+    "checksum": "https://models.versta.app/text-to-speech/v1.2.0/versta-tts-data-bundle.tar.sha256",
+    "mandatory": true,
+    "hidden": true
+  },
+  {
+    "id": "kokoro",
+    "name": "Kokoro",
+    "base_model": "hexgrad/Kokoro-82M",
+    "size": 163901362,
+    "version": "v1.2.0",
+    "voices": [
+      {
+        "gender": "female",
+        "language": "en"
       },
-      "link": "https://models.versta.app/kokoro-bundle.tar.gz"
-    }
+      {
+        "gender": "male",
+        "language": "en"
+      },
+      {
+        "gender": "female",
+        "language": "ja"
+      },
+      {
+        "gender": "male",
+        "language": "ja"
+      },
+      {
+        "gender": "female",
+        "language": "zh"
+      },
+      {
+        "gender": "male",
+        "language": "zh"
+      },
+      {
+        "gender": "female",
+        "language": "es"
+      },
+      {
+        "gender": "male",
+        "language": "es"
+      },
+      {
+        "gender": "female",
+        "language": "pt"
+      },
+      {
+        "gender": "male",
+        "language": "pt"
+      },
+      {
+        "gender": "female",
+        "language": "hi"
+      },
+      {
+        "gender": "male",
+        "language": "hi"
+      },
+      {
+        "gender": "female",
+        "language": "it"
+      },
+      {
+        "gender": "male",
+        "language": "it"
+      },
+      {
+        "gender": "female",
+        "language": "fr"
+      }
+    ],
+    "architectures": ["StyleTTS2"],
+    "bundle": "https://models.versta.app/text-to-speech/v1.2.0/kokoro-bundle.tar.gz",
+    "checksum": "https://models.versta.app/text-to-speech/v1.2.0/kokoro-bundle.tar.sha256"
   }
 ]
