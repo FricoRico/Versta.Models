@@ -21,18 +21,31 @@ def convert_piper_to_onnx(model_name: str, export_path: Path, sub_voice: str = N
     
     # Piper models are organized by language and voice type
     # Example: nl-piet-medium, de-thorsten-medium, etc.
-    # With sub-voice like mls: nl-mls-512-medium
+    # With sub-voice like mls: nl-mls_5809-medium, de-mls_6892-medium
     if sub_voice:
-        # Construct the full model name with sub-voice
-        parts = model_name.split('-')
-        if len(parts) >= 2:
-            language = parts[0]  # e.g., "nl", "de"
-            full_model_name = f"{language}-{sub_voice}"
-            if len(parts) > 2:
-                # Add additional parts like "medium", "low", etc.
-                full_model_name = "-".join([full_model_name] + parts[2:])
+        # For mls voices, the format is typically: {language}-{sub_voice}_{speaker_id}-{quality}
+        # e.g., nl-mls_5809-medium, de-mls_6892-medium
+        if sub_voice == "mls":
+            # Use a default speaker ID for mls models since we don't have speaker selection yet
+            # These are common speaker IDs for Dutch and German mls models
+            if model_name.startswith("nl"):
+                full_model_name = "nl-mls_5809-medium" 
+            elif model_name.startswith("de"):
+                full_model_name = "de-mls_6892-medium"
+            else:
+                # Generic pattern for other languages
+                full_model_name = f"{model_name}-{sub_voice}"
         else:
-            full_model_name = f"{model_name}-{sub_voice}"
+            # For other sub-voices, use the original logic
+            parts = model_name.split('-')
+            if len(parts) >= 2:
+                language = parts[0]  # e.g., "nl", "de"
+                full_model_name = f"{language}-{sub_voice}"
+                if len(parts) > 2:
+                    # Add additional parts like "medium", "low", etc.
+                    full_model_name = "-".join([full_model_name] + parts[2:])
+            else:
+                full_model_name = f"{model_name}-{sub_voice}"
     else:
         full_model_name = model_name
 
@@ -57,7 +70,11 @@ def convert_piper_to_onnx(model_name: str, export_path: Path, sub_voice: str = N
         )
         
     except Exception as e:
-        raise FileNotFoundError(f"Could not download Piper model {full_model_name}: {e}")
+        raise FileNotFoundError(
+            f"Could not download Piper model {full_model_name} from {repo_id}. "
+            f"Please check that the model exists and that you have internet access. "
+            f"Original error: {e}"
+        )
 
     # Rename files to standard names expected by the export pipeline
     model_output = export_path / "model.onnx"

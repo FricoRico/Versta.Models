@@ -17,8 +17,8 @@ with open(Path(__file__).parent / ".." / "version.txt", "r") as version_file:
 def parse_args():
     parser = ArgumentParser(
         os.path.basename(__file__),
-        description="""Convert a model from HuggingFace model hub to ONNX format and then to ORT format.
-        The converter is intended to be used with Helsinki-NLP's Opus-MT translation models, but might work with other models as well.
+        description="""Convert a TTS model from HuggingFace model hub to ONNX format and then to ORT format.
+        The converter supports Kokoro and Piper TTS models for text-to-speech functionality.
         This function manages the overall workflow from exporting the model to ONNX, saving the tokenizer, and quantizing the model components.
         After the model is quantized, it is converted to ORT format for deployment on ARM devices.
         """,
@@ -27,8 +27,9 @@ def parse_args():
     parser.add_argument(
         "--model",
         type=str,
-        help="Provide the name of the pre-trained model to convert."
-             "For the moment, only Helsinki-NLP's Opus-MT translation models are supported.",
+        help="Provide the name of the pre-trained model to convert. "
+             "For Kokoro models, use the HuggingFace model name. "
+             "For Piper models, use a language code (e.g., 'nl', 'de') and specify sub-voice.",
         required=True,
     )
 
