@@ -40,15 +40,54 @@ def generate_metadata(version: str, output_dir: Path, model: str, architectures:
 
     return metadata_file
 
-def get_voices(directory: Path) -> List[str]:
+def get_voices(directory: Path, model_format: str = "kokoro") -> List[str]:
     """
     Get all voices from voices directory
 
     Args:
         directory (Path): Path to the voices directory
+        model_format (str): Format of the model ("kokoro" or "piper")
     """
-    files = listdir(directory)
+    if model_format == "kokoro":
+        files = listdir(directory)
+        voices = [f for f in files if path.isfile(path.join(directory, f))]
+        return [path.join("voices", f) for f in voices]
+    else:
+        # Piper models don't use separate voice files like Kokoro
+        return []
 
-    voices = [f for f in files if path.isfile(path.join(directory, f))]
 
-    return [path.join("voices", f) for f in voices]
+def _update_output_dir_for_piper(output_dir: Path, converted_dir: Path) -> Path:
+    """
+    Updates output directory for Piper models based on language information from config.
+    
+    Args:
+        output_dir (Path): Current output directory
+        converted_dir (Path): Directory containing the converted model and config
+        
+    Returns:
+        Path: Updated output directory with Piper language naming
+    """
+    config_file = converted_dir / "config.json"
+    if not config_file.exists():
+        return output_dir
+        
+    try:
+        from .convert_piper_to_onnx import get_language_info_from_config
+        language_info = get_language_info_from_config(config_file)
+        if language_info and "family" in language_info:
+            # Create output dir in format: piper-{language_family}
+            language_family = language_info["family"]  # e.g., "nl", "de"
+            
+            # Only update the output dir if it's still the default or doesn't contain language info
+            if "output" in str(output_dir) and f"piper-{language_family}" not in str(output_dir):
+                # Keep the same parent, but add language info in piper format
+                parent_dir = output_dir.parent
+                output_dir = parent_dir / f"piper-{language_family}"
+                print(f"Updated output directory to: {output_dir}")
+                output_dir.mkdir(parents=True, exist_ok=True)
+                
+    except Exception as e:
+        print(f"Warning: Could not update output directory: {e}")
+        
+    return output_dir

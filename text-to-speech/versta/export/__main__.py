@@ -8,7 +8,7 @@ from .quantize import quantize_model
 from .convert_onnx import convert_model_to_onnx
 from .convert_ort import convert_model_to_ort
 from .tokenizer import save_tokenizer
-from .metadata import generate_metadata, get_voices
+from .metadata import generate_metadata, get_voices, _update_output_dir_for_piper
 from .utils import remove_folder
 
 with open(Path(__file__).parent / ".." / "version.txt", "r") as version_file:
@@ -100,22 +100,7 @@ def main(
 
     # For Piper models, update output directory based on language information from config
     if model_format == "piper":
-        config_file = converted_dir / "config.json"
-        if config_file.exists():
-            from .convert_piper_to_onnx import get_language_info_from_config
-            language_info = get_language_info_from_config(config_file)
-            if language_info and "name_english" in language_info:
-                # Create a language-specific output directory if not already specified
-                # Use the original output_dir as parent, and add language-specific folder
-                language_name = language_info["name_english"].lower().replace(" ", "_")
-                
-                # Only update the output dir if it's still the default or doesn't contain language info
-                if "output" in str(output_dir) and language_name not in str(output_dir):
-                    # Keep the same parent, but add language info
-                    parent_dir = output_dir.parent
-                    output_dir = parent_dir / f"{language_name}_{language_info.get('code', '').replace('_', '-')}"
-                    print(f"Updated output directory to: {output_dir}")
-                    output_dir.mkdir(parents=True, exist_ok=True)
+        output_dir = _update_output_dir_for_piper(output_dir, converted_dir)
 
     # Step 2: Quantize the model
     quantize_model(converted_dir, "model.onnx", quantization_dir, model_format)
@@ -126,12 +111,9 @@ def main(
     # Step 4: Save the tokenizer files
     tokenizer_files = save_tokenizer(converted_dir, output_dir)
 
-    # Step 5: Get all voices from voices directory (for Kokoro) or handle Piper voices
-    if model_format == "kokoro":
-        voices = get_voices(output_dir / "voices")
-    else:
-        # Piper models don't use separate voice files like Kokoro
-        voices = []
+    # Step 5: Get all voices from voices directory
+    voices_dir = output_dir / "voices" if model_format == "kokoro" else output_dir
+    voices = get_voices(voices_dir, model_format)
 
     # Step 6: Create metadata file for the model
     model_architectures = ["Piper"] if model_format == "piper" else ["Kokoro"]
