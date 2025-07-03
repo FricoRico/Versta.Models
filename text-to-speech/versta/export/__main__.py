@@ -49,6 +49,14 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--sub_voice",
+        type=str,
+        default=None,
+        help="Specify the sub-voice for models that support multiple voices (e.g., 'mls', 'amy', 'arctic'). "
+             "Only applicable for Piper models."
+    )
+
+    parser.add_argument(
         "--keep_intermediates",
         action="store_true",
         default=False,
@@ -73,6 +81,7 @@ def main(
         keep_intermediates: bool = False,
         clear_cache: bool = False,
         model_format: str = "kokoro",
+        sub_voice: str = None,
 ):
     print("Exporting the model...")
 
@@ -86,7 +95,7 @@ def main(
     quantization_dir.mkdir(parents=True, exist_ok=True)
 
     # Step 1: Convert the model to ONNX format
-    convert_model_to_onnx(model, converted_dir, model_format)
+    convert_model_to_onnx(model, converted_dir, model_format, sub_voice)
 
     # Step 2: Quantize the model
     quantize_model(converted_dir, "model.onnx", quantization_dir, model_format)
@@ -97,11 +106,16 @@ def main(
     # Step 4: Save the tokenizer files
     tokenizer_files = save_tokenizer(converted_dir, output_dir)
 
-    # Step 5: Get all voices from voices directory
-    voices = get_voices(output_dir / "voices")
+    # Step 5: Get all voices from voices directory (for Kokoro) or handle Piper voices
+    if model_format == "kokoro":
+        voices = get_voices(output_dir / "voices")
+    else:
+        # Piper models don't use separate voice files like Kokoro
+        voices = []
 
     # Step 6: Create metadata file for the model
-    generate_metadata(version, output_dir, model, ["Kokoro"], ort_files, tokenizer_files, voices)
+    model_architectures = ["Piper"] if model_format == "piper" else ["Kokoro"]
+    generate_metadata(version, output_dir, model, model_architectures, ort_files, tokenizer_files, voices)
 
     # Step 6: Remove intermediate files if specified
     if not keep_intermediates:
@@ -121,4 +135,5 @@ if __name__ == "__main__":
         keep_intermediates=args.keep_intermediates,
         clear_cache=args.clear_cache,
         model_format=args.model_format,
+        sub_voice=args.sub_voice,
     )

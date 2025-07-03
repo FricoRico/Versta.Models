@@ -1,15 +1,17 @@
 from pathlib import Path
 
 from .convert_kokoro_to_onnx import convert_kokoro_to_onnx as convert_kokoro
+from .convert_piper_to_onnx import convert_piper_to_onnx as convert_piper
 
-def convert_model_to_onnx(model_name: str, export_dir: Path, model_format: str) -> Path:
+def convert_model_to_onnx(model_name: str, export_dir: Path, model_format: str, sub_voice: str = None) -> Path:
     """
     Exports the specified pre-trained model to ONNX format and saves it in the export directory.
 
     Args:
         model_name (str): Name of the pre-trained model.
         export_dir (Path): Path to the directory where the ONNX model will be saved.
-        model_format (str): Type of the pre-trained model to convert (e.g., "kokoro").
+        model_format (str): Type of the pre-trained model to convert (e.g., "kokoro", "piper").
+        sub_voice (str): Sub-voice specification for models that support multiple voices (e.g., "mls").
     Returns:
         Path: The path to the exported ONNX model.
     """
@@ -17,6 +19,8 @@ def convert_model_to_onnx(model_name: str, export_dir: Path, model_format: str) 
 
     if model_format == "kokoro":
         return convert_kokoro(model_name, export_dir)
+    elif model_format == "piper":
+        return convert_piper(model_name, export_dir, sub_voice)
     else:
         raise ValueError(f"Unsupported model format: {model_format}")
 
