@@ -29,7 +29,7 @@ def parse_args():
         type=str,
         help="Provide the name of the pre-trained model to convert. "
              "For Kokoro models, use the HuggingFace model name. "
-             "For Piper models, use a language code (e.g., 'nl', 'de') and specify sub-voice.",
+             "For Piper models, use the repository name 'rhasspy/piper-voices'.",
         required=True,
     )
 
@@ -53,8 +53,8 @@ def parse_args():
         "--sub_voice",
         type=str,
         default=None,
-        help="Specify the sub-voice for models that support multiple voices (e.g., 'mls', 'amy', 'arctic'). "
-             "Only applicable for Piper models."
+        help="Specify the voice path for Piper models (e.g., 'nl/nl_NL/mls/medium', 'de/de_DE/mls_6892/low'). "
+             "This parameter specifies the directory path within the Piper repository to the desired voice model."
     )
 
     parser.add_argument(
@@ -98,6 +98,25 @@ def main(
     # Step 1: Convert the model to ONNX format
     convert_model_to_onnx(model, converted_dir, model_format, sub_voice)
 
+    # For Piper models, update output directory based on language information from config
+    if model_format == "piper":
+        config_file = converted_dir / "config.json"
+        if config_file.exists():
+            from .convert_piper_to_onnx import get_language_info_from_config
+            language_info = get_language_info_from_config(config_file)
+            if language_info and "name_english" in language_info:
+                # Create a language-specific output directory if not already specified
+                # Use the original output_dir as parent, and add language-specific folder
+                language_name = language_info["name_english"].lower().replace(" ", "_")
+                
+                # Only update the output dir if it's still the default or doesn't contain language info
+                if "output" in str(output_dir) and language_name not in str(output_dir):
+                    # Keep the same parent, but add language info
+                    parent_dir = output_dir.parent
+                    output_dir = parent_dir / f"{language_name}_{language_info.get('code', '').replace('_', '-')}"
+                    print(f"Updated output directory to: {output_dir}")
+                    output_dir.mkdir(parents=True, exist_ok=True)
+
     # Step 2: Quantize the model
     quantize_model(converted_dir, "model.onnx", quantization_dir, model_format)
 
@@ -118,12 +137,12 @@ def main(
     model_architectures = ["Piper"] if model_format == "piper" else ["Kokoro"]
     generate_metadata(version, output_dir, model, model_architectures, ort_files, tokenizer_files, voices)
 
-    # Step 6: Remove intermediate files if specified
+    # Step 7: Remove intermediate files if specified
     if not keep_intermediates:
         remove_folder(intermediates_dir)
         print("Intermediates files cleaned.")
 
-    # Step 7: Clear the cache if specified
+    # Step 8: Clear the cache if specified
     if clear_cache:
         remove_folder(Path(default_cache_path) / f"models/{model}".replace("/", "--"))
         print("HuggingFace cache cleaned.")

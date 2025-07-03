@@ -16,22 +16,19 @@ Piper TTS models are already in ONNX format and primarily require:
 
 ```bash
 python -m versta.export \
-    --model nl \
+    --model rhasspy/piper-voices \
     --model_format piper \
-    --sub_voice mls \
-    --output_dir ./output/nl-mls
+    --sub_voice nl/nl_NL/mls/medium \
+    --output_dir ./output
 ```
 
-### Supported Languages
+### Voice Path Specification
 
-The implementation currently supports:
-- Dutch (nl) with mls sub-voice: `nl-mls_5809-medium`
-- German (de) with mls sub-voice: `de-mls_6892-medium`
+The `--sub_voice` parameter specifies the directory path within the Piper repository to the desired voice model. Examples:
 
-### Sub-voice Options
-
-- `mls`: Multi-language speaker models (recommended for Dutch and German)
-- `amy`, `arctic`: Other voice options (model-dependent)
+- `nl/nl_NL/mls/medium` - Dutch MLS voice, medium quality
+- `nl/nl_NL/mls_5809/low` - Dutch MLS voice with speaker ID 5809, low quality
+- `de/de_DE/mls_6892/low` - German MLS voice with speaker ID 6892, low quality
 
 ### Output Structure
 
@@ -43,6 +40,8 @@ output/
 ├── config.json        # Model configuration
 └── metadata.json      # Model metadata for Android app
 ```
+
+The output directory will be automatically named based on language information from the model's config.json file (e.g., `dutch_nl-nl`, `german_de-de`).
 
 ## Implementation Details
 
@@ -59,21 +58,28 @@ output/
 2. **Vocabulary Extraction**: Extracts phoneme_id_map from config.json to vocab.bin
 3. **Quantization**: ARM64-optimized quantization for mobile deployment
 4. **Metadata Generation**: Creates metadata.json with Piper architecture info
+5. **Language-based Output Naming**: Automatically names output folders based on language info
 
 ### Error Handling
 
 - Graceful handling of network errors when downloading models
 - Clear error messages for missing models or configurations
 - Validation of model file existence before processing
+- Validation of voice path format
 
 ## Examples
 
 ### Dutch MLS Model
 ```bash
-python -m versta.export --model nl --model_format piper --sub_voice mls
+python -m versta.export --model rhasspy/piper-voices --model_format piper --sub_voice nl/nl_NL/mls/medium
 ```
 
 ### German MLS Model  
 ```bash
-python -m versta.export --model de --model_format piper --sub_voice mls
+python -m versta.export --model rhasspy/piper-voices --model_format piper --sub_voice de/de_DE/mls_6892/low
+```
+
+### Dutch MLS Model with Specific Speaker
+```bash
+python -m versta.export --model rhasspy/piper-voices --model_format piper --sub_voice nl/nl_NL/mls_5809/low
 ```

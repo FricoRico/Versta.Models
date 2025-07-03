@@ -5,74 +5,58 @@ from struct import pack
 from huggingface_hub import hf_hub_download
 
 
-def convert_piper_to_onnx(model_name: str, export_path: Path, sub_voice: str = None) -> Path:
+def convert_piper_to_onnx(repo_name: str, export_path: Path, voice_path: str = None) -> Path:
     """
     Downloads the specified Piper TTS model (already in ONNX format) and prepares it for export.
 
     Args:
-        model_name (str): Name of the pre-trained Piper model (e.g., "nl-piet-medium")
+        repo_name (str): Name of the Piper repository (e.g., "rhasspy/piper-voices")
         export_path (Path): Path to the directory where the ONNX model will be saved.
-        sub_voice (str): Sub-voice specification (e.g., "mls", "amy", "arctic")
+        voice_path (str): Voice path specification (e.g., "nl/nl_NL/mls/medium", "de/de_DE/mls_6892/low")
     
     Returns:
         Path: The path to the exported ONNX model.
     """
-    print(f"Downloading Piper model {model_name} with sub-voice {sub_voice}...")
+    if not voice_path:
+        raise ValueError("Voice path must be specified for Piper models. Use --sub_voice parameter.")
     
-    # Piper models are organized by language and voice type
-    # Example: nl-piet-medium, de-thorsten-medium, etc.
-    # With sub-voice like mls: nl-mls_5809-medium, de-mls_6892-medium
-    if sub_voice:
-        # For mls voices, the format is typically: {language}-{sub_voice}_{speaker_id}-{quality}
-        # e.g., nl-mls_5809-medium, de-mls_6892-medium
-        if sub_voice == "mls":
-            # Use a default speaker ID for mls models since we don't have speaker selection yet
-            # These are common speaker IDs for Dutch and German mls models
-            if model_name.startswith("nl"):
-                full_model_name = "nl-mls_5809-medium" 
-            elif model_name.startswith("de"):
-                full_model_name = "de-mls_6892-medium"
-            else:
-                # Generic pattern for other languages
-                full_model_name = f"{model_name}-{sub_voice}"
-        else:
-            # For other sub-voices, use the original logic
-            parts = model_name.split('-')
-            if len(parts) >= 2:
-                language = parts[0]  # e.g., "nl", "de"
-                full_model_name = f"{language}-{sub_voice}"
-                if len(parts) > 2:
-                    # Add additional parts like "medium", "low", etc.
-                    full_model_name = "-".join([full_model_name] + parts[2:])
-            else:
-                full_model_name = f"{model_name}-{sub_voice}"
-    else:
-        full_model_name = model_name
-
-    # Download from rhasspy/piper-voices repository
-    repo_id = "rhasspy/piper-voices"
+    print(f"Downloading Piper model from {repo_name} with voice path {voice_path}...")
     
+    # Extract the model name from the voice path
+    # Example: "nl/nl_NL/mls/medium" -> "nl_NL-mls-medium"
+    path_parts = voice_path.strip('/').split('/')
+    if len(path_parts) < 3:
+        raise ValueError(f"Invalid voice path '{voice_path}'. Expected format: 'language/locale/voice_type/quality'")
+    
+    # Construct the model name based on the path structure
+    locale = path_parts[1]  # e.g., "nl_NL", "de_DE"
+    voice_type = path_parts[2]  # e.g., "mls", "mls_6892"
+    quality = path_parts[3] if len(path_parts) > 3 else "medium"  # Default to medium
+    
+    model_name = f"{locale}-{voice_type}-{quality}"
+    
+    # Download from Piper repository
     try:
         # Download the ONNX model file
         model_file_path = hf_hub_download(
-            repo_id=repo_id,
-            filename=f"{full_model_name}.onnx",
+            repo_id=repo_name,
+            filename=f"{voice_path}/{model_name}.onnx",
             local_dir=export_path,
             local_dir_use_symlinks=False
         )
         
         # Download the config.json file
         config_file_path = hf_hub_download(
-            repo_id=repo_id,
-            filename=f"{full_model_name}.onnx.json",
+            repo_id=repo_name,
+            filename=f"{voice_path}/{model_name}.onnx.json",
             local_dir=export_path,
             local_dir_use_symlinks=False
         )
         
     except Exception as e:
         raise FileNotFoundError(
-            f"Could not download Piper model {full_model_name} from {repo_id}. "
-            f"Please check that the model exists and that you have internet access. "
+            f"Could not download Piper model from {repo_name} at path {voice_path}. "
+            f"Please check that the voice path exists and that you have internet access. "
             f"Original error: {e}"
         )
 
@@ -151,3 +135,18 @@ def _set_model_type(config_file: Path, model_type: str):
 
     with open(config_file, "w", encoding="utf-8") as f:
         json.dump(config, f, indent=2)
+
+
+def get_language_info_from_config(config_file: Path) -> dict:
+    """
+    Extracts language information from the Piper model configuration file.
+
+    Args:
+        config_file (Path): Path to the configuration file.
+
+    Returns:
+        dict: Language information including code, family, region, etc.
+    """
+    with open(config_file, "r", encoding="utf-8") as f:
+        config = json.load(f)
+        return config.get("language", {})
