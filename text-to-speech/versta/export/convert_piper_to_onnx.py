@@ -112,12 +112,14 @@ def _load_vocabulary(config_file: Path) -> dict:
         config_file (Path): Path to the configuration file of the Piper model.
 
     Returns:
-        dict: A dictionary containing the vocabulary.
+        dict: A dictionary containing the vocabulary with phoneme->index mapping.
     """
     with open(config_file, "r", encoding="utf-8") as f:
         config = json.load(f)
-        # Piper vocabulary is typically in the "phoneme_id_map" field
-        return config.get("phoneme_id_map", {})
+        # Piper vocabulary is in the "phoneme_id_map" field
+        # Structure: {"phoneme": [index], ...} - extract the first index from each list
+        phoneme_id_map = config.get("phoneme_id_map", {})
+        return {phoneme: ids[0] for phoneme, ids in phoneme_id_map.items()}
 
 
 def _set_model_type(config_file: Path, model_type: str):
