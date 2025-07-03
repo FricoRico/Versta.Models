@@ -10,4 +10,6 @@ transformers>=4.47,<4.48
 
 pycountry>=24.6,<24.7
 
+huggingface_hub>=0.20,<1.0
+
 kokoro==0.8.4
