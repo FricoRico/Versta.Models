@@ -1,4 +1,4 @@
-from os import environ, path, listdir, remove
+from os import environ, path, listdir
 from shutil import rmtree, move
 from subprocess import run
 from pathlib import Path

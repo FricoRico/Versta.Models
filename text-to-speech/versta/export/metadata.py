@@ -26,7 +26,6 @@ def generate_metadata(version: str, output_dir: Path, model: str, model_format: 
 
     metadata = {
         "version": version,
-        "type": "voice",
         "base_model": model,
         "architectures": architectures,
         "files": {
@@ -56,10 +55,11 @@ def get_voices(input_path: Path, export_path: Path, model_format: str = "kokoro"
         model_format (str): Format of the model ("kokoro" or "piper")
     """
     if model_format == "kokoro":
+        folder_name = input_path.name
         copy_folder(input_path, export_path)
 
-        files = listdir(export_path)
-        voices = [f for f in files if path.isfile(path.join(export_path, f))]
+        files = listdir(export_path / folder_name)
+        voices = [f for f in files if path.isfile(path.join(export_path / folder_name, f))]
         return [path.join("voices", f) for f in voices]
     elif model_format == "piper":
         return []

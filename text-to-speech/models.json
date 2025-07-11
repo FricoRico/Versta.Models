@@ -1,16 +1,5 @@
 [
   {
-    "id": "versta-tts-data",
-    "name": "Text-to-Speech Data",
-    "base_model": "Neurora/versta-tts-data",
-    "size": 32784814,
-    "version": "v1.2.0",
-    "bundle": "https://models.versta.app/text-to-speech/v1.2.0/versta-tts-data-bundle.tar.gz",
-    "checksum": "https://models.versta.app/text-to-speech/v1.2.0/versta-tts-data-bundle.tar.sha256",
-    "mandatory": true,
-    "hidden": true
-  },
-  {
     "id": "kokoro",
     "name": "Kokoro",
     "base_model": "hexgrad/Kokoro-82M",
