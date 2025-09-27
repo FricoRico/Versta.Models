@@ -1,0 +1,11 @@
+setuptools
+wheel
+
+numpy<2.0
+paddlex>=3.2,<3.3
+pycountry>=24.6,<24.7
+
+onnxruntime>=1.20,<1.21
+paddlepaddle>=3.2,<3.3
+paddle2onnx>=2.0,<2.1
+paddleslim>=2.6,<2.7
