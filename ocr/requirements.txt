@@ -1,0 +1,9 @@
+setuptools
+wheel
+
+paddlex>=3.2,<3.3
+
+onnxruntime>=1.20,<1.21
+paddlepaddle>=3.2,<3.3
+paddle2onnx>=2.0,<2.1
+paddleslim>=2.6,<2.7
