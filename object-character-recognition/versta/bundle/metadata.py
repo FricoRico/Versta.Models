@@ -60,11 +60,12 @@ def load_metadata_for_input_dirs(input_dirs: List[Path]) -> List[OCRBundleMetada
     return metadata
 
 
-def generate_metadata(version: str, output_dir: Path, languages: List[str], modules: List[str], model_metadata: List[OCRBundleMetadata]) -> Path:
+def generate_metadata(unique_id: str, version: str, output_dir: Path, languages: List[str], modules: List[str], model_metadata: List[OCRBundleMetadata]) -> Path:
     """
     Generates a metadata file for the OCR bundle process.
 
     Args:
+        unique_id (str): Unique identifier for the bundle.
         version (str): Version of the bundle process.
         output_dir (Path): Path to the directory where the metadata file will be saved.
         languages (List[str]): List of unique languages supported by the bundle.
@@ -75,6 +76,7 @@ def generate_metadata(version: str, output_dir: Path, languages: List[str], modu
         Path: Path to the generated metadata.json file.
     """
     metadata = {
+        "id": unique_id,
         "version": version,
         "languages": languages or [],
         "modules": modules or [],

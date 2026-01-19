@@ -25,7 +25,10 @@ def generate_metadata(version: str, output_dir: Path, model: str, module: str, o
     if languageCodes is None:
         raise ValueError(f"Could not extract language codes from model name: {model}")
 
+    modelName = model.split('/').pop().replace('_', '-').lower()
+
     metadata = {
+        "id": f"{modelName}-{module}",
         "version": version,
         "base_model": model,
         "architectures": ["PaddleOCR"], # Only supported model for now

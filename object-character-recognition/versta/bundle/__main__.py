@@ -30,6 +30,12 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--unique_id",
+        type=str,
+        help="Provide a unique identifier for the model. This will be used to generate the metadata file.",
+    )
+
+    parser.add_argument(
         "--input_dir",
         nargs="+",
         type=Path,
@@ -67,6 +73,7 @@ def parse_args():
 
 
 def main(
+        unique_id: str,
         input_dirs: List[Path],
         output_dir: Path,
         keep_intermediates: bool = False,
@@ -107,7 +114,7 @@ def main(
     copy_folders(input_dirs, intermediates_dir)
 
     # Step 5: Generate metadata for the bundle
-    generate_metadata(version, intermediates_dir, languages, modules, metadata)
+    generate_metadata(unique_id, version, intermediates_dir, languages, modules, metadata)
 
     # Step 6: Bundle the folders into a single .tar.gz file
     output_archive = bundle_output_dir / f"{modules_name}-bundle.tar.gz"
@@ -137,6 +144,7 @@ def main(
 if __name__ == "__main__":
     args = parse_args()
     main(
+        unique_id=args.unique_id,
         input_dirs=args.input_dir,
         output_dir=args.output_dir,
         keep_intermediates=args.keep_intermediates,
