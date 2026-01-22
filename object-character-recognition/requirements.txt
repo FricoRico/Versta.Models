@@ -1,11 +1,17 @@
 setuptools
 wheel
 
-numpy<2.0
-paddlex>=3.2,<3.3
+torch>=2.10,<2.11
+numpy>=2.4,<2.5
 pycountry>=24.6,<24.7
 
-onnxruntime>=1.20,<1.21
+onnxruntime>=1.23,<1.24
 paddlepaddle>=3.2,<3.3
 paddle2onnx>=2.0,<2.1
-paddleslim>=2.6,<2.7
+paddleocr>=3.3,<3.4
+paddlex>=3.3,<3.4
+
+onnx>=1.20,<1.21
+onnxslim>=0.1.80,<0.2
+opencv-python>=4.13,<4.14
+pillow>=12.1,<12.2

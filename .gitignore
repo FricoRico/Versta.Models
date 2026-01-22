@@ -180,7 +180,10 @@ cython_debug/
 */lib
 */lib64
 */share
-*/output
-*/export
 */tmp
 */pyvenv.cfg
+
+# Versta specific ignores
+*/output
+*/export
+*/calibration
