@@ -1,12 +1,7 @@
-from typing import TypedDict, Optional
+from typing import TypedDict
 
-
-class ModelFiles(TypedDict):
-    """TFLite model files."""
-
+class ORTFiles(TypedDict):
     model: str
-    quantization: Optional[str]
-
 
 class TokenizerFiles(TypedDict):
     vocabulary: str

@@ -1,23 +1,15 @@
 import json
 
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 from pycountry import languages
 
-from .typing import ModelFiles, TokenizerFiles
+from .typing import ORTFiles, TokenizerFiles
 from .definitions import languages as languageDefinitions
 
 
-def generate_metadata(
-    version: str,
-    output_dir: Path,
-    model: str,
-    module: str,
-    model_files: ModelFiles,
-    tokenizer_files: Optional[TokenizerFiles] = None,
-    quantization: Optional[str] = None,
-) -> Path:
+def generate_metadata(version: str, output_dir: Path, model: str, module: str, ort_files: ORTFiles, tokenizer_files: TokenizerFiles) -> Path:
     """
     Generates a metadata file for the model conversion process.
 
@@ -26,26 +18,26 @@ def generate_metadata(
         model (str): Name of the model being converted.
         module (str): Format of the model ("detector" or "recognizer").
         output_dir (Path): Path to the directory where the metadata file will be saved.
-        model_files (ModelFiles): Dictionary containing the file paths for the TFLite model.
+        ort_files (ORTFiles): Dictionary containing the file paths for the encoder and decoder ORT files.
         tokenizer_files (TokenizerFiles): Dictionary containing the file paths for the tokenizer files.
-        quantization (Optional[str]): Quantization type applied to the model.
     """
     languageCodes = _get_language_from_model_name(model)
     if languageCodes is None:
         raise ValueError(f"Could not extract language codes from model name: {model}")
 
-    modelName = model.split("/").pop().replace("_", "-").lower()
+    modelName = model.split('/').pop().replace('_', '-').lower()
 
     metadata = {
         "id": f"{modelName}-{module}",
         "version": version,
         "base_model": model,
-        "architectures": ["PaddleOCR"],
+        "architectures": ["PaddleOCR"], # Only supported model for now
         "languages": languageCodes,
         "module": module,
-        "format": "tflite",
-        "quantization": quantization,
-        "files": {"inference": model_files or {}, "tokenizer": tokenizer_files or {}},
+        "files": {
+            "inference": ort_files or {},
+            "tokenizer": tokenizer_files or {}
+        }
     }
 
     # Define the path for the metadata.json file
@@ -56,7 +48,6 @@ def generate_metadata(
         json.dump(metadata, f, indent=4)
 
     return metadata_file
-
 
 def _get_language_from_model_name(model_name: str) -> List[str]:
     """
@@ -103,7 +94,6 @@ def _get_language_from_model_name(model_name: str) -> List[str]:
     else:
         return ["*"]
 
-
 def _get_iso_code(language_names: List[str]) -> List[str]:
     """
     Return ISO 639-1 codes for the provided language list, keeping failures as None.
@@ -119,14 +109,10 @@ def _get_iso_code(language_names: List[str]) -> List[str]:
     for raw in language_names:
         cleaned = raw.split("(")[0].strip()
         try:
-            record = languages.get(name=cleaned)
+            record = languages.get(name = cleaned)
         except LookupError:
-            raise ValueError(
-                f"Could not extract language codes from language name: {raw}"
-            )
+            raise ValueError(f"Could not extract language codes from language name: {raw}")
         else:
-            code = getattr(record, "alpha_2", None)
-            if code:
-                results.append(code)
+            results.append(getattr(record, "alpha_2", None))
 
-    return results
+    return [code for code in results if code is not None]

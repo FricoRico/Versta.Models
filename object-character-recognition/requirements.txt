@@ -1,16 +1,11 @@
 setuptools
 wheel
 
-numpy>=1.26,<1.27
-paddlex>=3.3,<3.5
+numpy<2.0
+paddlex>=3.2,<3.3
 pycountry>=24.6,<24.7
 
-paddlepaddle>=3.3,<3.4
-paddle2onnx>=2.1,<2.2
-onnxsim>=0.4,<0.5
-
-tf-keras>=2.20,<2.21
-sng4onnx>=2.0,<2.1
-onnx2tf>=1.27,<1.28
-tensorflow>=2.20,<2.21
-ai-edge-litert>=2.1,<2.2
+onnxruntime>=1.20,<1.21
+paddlepaddle>=3.2,<3.3
+paddle2onnx>=2.0,<2.1
+paddleslim>=2.6,<2.7
