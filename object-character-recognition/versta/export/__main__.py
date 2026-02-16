@@ -9,6 +9,7 @@ from huggingface_hub import snapshot_download
 
 from .convert_onnx import convert_model_to_onnx
 from .convert_ort import convert_model_to_ort
+from .quantize import simplify_model
 from .metadata import generate_metadata
 from .tokenizer import save_tokenizer
 from .utils import remove_folder
@@ -21,8 +22,8 @@ def parse_args():
         os.path.basename(__file__),
         description="""Convert an OCR model from disk to ONNX format and then to ORT format.
         The converter is intended to be used with PaddleOCR models, but might work with other models in the future as well.
-        This function manages the overall workflow from exporting the model to ONNX and quantizing the model components.
-        After the model is quantized, it is converted to ORT format for deployment on ARM devices.
+        This function manages the overall workflow from exporting the model to ONNX, simplifying the model, and converting to ORT format.
+        The model is exported in FP16 format and optimized for deployment on mobile and web devices.
         """,
     )
 
@@ -82,7 +83,7 @@ def main(
         clear_cache: bool = False,
 ):
     if repository_exists(model):
-        output = snapshot_download(repo_id=model, local_dir_use_symlinks=False)
+        output = snapshot_download(repo_id=model)
         model_path = Path(output)
     else:
         raise "The provided model path does not exist."
@@ -91,21 +92,25 @@ def main(
     output_dir = export_dir / model.split("/")[-1].lower()
     intermediates_dir = output_dir / "intermediates"
     converted_dir = intermediates_dir / "converted"
-    quantization_dir = intermediates_dir / "quantized"
+    simplified_dir = intermediates_dir / "simplified"
 
     output_dir.mkdir(parents=True, exist_ok=True)
     intermediates_dir.mkdir(parents=True, exist_ok=True)
     converted_dir.mkdir(parents=True, exist_ok=True)
-    quantization_dir.mkdir(parents=True, exist_ok=True)
+    simplified_dir.mkdir(parents=True, exist_ok=True)
 
-    # Step 1: Convert the model to ONNX format
-    convert_model_to_onnx(model_path, converted_dir)
+    # Step 1: Convert the model to ONNX format (FP16)
+    onnx_model_path = convert_model_to_onnx(model_path, converted_dir)
 
-    # Step 2: Convert the ONNX model to ORT format
-    ort_files = convert_model_to_ort(converted_dir, output_dir)
+    # Step 2: Simplify the model using onnxsim
+    simplified_model_path = simplified_dir / "model.onnx"
+    simplify_model(onnx_model_path, simplified_model_path, module=module)
+
+    # Step 3: Convert the simplified ONNX model to ORT format
+    ort_files = convert_model_to_ort(simplified_dir, output_dir)
     tokenizer_files = save_tokenizer(model_path, output_dir)
 
-    # Step 3: Validate the presence of vocabulary file based on model format
+    # Step 4: Validate the presence of vocabulary file based on model format
     if tokenizer_files is None:
         if module == "recognizer":
             raise ValueError("Missing vocabulary file for recognizer model.")
@@ -113,15 +118,15 @@ def main(
         if module == "detector":
             raise ValueError("Unexpected vocabulary file for detector model.")
 
-    # Step 4: Create metadata file for the exported model
+    # Step 5: Create metadata file for the exported model
     generate_metadata(version, output_dir, model, module, ort_files, tokenizer_files)
 
-    # Step 5: Clean up intermediate files if specified
+    # Step 6: Clean up intermediate files if specified
     if not keep_intermediates:
         remove_folder(intermediates_dir)
         print("Intermediates files cleaned.")
 
-    # Step 6: Clear the cache if specified
+    # Step 7: Clear the cache if specified
     if clear_cache:
         remove_folder(Path(default_cache_path) / f"models/{model}".replace("/", "--"))
         print("HuggingFace cache cleaned.")

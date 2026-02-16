@@ -21,7 +21,7 @@ def convert_model_to_ort(input_dir: Path, output_dir: Path) -> ORTFiles:
     convert_onnx_models_to_ort(
         input_dir,
         output_dir,
-        optimization_styles=[OptimizationStyle.Fixed],
+        optimization_styles=[OptimizationStyle.Runtime],
         target_platform="arm",
         enable_type_reduction=True,
     )
