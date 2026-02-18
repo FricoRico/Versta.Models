@@ -1,6 +1,8 @@
 onnxruntime>=1.20,<1.21
 onnxruntime-tools>=1.7,<1.8
 onnxconverter-common>=1.14,<1.15
+onnx>=1.16,<1.17
+onnxslim>=0.1,<1.0
 
 opustools>=1.8,<1.9
 sacremoses>=0.1,<0.2

@@ -1,12 +1,25 @@
 import json
 
 from pathlib import Path
-from typing import List
+from typing import List, Dict, Any
 
 from .tokenizer import TokenizerFiles
 from .convert_ort import ORTFiles
+from .config import ArchitectureConfig
 
-def generate_metadata(version: str, output_dir: Path, model: str, source_language: str, target_language: str, architectures: List[str], score: float, tokenizer_files: TokenizerFiles, ort_files: ORTFiles) -> str:
+
+def generate_metadata(
+    version: str,
+    output_dir: Path,
+    model: str,
+    source_language: str,
+    target_language: str,
+    architectures: List[str],
+    arch_config: ArchitectureConfig,
+    score: float,
+    tokenizer_files: TokenizerFiles,
+    ort_files: ORTFiles,
+) -> str:
     """
     Generates a metadata file for the model conversion process.
 
@@ -17,6 +30,7 @@ def generate_metadata(version: str, output_dir: Path, model: str, source_languag
         source_language (str): Source language for the translation model.
         target_language (str): Target language for the translation model.
         architectures (List[str]): List of architectures used in the model.
+        arch_config (ArchitectureConfig): Architecture configuration for decoder cache initialization.
         score (float): Score of the model to be converted.
         tokenizer_files (TokenizerFiles): Dictionary containing the file paths for the tokenizer files.
         ort_files (ORTFiles): Dictionary containing the file paths for the encoder and decoder ORT files.
@@ -27,11 +41,9 @@ def generate_metadata(version: str, output_dir: Path, model: str, source_languag
         "source_language": source_language,
         "target_language": target_language,
         "architectures": architectures,
+        "architecture_config": arch_config,
         "score": score,
-        "files": {
-            "tokenizer": tokenizer_files or {},
-            "inference": ort_files or {}
-        }
+        "files": {"tokenizer": tokenizer_files or {}, "inference": ort_files or {}},
     }
 
     # Define the path for the metadata.json file

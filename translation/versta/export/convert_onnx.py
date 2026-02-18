@@ -1,6 +1,7 @@
 from optimum.exporters.onnx import main_export
 from pathlib import Path
 
+
 def convert_model_to_onnx(model_name: str, export_dir: Path):
     """
     Exports the specified pre-trained model to ONNX format and saves it in the export directory.
@@ -20,4 +21,5 @@ def convert_model_to_onnx(model_name: str, export_dir: Path):
         framework="pt",
         opset=20,
         library_name="transformers",
+        no_post_process=True,
     )

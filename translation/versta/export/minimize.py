@@ -1,6 +1,7 @@
 from os import remove
 from pathlib import Path
 
+
 def minimize(output_dir: Path):
     """
     Remove unnecessary files from the output directory.
@@ -8,5 +9,17 @@ def minimize(output_dir: Path):
     Args:
         output_dir (Path): Path to the output directory.
     """
-    remove(output_dir / "special_tokens_map.json")
-    remove(output_dir / "vocab.json")
+    files_to_remove = [
+        "special_tokens_map.json",
+        "vocab.json",
+    ]
+
+    for filename in files_to_remove:
+        filepath = output_dir / filename
+        if filepath.exists():
+            remove(filepath)
+
+    # Remove any .onnx files that shouldn't be in the final output
+    for onnx_file in output_dir.glob("*.onnx"):
+        onnx_file.unlink()
+        print(f"Removed intermediate ONNX file: {onnx_file.name}")

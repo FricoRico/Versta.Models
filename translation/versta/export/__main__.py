@@ -6,21 +6,29 @@ from typing import TypedDict
 
 from huggingface_hub.constants import default_cache_path
 
-from .config import get_source_language, get_target_language, get_architecture
+from .config import (
+    get_source_language,
+    get_target_language,
+    get_architecture,
+    get_architecture_config,
+)
 from .tokenizer import save_tokenizer, optimize_vocabulary
-from .quantize import quantize_model
+from .convert_fp16 import convert_models_to_fp16
 from .convert_onnx import convert_model_to_onnx
 from .convert_ort import convert_model_to_ort
 from .metadata import generate_metadata
 from .minimize import minimize
 from .utils import remove_folder
 
+
 class Output(TypedDict):
     path: Path
     metadata: Path
 
+
 with open(Path(__file__).parent / ".." / "version.txt", "r") as version_file:
     version = version_file.read().strip()
+
 
 def parse_args():
     parser = ArgumentParser(
@@ -69,11 +77,12 @@ def parse_args():
         action="store_true",
         default=False,
         help="Whether to remove the downloaded files from HuggingFace cache."
-             "This will default to False if not specified.",
+        "This will default to False if not specified.",
     )
 
     parsed_args = parser.parse_args()
     return parsed_args
+
 
 def main(
     model: str,
@@ -100,6 +109,7 @@ def main(
     source_language = get_source_language(model)
     target_language = get_target_language(model)
     architectures = get_architecture(model)
+    arch_config = get_architecture_config(model)
 
     language_output_dir = output_dir / f"{source_language}-{target_language}"
 
@@ -115,19 +125,37 @@ def main(
     # Step 1: Convert the model to ONNX format
     convert_model_to_onnx(model, converted_dir)
 
+    # Remove unused decoder_model.onnx (we only use decoder_with_past_model.onnx)
+    decoder_model_path = converted_dir / "decoder_model.onnx"
+    if decoder_model_path.exists():
+        decoder_model_path.unlink()
+        print("Removed unused decoder_model.onnx")
+
     # Step 2: Save the tokenizer and optimize the vocabulary
     tokenizer_files = save_tokenizer(model, language_output_dir)
-    tokenizer_files_optimized = optimize_vocabulary(tokenizer_files, language_output_dir)
+    tokenizer_files_optimized = optimize_vocabulary(
+        tokenizer_files, language_output_dir
+    )
 
-    # Step 3: Quantize the encoder and decoder models
-    quantize_model(converted_dir, "encoder_model.onnx", quantization_dir)
-    quantize_model(converted_dir, "decoder_model_merged.onnx", quantization_dir)
+    # Step 3: Convert models to FP16 format
+    encoder_fp16, decoder_fp16 = convert_models_to_fp16(converted_dir, quantization_dir)
 
-    # Step 4: Convert the quantized models to ORT format
+    # Step 4: Convert the FP16 models to ORT format
     ort_files = convert_model_to_ort(quantization_dir, language_output_dir)
 
     # Step 5: Create metadata file for the model
-    generate_metadata(version, language_output_dir, model, source_language, target_language, architectures, score, tokenizer_files_optimized, ort_files)
+    generate_metadata(
+        version,
+        language_output_dir,
+        model,
+        source_language,
+        target_language,
+        architectures,
+        arch_config,
+        score,
+        tokenizer_files_optimized,
+        ort_files,
+    )
 
     # Step 6: Remove unused files
     minimize(language_output_dir)
@@ -146,6 +174,7 @@ def main(
         path=language_output_dir,
         metadata=language_output_dir / "metadata.json",
     )
+
 
 if __name__ == "__main__":
     args = parse_args()
