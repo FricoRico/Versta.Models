@@ -103,11 +103,11 @@ def main(
     onnx_model_path = convert_model_to_onnx(model_path, converted_dir)
 
     # Step 2: Simplify the model using onnxsim
-    simplified_model_path = simplified_dir / "model.onnx"
-    simplify_model(onnx_model_path, simplified_model_path, module=module)
+    # simplified_model_path = simplified_dir / "model.onnx"
+    # simplify_model(onnx_model_path, simplified_model_path, module=module)
 
     # Step 3: Convert the simplified ONNX model to ORT format
-    ort_files = convert_model_to_ort(simplified_dir, output_dir)
+    ort_files = convert_model_to_ort(converted_dir, output_dir)
     tokenizer_files = save_tokenizer(model_path, output_dir)
 
     # Step 4: Validate the presence of vocabulary file based on model format

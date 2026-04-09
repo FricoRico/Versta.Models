@@ -129,6 +129,7 @@ celerybeat.pid
 
 # Environments
 .env
+.envrc
 .venv
 env/
 venv/
@@ -180,7 +181,15 @@ cython_debug/
 */lib
 */lib64
 */share
-*/output
-*/export
 */tmp
 */pyvenv.cfg
+
+# Opencode
+.opencode
+.swarm
+
+# Versta specific
+*/output
+*/export
+*/cache
+*/results

@@ -2,70 +2,70 @@
   "lockfile_version": "1",
   "packages": {
     "ccache@latest": {
-      "last_modified": "2026-01-23T17:20:52Z",
-      "resolved": "github:NixOS/nixpkgs/a1bab9e494f5f4939442a57a58d0449a109593fe#ccache",
+      "last_modified": "2026-03-30T07:26:21Z",
+      "resolved": "github:NixOS/nixpkgs/15c6719d8c604779cf59e03c245ea61d3d7ab69b#ccache",
       "source": "devbox-search",
-      "version": "4.12.2",
+      "version": "4.13.2",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/nkbc2ghb9cj5nw4wqycidpwhan3759h1-ccache-4.12.2",
+              "path": "/nix/store/3lsnqrr50qd2jqgif20v5jfnq5q53n8g-ccache-4.13.2",
               "default": true
             },
             {
               "name": "man",
-              "path": "/nix/store/cz8pafqqq8fqrfyif3vdwyibxji4ad0a-ccache-4.12.2-man",
+              "path": "/nix/store/i4327mzlmbcrc3lr7i0m6bv6hmldy3wj-ccache-4.13.2-man",
               "default": true
             }
           ],
-          "store_path": "/nix/store/nkbc2ghb9cj5nw4wqycidpwhan3759h1-ccache-4.12.2"
+          "store_path": "/nix/store/3lsnqrr50qd2jqgif20v5jfnq5q53n8g-ccache-4.13.2"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/sa9ki6l4lq8h6jqhimxf3dgbxam1ahcq-ccache-4.12.2",
+              "path": "/nix/store/83fld06jn2q3sfjzrymwchwkzjhn9jbv-ccache-4.13.2",
               "default": true
             },
             {
               "name": "man",
-              "path": "/nix/store/9zhwcmcg4wlrv35mlvam5mrvjymql7v7-ccache-4.12.2-man",
+              "path": "/nix/store/kqkxnh62gjjqnyw2iciv57gj1wcrb9y1-ccache-4.13.2-man",
               "default": true
             }
           ],
-          "store_path": "/nix/store/sa9ki6l4lq8h6jqhimxf3dgbxam1ahcq-ccache-4.12.2"
+          "store_path": "/nix/store/83fld06jn2q3sfjzrymwchwkzjhn9jbv-ccache-4.13.2"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/190lar4v0y3mpfavcsdj597pvl5n2xp8-ccache-4.12.2",
+              "path": "/nix/store/nnnjg1mrcj9rs3ka22v0ad6in98z94bn-ccache-4.13.2",
               "default": true
             },
             {
               "name": "man",
-              "path": "/nix/store/lanl5g7bvx580s7y1c74hak8vg7xn3f1-ccache-4.12.2-man",
+              "path": "/nix/store/06pvpgmslad1swz4p6s66bfj6521jhql-ccache-4.13.2-man",
               "default": true
             }
           ],
-          "store_path": "/nix/store/190lar4v0y3mpfavcsdj597pvl5n2xp8-ccache-4.12.2"
+          "store_path": "/nix/store/nnnjg1mrcj9rs3ka22v0ad6in98z94bn-ccache-4.13.2"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/b97b1whmqww0hpcbbwh2fpwlmwh8rair-ccache-4.12.2",
+              "path": "/nix/store/pyi05q4zn2bzm2d8a7251y2w6j4a36m4-ccache-4.13.2",
               "default": true
             },
             {
               "name": "man",
-              "path": "/nix/store/x22fs37f0wmlm32qsk1gg1dh43alfksb-ccache-4.12.2-man",
+              "path": "/nix/store/7d4vbk48azx9rq18rikw2rm5sh5vcjdr-ccache-4.13.2-man",
               "default": true
             }
           ],
-          "store_path": "/nix/store/b97b1whmqww0hpcbbwh2fpwlmwh8rair-ccache-4.12.2"
+          "store_path": "/nix/store/pyi05q4zn2bzm2d8a7251y2w6j4a36m4-ccache-4.13.2"
         }
       }
     },
@@ -125,64 +125,467 @@
         }
       }
     },
-    "github:NixOS/nixpkgs/nixpkgs-unstable": {
-      "last_modified": "2026-02-06T12:24:04Z",
-      "resolved": "github:NixOS/nixpkgs/ae67888ff7ef9dff69b3cf0cc0fbfbcd3a722abe?lastModified=1770380644&narHash=sha256-P7dWMHRUWG5m4G%2B06jDyThXO7kwSk46C1kgjEWcybkE%3D"
-    },
-    "python@3.12": {
-      "last_modified": "2026-01-23T17:20:52Z",
-      "plugin_version": "0.0.4",
-      "resolved": "github:NixOS/nixpkgs/a1bab9e494f5f4939442a57a58d0449a109593fe#python312",
+    "ghostscript@10.06.0": {
+      "last_modified": "2026-04-23T13:07:47Z",
+      "resolved": "github:NixOS/nixpkgs/01fbdeef22b76df85ea168fbfe1bfd9e63681b30#ghostscript",
       "source": "devbox-search",
-      "version": "3.12.12",
+      "version": "10.06.0",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/2j3gnwp0hsbvrirf23w1q344q7gbcy92-python3-3.12.12",
+              "path": "/nix/store/nfwqk75drdgav7ig7n2w3g79pcgyl6sr-ghostscript-10.06.0",
               "default": true
+            },
+            {
+              "name": "man",
+              "path": "/nix/store/3ziqmdzncvzvvpx0v6a24037ngc39ign-ghostscript-10.06.0-man",
+              "default": true
+            },
+            {
+              "name": "doc",
+              "path": "/nix/store/fgxwvgq5xbdlq59ljwhg6s0a956dhsdq-ghostscript-10.06.0-doc"
+            },
+            {
+              "name": "fonts",
+              "path": "/nix/store/y1wb4gg3kakpykg0wqqbqqn7g1hb7z9f-ghostscript-10.06.0-fonts"
             }
           ],
-          "store_path": "/nix/store/2j3gnwp0hsbvrirf23w1q344q7gbcy92-python3-3.12.12"
+          "store_path": "/nix/store/nfwqk75drdgav7ig7n2w3g79pcgyl6sr-ghostscript-10.06.0"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/h2jzxh50f3sa4k8p8wv4rrf51ci1srq1-python3-3.12.12",
+              "path": "/nix/store/82h1yvnvz9278n4d1rn378cap92c3384-ghostscript-with-X-10.06.0",
               "default": true
             },
             {
-              "name": "debug",
-              "path": "/nix/store/8rckkaw2jgbwz8l8gvhi75fx5q2wh87b-python3-3.12.12-debug"
+              "name": "man",
+              "path": "/nix/store/6lzcpal41abk5cz4hzc6by1wm3bxhf1q-ghostscript-with-X-10.06.0-man",
+              "default": true
+            },
+            {
+              "name": "fonts",
+              "path": "/nix/store/0gmpidhwj6ssj4k69khn5dqaz1rrccag-ghostscript-with-X-10.06.0-fonts"
+            },
+            {
+              "name": "doc",
+              "path": "/nix/store/q0jgdwkfl82l1kpc72rzp6s830pm18va-ghostscript-with-X-10.06.0-doc"
             }
           ],
-          "store_path": "/nix/store/h2jzxh50f3sa4k8p8wv4rrf51ci1srq1-python3-3.12.12"
+          "store_path": "/nix/store/82h1yvnvz9278n4d1rn378cap92c3384-ghostscript-with-X-10.06.0"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/1f8k4x22cjz9nj2x7dki3xsgkih1j4rx-python3-3.12.12",
+              "path": "/nix/store/dfh5b57w0g3wp02qm5slcz46lv4gfv48-ghostscript-10.06.0",
               "default": true
+            },
+            {
+              "name": "man",
+              "path": "/nix/store/f3lnjvj8jcwpgj185qgcb3cj5ha42swv-ghostscript-10.06.0-man",
+              "default": true
+            },
+            {
+              "name": "doc",
+              "path": "/nix/store/62hf4b5b98wxby39awlbi6crnkkkr30v-ghostscript-10.06.0-doc"
+            },
+            {
+              "name": "fonts",
+              "path": "/nix/store/6m479j1jibj0ilh78frl0ki75vnqmm1z-ghostscript-10.06.0-fonts"
             }
           ],
-          "store_path": "/nix/store/1f8k4x22cjz9nj2x7dki3xsgkih1j4rx-python3-3.12.12"
+          "store_path": "/nix/store/dfh5b57w0g3wp02qm5slcz46lv4gfv48-ghostscript-10.06.0"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/by9gvhyjawm7g7gkkgpj28aas6fl8ws7-python3-3.12.12",
+              "path": "/nix/store/l7nryi3685lc6di1wbyfmb5q3v3xmfqz-ghostscript-with-X-10.06.0",
+              "default": true
+            },
+            {
+              "name": "man",
+              "path": "/nix/store/s4h9lppss1lx8406g743dk1aq32pcrf7-ghostscript-with-X-10.06.0-man",
+              "default": true
+            },
+            {
+              "name": "doc",
+              "path": "/nix/store/2y4jirf4jmzfvgd7bpzzi0gz5vmyyqrz-ghostscript-with-X-10.06.0-doc"
+            },
+            {
+              "name": "fonts",
+              "path": "/nix/store/wh26i6fali0k8yx57f6s5jfhl38wbyna-ghostscript-with-X-10.06.0-fonts"
+            }
+          ],
+          "store_path": "/nix/store/l7nryi3685lc6di1wbyfmb5q3v3xmfqz-ghostscript-with-X-10.06.0"
+        }
+      }
+    },
+    "github:NixOS/nixpkgs/nixpkgs-unstable": {
+      "last_modified": "2026-04-07T08:05:10Z",
+      "resolved": "github:NixOS/nixpkgs/a3db02183b5da6fbf728203492a5d1b9d109b7f9?lastModified=1775549110&narHash=sha256-gCXSLBI1drlFwYlNqqPS9cFXvraaEGyLS8Sq45p7b%2FQ%3D"
+    },
+    "imagemagick@7.1.2-19": {
+      "last_modified": "2026-04-23T13:07:47Z",
+      "resolved": "github:NixOS/nixpkgs/01fbdeef22b76df85ea168fbfe1bfd9e63681b30#imagemagick",
+      "source": "devbox-search",
+      "version": "7.1.2-19",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/wpzigcx7gxjlwwp37zarhvd3bqa80b8c-imagemagick-7.1.2-19",
+              "default": true
+            },
+            {
+              "name": "doc",
+              "path": "/nix/store/nbsq26ilsasp7q30yi1a0wg7gphas4yd-imagemagick-7.1.2-19-doc"
+            },
+            {
+              "name": "dev",
+              "path": "/nix/store/5aqqkdj4f73paq3g2j4w4hzzr761ikxl-imagemagick-7.1.2-19-dev"
+            }
+          ],
+          "store_path": "/nix/store/wpzigcx7gxjlwwp37zarhvd3bqa80b8c-imagemagick-7.1.2-19"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/fwzsk0k739njgrc6akds0gb9dlf35c7j-imagemagick-7.1.2-19",
+              "default": true
+            },
+            {
+              "name": "dev",
+              "path": "/nix/store/cbix8xr3hapw0gxnb9frs03pmk4qwg03-imagemagick-7.1.2-19-dev"
+            },
+            {
+              "name": "doc",
+              "path": "/nix/store/0n8il9kwbiz0iv7v5i2lqgq0b74ysabl-imagemagick-7.1.2-19-doc"
+            }
+          ],
+          "store_path": "/nix/store/fwzsk0k739njgrc6akds0gb9dlf35c7j-imagemagick-7.1.2-19"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/gg9cl0mxb1imfdswpfizk5dj7zrxrwh6-imagemagick-7.1.2-19",
+              "default": true
+            },
+            {
+              "name": "dev",
+              "path": "/nix/store/lgixyf4qclp6bcm6z76ffpjmzlhvxa4l-imagemagick-7.1.2-19-dev"
+            },
+            {
+              "name": "doc",
+              "path": "/nix/store/8lbb1bszlsbva3j87k24vmgznd8lnfzr-imagemagick-7.1.2-19-doc"
+            }
+          ],
+          "store_path": "/nix/store/gg9cl0mxb1imfdswpfizk5dj7zrxrwh6-imagemagick-7.1.2-19"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/pjcg9z9zj4hqa7y8jjgsx06rc31q6r8s-imagemagick-7.1.2-19",
+              "default": true
+            },
+            {
+              "name": "dev",
+              "path": "/nix/store/hn59rqwq5j0z7l13yns903l6ibylwz1g-imagemagick-7.1.2-19-dev"
+            },
+            {
+              "name": "doc",
+              "path": "/nix/store/ynxxq1m4789p30i1g8qjlkm9lp80h9c0-imagemagick-7.1.2-19-doc"
+            }
+          ],
+          "store_path": "/nix/store/pjcg9z9zj4hqa7y8jjgsx06rc31q6r8s-imagemagick-7.1.2-19"
+        }
+      }
+    },
+    "libGL.dev": {
+      "resolved": "github:NixOS/nixpkgs/a3db02183b5da6fbf728203492a5d1b9d109b7f9?narHash=sha256-gCXSLBI1drlFwYlNqqPS9cFXvraaEGyLS8Sq45p7b%2FQ%3D#libGL.dev",
+      "source": "nixpkg"
+    },
+    "libxml2.dev": {
+      "resolved": "github:NixOS/nixpkgs/a3db02183b5da6fbf728203492a5d1b9d109b7f9?narHash=sha256-gCXSLBI1drlFwYlNqqPS9cFXvraaEGyLS8Sq45p7b%2FQ%3D#libxml2.dev",
+      "source": "nixpkg"
+    },
+    "libxslt.dev": {
+      "resolved": "github:NixOS/nixpkgs/a3db02183b5da6fbf728203492a5d1b9d109b7f9?narHash=sha256-gCXSLBI1drlFwYlNqqPS9cFXvraaEGyLS8Sq45p7b%2FQ%3D#libxslt.dev",
+      "source": "nixpkg"
+    },
+    "perl536Packages.LaTeXML@0.8.8": {
+      "last_modified": "2024-10-08T17:43:25Z",
+      "resolved": "github:NixOS/nixpkgs/1366d1af8f58325602280e43ed6233849fb92216#perl536Packages.LaTeXML",
+      "source": "devbox-search",
+      "version": "0.8.8",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/qn159cb0wcnzhhdv8hpmd863b3ar09g2-perl5.36.3-LaTeXML-0.8.8",
+              "default": true
+            },
+            {
+              "name": "tex",
+              "path": "/nix/store/fzq3wgcz2fkq9cj29yr3gl99xi4irf5r-perl5.36.3-LaTeXML-0.8.8-tex"
+            }
+          ],
+          "store_path": "/nix/store/qn159cb0wcnzhhdv8hpmd863b3ar09g2-perl5.36.3-LaTeXML-0.8.8"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/4sgqmzqnlbggvyn1g0jcp7zmbsfpfl05-perl5.36.3-LaTeXML-0.8.8",
+              "default": true
+            },
+            {
+              "name": "tex",
+              "path": "/nix/store/ylpfjbf8lfmv6ri65amasgmz6lc8wily-perl5.36.3-LaTeXML-0.8.8-tex"
+            }
+          ],
+          "store_path": "/nix/store/4sgqmzqnlbggvyn1g0jcp7zmbsfpfl05-perl5.36.3-LaTeXML-0.8.8"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/v2adfv9smf51r6l6739yfqfcihfyvh4y-perl5.36.3-LaTeXML-0.8.8",
+              "default": true
+            },
+            {
+              "name": "tex",
+              "path": "/nix/store/s7shj062g4dc9i90fpsywrwywgxagdym-perl5.36.3-LaTeXML-0.8.8-tex"
+            }
+          ],
+          "store_path": "/nix/store/v2adfv9smf51r6l6739yfqfcihfyvh4y-perl5.36.3-LaTeXML-0.8.8"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/jjplxy706089yp4ikd7b0ra8a7k0y9r3-perl5.36.3-LaTeXML-0.8.8",
+              "default": true
+            },
+            {
+              "name": "tex",
+              "path": "/nix/store/xab82s4is7q069sypk3i478g0x2dpp9w-perl5.36.3-LaTeXML-0.8.8-tex"
+            }
+          ],
+          "store_path": "/nix/store/jjplxy706089yp4ikd7b0ra8a7k0y9r3-perl5.36.3-LaTeXML-0.8.8"
+        }
+      }
+    },
+    "python311Packages.opencv-python@latest": {
+      "last_modified": "2024-12-03T12:40:06Z",
+      "resolved": "github:NixOS/nixpkgs/566e53c2ad750c84f6d31f9ccb9d00f823165550#python311Packages.opencv-python",
+      "source": "devbox-search",
+      "version": "4.9.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/003phywpr8h9878jy88p82x5v6160xbm-python3.11-opencv-python-4.9.0",
+              "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/51nnqqz29g38kqd9x43qa07af726802q-python3.11-opencv-python-4.9.0-dist"
+            }
+          ],
+          "store_path": "/nix/store/003phywpr8h9878jy88p82x5v6160xbm-python3.11-opencv-python-4.9.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/asaxhsmacy4bmzy0hf0xdfkssg8lkn7k-python3.11-opencv-python-4.9.0",
+              "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/jcg556j01gphmpl640ar92p8x6f2sl2g-python3.11-opencv-python-4.9.0-dist"
+            }
+          ],
+          "store_path": "/nix/store/asaxhsmacy4bmzy0hf0xdfkssg8lkn7k-python3.11-opencv-python-4.9.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/zq4974lyj048irdypsbdqr6jkqv2zqim-python3.11-opencv-python-4.9.0",
+              "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/i767yi58lpmycigmh7xihi55src9ssg4-python3.11-opencv-python-4.9.0-dist"
+            }
+          ],
+          "store_path": "/nix/store/zq4974lyj048irdypsbdqr6jkqv2zqim-python3.11-opencv-python-4.9.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/ap1s3yksdhm5rqna9fjydra6dh8haqr0-python3.11-opencv-python-4.9.0",
+              "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/ikqn1sk88byq73yr664a5iwk7h2awp60-python3.11-opencv-python-4.9.0-dist"
+            }
+          ],
+          "store_path": "/nix/store/ap1s3yksdhm5rqna9fjydra6dh8haqr0-python3.11-opencv-python-4.9.0"
+        }
+      }
+    },
+    "python@3.11": {
+      "last_modified": "2026-03-21T07:29:51Z",
+      "resolved": "github:NixOS/nixpkgs/09061f748ee21f68a089cd5d91ec1859cd93d0be#python311",
+      "source": "devbox-search",
+      "version": "3.11.15",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/djf5adf96xxxj1p11517518czg7sx56l-python3-3.11.15",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/djf5adf96xxxj1p11517518czg7sx56l-python3-3.11.15"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/qrknnm8rdz493vi0jfrl1gr789bbq5fb-python3-3.11.15",
               "default": true
             },
             {
               "name": "debug",
-              "path": "/nix/store/j79a6bw3yqj9jvfazf6zpapzq7dh83q5-python3-3.12.12-debug"
+              "path": "/nix/store/df156knysl63wg30n4pr5gmvwrz4f6ij-python3-3.11.15-debug"
             }
           ],
-          "store_path": "/nix/store/by9gvhyjawm7g7gkkgpj28aas6fl8ws7-python3-3.12.12"
+          "store_path": "/nix/store/qrknnm8rdz493vi0jfrl1gr789bbq5fb-python3-3.11.15"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/84xdg19sbff0azp65v8jr33bz1nrna78-python3-3.11.15",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/84xdg19sbff0azp65v8jr33bz1nrna78-python3-3.11.15"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/5bd4b8iifahkr4di8np8pirmcsmcvlgh-python3-3.11.15",
+              "default": true
+            },
+            {
+              "name": "debug",
+              "path": "/nix/store/fbxbndlfynvff9ppiva1b5rzy4sbl81g-python3-3.11.15-debug"
+            }
+          ],
+          "store_path": "/nix/store/5bd4b8iifahkr4di8np8pirmcsmcvlgh-python3-3.11.15"
+        }
+      }
+    },
+    "texliveMinimal@2025": {
+      "last_modified": "2026-04-23T13:07:47Z",
+      "resolved": "github:NixOS/nixpkgs/01fbdeef22b76df85ea168fbfe1bfd9e63681b30#texliveMinimal",
+      "source": "devbox-search",
+      "version": "2025-r78234-final-env",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/ai009hh5819r8j0ykndz0zq6zfk24qa2-texlive-2025-r78234-final-env",
+              "default": true
+            },
+            {
+              "name": "man",
+              "path": "/nix/store/sw9grh6p2l8k9f625fx23k9n46jkwfdm-texlive-2025-r78234-final-env-man",
+              "default": true
+            },
+            {
+              "name": "info",
+              "path": "/nix/store/isg6cs5nn6nsy3rzxlmif1z0fnm64ilc-texlive-2025-r78234-final-env-info"
+            }
+          ],
+          "store_path": "/nix/store/ai009hh5819r8j0ykndz0zq6zfk24qa2-texlive-2025-r78234-final-env"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/cj61k60xqns00hg0ammw6lxvsqhabrvy-texlive-2025-r78234-final-env",
+              "default": true
+            },
+            {
+              "name": "man",
+              "path": "/nix/store/y6g8vckw52jv9sb758xl32z1m8rlq45n-texlive-2025-r78234-final-env-man",
+              "default": true
+            },
+            {
+              "name": "info",
+              "path": "/nix/store/zkv4zvkx6v8z1wnb1m3vxszcqd57r8dd-texlive-2025-r78234-final-env-info"
+            }
+          ],
+          "store_path": "/nix/store/cj61k60xqns00hg0ammw6lxvsqhabrvy-texlive-2025-r78234-final-env"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/vhdvskhqvm7iaqaadsn4iwk1biqgbzn3-texlive-2025-r78234-final-env",
+              "default": true
+            },
+            {
+              "name": "man",
+              "path": "/nix/store/wabljk40zykhv52jh8mdkqp45k9lqzx4-texlive-2025-r78234-final-env-man",
+              "default": true
+            },
+            {
+              "name": "info",
+              "path": "/nix/store/qgzqa0rymy520hyk0d6mcn7m314yw5im-texlive-2025-r78234-final-env-info"
+            }
+          ],
+          "store_path": "/nix/store/vhdvskhqvm7iaqaadsn4iwk1biqgbzn3-texlive-2025-r78234-final-env"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/03kdi9904bqlqa8a80i1s7p0qvlxyax3-texlive-2025-r78234-final-env",
+              "default": true
+            },
+            {
+              "name": "man",
+              "path": "/nix/store/bdn7rf80ik3i06cf8xh6xjksbh4hfv9d-texlive-2025-r78234-final-env-man",
+              "default": true
+            },
+            {
+              "name": "info",
+              "path": "/nix/store/d5lg43id54b78g2nrzi8jb6n1wi9zx0j-texlive-2025-r78234-final-env-info"
+            }
+          ],
+          "store_path": "/nix/store/03kdi9904bqlqa8a80i1s7p0qvlxyax3-texlive-2025-r78234-final-env"
         }
       }
     }

@@ -25,7 +25,7 @@ def convert_model_to_onnx(model_path: Path, converted_dir: Path):
         save_file=output_file,
         opset_version=14,
         auto_upgrade_opset=True,
-        export_fp16_model=True,
+        export_fp16_model=False,
     )
 
     print(f"ONNX model exported to {output_file}")
