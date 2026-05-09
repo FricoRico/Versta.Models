@@ -1,0 +1,15 @@
+[
+  {
+    "corpus": "CCMatrix",
+    "pairs": 150000
+  },
+  {
+    "corpus": "OpenSubtitles",
+    "pairs": 75000,
+    "release": "v2016"
+  },
+  {
+    "corpus": "Europarl",
+    "pairs": 75000
+  }
+]
