@@ -5,7 +5,7 @@ from pathlib import Path
 
 from .extractor import download_opus_dataset, merge_and_dedup, smart_sample
 from .processor import process_dataset
-from .types import MultiCorpusConfig
+from .types import CorpusConfig, LanguagePairConfig
 from .utils import remove_folder
 
 
@@ -37,22 +37,8 @@ def parse_args():
     parser.add_argument(
         "--corpus",
         type=str,
-        default="OpenSubtitles",
-        help="OPUS corpus name or path to multi-corpus JSON config file.",
-    )
-
-    parser.add_argument(
-        "--source",
-        type=str,
-        default="en",
-        help="Source language code (e.g., 'en', 'nl').",
-    )
-
-    parser.add_argument(
-        "--target",
-        type=str,
-        default="nl",
-        help="Target language code (e.g., 'nl', 'jp').",
+        default="corpora.json",
+        help="Path to corpora JSON config file.",
     )
 
     parser.add_argument(
@@ -107,43 +93,47 @@ def parse_args():
         help="Number of pairs per shard for input merging and output processing.",
     )
 
-    parsed_args = parser.parse_args()
-    return parsed_args
+    return parser.parse_args()
 
 
-def load_corpus_config(corpus_arg: str) -> list[MultiCorpusConfig]:
-    """Load corpus configuration from either a JSON file or a single corpus name."""
+def load_corpus_config(corpus_arg: str) -> list[LanguagePairConfig]:
+    """Load corpus configuration from a JSON file."""
     corpus_path = Path(corpus_arg)
 
-    if corpus_path.exists() and corpus_path.suffix == ".json":
-        with open(corpus_path, "r", encoding="utf-8") as f:
-            configs = json.load(f)
+    if not corpus_path.exists() or corpus_path.suffix != ".json":
+        raise ValueError(
+            f"'{corpus_arg}' is not a valid JSON file. "
+            "Please provide a path to a corpora JSON config file."
+        )
 
-        typed_configs = []
-        for config in configs:
-            typed_configs.append(
-                MultiCorpusConfig(
-                    corpus=config["corpus"],
-                    pairs=config.get("pairs"),
-                    release=config.get("release"),
+    with open(corpus_path, "r", encoding="utf-8") as f:
+        configs = json.load(f)
+
+    typed_configs = []
+    for config in configs:
+        corpora = []
+        for c in config.get("corpora", []):
+            corpora.append(
+                CorpusConfig(
+                    corpus=c["corpus"],
+                    pairs=c.get("pairs"),
+                    release=c.get("release"),
                 )
             )
 
-        return typed_configs
-
-    return [
-        MultiCorpusConfig(
-            corpus=corpus_arg,
-            pairs=None,
-            release=None,
+        typed_configs.append(
+            LanguagePairConfig(
+                source=config["source"],
+                target=config["target"],
+                corpora=corpora,
+            )
         )
-    ]
+
+    return typed_configs
 
 
 def main(
-    corpus_config: list[MultiCorpusConfig],
-    source: str,
-    target: str,
+    corpus_config: list[LanguagePairConfig],
     cache: Path,
     output: Path,
     pairs: int | None = None,
@@ -155,91 +145,98 @@ def main(
     """Download corpus(ata), filter, deduplicate, and process for tonal translations.
 
     Args:
-        corpus_config: List of MultiCorpusConfig dicts."""
-
-    output_dir = output / f"{source}-{target}"
-    cache_dir = cache / f"{source}-{target}"
-    download_dir = cache_dir / "corpora"
-    intermediates_dir = cache_dir / "intermediates"
-
-    output_dir.mkdir(parents=True, exist_ok=True)
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    download_dir.mkdir(parents=True, exist_ok=True)
-    intermediates_dir.mkdir(parents=True, exist_ok=True)
-
-    dataset_paths = []
+        corpus_config: List of LanguagePairConfig dicts.
+    """
     for config in corpus_config:
-        corpus = config["corpus"]
-        pairs = config["pairs"]
-        release = config["release"]
-        source_lang = source
-        target_lang = target
+        source = config["source"]
+        target = config["target"]
+        corpora = config["corpora"]
 
-        extraction = download_opus_dataset(
-            source=source_lang,
-            target=target_lang,
-            download_dir=download_dir,
+        print(f"\n{'='*60}")
+        print(f"Processing language pair: {source} -> {target}")
+        print(f"{'='*60}\n")
+
+        output_dir = output / f"{source}-{target}"
+        cache_dir = cache / f"{source}-{target}"
+        download_dir = cache_dir / "corpora"
+        intermediates_dir = cache_dir / "intermediates"
+
+        output_dir.mkdir(parents=True, exist_ok=True)
+        cache_dir.mkdir(parents=True, exist_ok=True)
+        download_dir.mkdir(parents=True, exist_ok=True)
+        intermediates_dir.mkdir(parents=True, exist_ok=True)
+
+        dataset_paths = []
+        for corpus_config_entry in corpora:
+            corpus = corpus_config_entry["corpus"]
+            config_pairs = corpus_config_entry["pairs"]
+            release = corpus_config_entry["release"]
+
+            extraction = download_opus_dataset(
+                source=source,
+                target=target,
+                download_dir=download_dir,
+                intermediates_dir=intermediates_dir,
+                corpus=corpus,
+                pairs=config_pairs,
+                release=release,
+            )
+
+            raw_jsonl_path = extraction["output_file"]
+            filtered_jsonl_path = (
+                intermediates_dir / f"{corpus}_{source}-{target}.filtered.jsonl"
+            )
+
+            smart_sample(
+                jsonl_path=raw_jsonl_path,
+                intermediates_dir=filtered_jsonl_path,
+                pairs=config_pairs,
+                seed=seed,
+            )
+
+            dataset_paths.append(str(filtered_jsonl_path))
+
+        shard_files: list[Path] = []
+        if len(dataset_paths) > 1:
+            shard_path = intermediates_dir / "all_filtered_merged"
+            merge_and_dedup(
+                filtered_paths=dataset_paths,
+                filtered_file_path=shard_path,
+                shard_size=shard_size,
+            )
+
+            for shard in sorted(shard_path.parent.glob(shard_path.name + "_*.jsonl")):
+                shard_files.append(shard)
+        else:
+            shard_files.append(Path(dataset_paths[0]))
+
+        print(f"Processing the following shards: {shard_files}")
+
+        process_dataset(
+            input_paths=shard_files,
             intermediates_dir=intermediates_dir,
-            corpus=corpus,
-            pairs=pairs,
-            release=release,
-        )
-
-        raw_jsonl_path = extraction["output_file"]
-        filtered_jsonl_path = (
-            intermediates_dir / f"{corpus}_{source_lang}-{target_lang}.filtered.jsonl"
-        )
-
-        smart_sample(
-            jsonl_path=raw_jsonl_path,
-            intermediates_dir=filtered_jsonl_path,
-            pairs=pairs,
-            seed=seed,
-        )
-
-        dataset_paths.append(str(filtered_jsonl_path))
-
-    shard_files: list[Path] = []
-    if len(dataset_paths) > 1:
-        shard_path = intermediates_dir / "all_filtered_merged"
-        merge_and_dedup(
-            filtered_paths=dataset_paths,
-            filtered_file_path=shard_path,
+            output_file=output_dir / "dataset.jsonl",
+            source_lang=source,
+            target_lang=target,
+            max_workers=workers,
             shard_size=shard_size,
         )
 
-        for shard in sorted(shard_path.parent.glob(shard_path.name + "_*.jsonl")):
-            shard_files.append(shard)
-    else:
-        shard_files.append(Path(dataset_paths[0]))
+        reversed_shards = _create_reversed_shards(shard_files, intermediates_dir)
+        print(f"Mirrored shards: {len(reversed_shards)}")
+        process_dataset(
+            input_paths=reversed_shards,
+            intermediates_dir=intermediates_dir,
+            output_file=output_dir / "dataset.jsonl",
+            source_lang=target,
+            target_lang=source,
+            max_workers=workers,
+            shard_size=shard_size,
+        )
 
-    print(f"Processing the following shards: {shard_files}")
-
-    process_dataset(
-        input_paths=shard_files,
-        intermediates_dir=intermediates_dir,
-        output_file=output_dir / "dataset.jsonl",
-        source_lang=source,
-        target_lang=target,
-        max_workers=workers,
-        shard_size=shard_size,
-    )
-
-    reversed_shards = _create_reversed_shards(shard_files, intermediates_dir)
-    print(f"Mirrored shards: {len(reversed_shards)}")
-    process_dataset(
-        input_paths=reversed_shards,
-        intermediates_dir=intermediates_dir,
-        output_file=output_dir / "dataset.jsonl",
-        source_lang=target,
-        target_lang=source,
-        max_workers=workers,
-        shard_size=shard_size,
-    )
-
-    if not keep_intermediates:
-        remove_folder(intermediates_dir)
-        print("Intermediates files cleaned.")
+        if not keep_intermediates:
+            remove_folder(intermediates_dir)
+            print("Intermediates files cleaned.")
 
 
 if __name__ == "__main__":
@@ -252,8 +249,6 @@ if __name__ == "__main__":
 
     main(
         corpus_config=corpus_configs,
-        source=args.source,
-        target=args.target,
         cache=args.cache,
         output=args.output,
         pairs=args.pairs,

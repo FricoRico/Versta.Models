@@ -23,7 +23,13 @@ class ExtractionResult(TypedDict):
     output_file: str
 
 
-class MultiCorpusConfig(TypedDict):
+class CorpusConfig(TypedDict):
     corpus: str
     pairs: int | None
     release: str | None
+
+
+class LanguagePairConfig(TypedDict):
+    source: str
+    target: str
+    corpora: list[CorpusConfig]
