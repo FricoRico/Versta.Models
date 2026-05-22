@@ -4,17 +4,75 @@
     "target": "nl",
     "corpora": [
       {
-        "corpus": "CCMatrix",
-        "pairs": 150000
+        "corpus": "WikiMatrix",
+        "pairs": 300000
       },
       {
-        "corpus": "OpenSubtitles",
-        "pairs": 75000,
-        "release": "v2016"
+        "corpus": "TED2020",
+        "pairs": 200000
       },
       {
         "corpus": "Europarl",
-        "pairs": 75000
+        "pairs": 60000
+      },
+      {
+        "corpus": "CCAligned",
+        "pairs": 200000
+      },
+      {
+        "corpus": "OpenSubtitles",
+        "pairs": 130000,
+        "release": "v2016"
+      },
+      {
+        "corpus": "Tatoeba",
+        "pairs": 70000
+      },
+      {
+        "corpus": "NLLB",
+        "pairs": 300000
+      },
+      {
+        "corpus": "GlobalVoices",
+        "pairs": 40000
+      },
+      {
+        "corpus": "News-Commentary",
+        "pairs": 50000
+      }
+    ]
+  },
+  {
+    "source": "en",
+    "target": "zh",
+    "corpora": [
+      {
+        "corpus": "WikiMatrix",
+        "pairs": 120000
+      },
+      {
+        "corpus": "UNPC",
+        "pairs": 100000
+      },
+      {
+        "corpus": "ParaCrawl",
+        "pairs": 120000
+      },
+      {
+        "corpus": "NLLB",
+        "pairs": 80000
+      },
+      {
+        "corpus": "Tatoeba",
+        "pairs": 30000
+      },
+      {
+        "corpus": "tldr-pages",
+        "pairs": 20000
+      },
+      {
+        "corpus": "NewsCommentary",
+        "pairs": 10000
       }
     ]
   }
