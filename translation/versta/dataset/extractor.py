@@ -1,12 +1,39 @@
 import hashlib
 import json
 import random
+import shutil
 from pathlib import Path
-from typing import Optional
 
 from opustools import OpusRead
 
 from .types import ExtractionResult
+
+
+def _create_reversed_shards(
+    input_shards: list[Path], intermediates_dir: Path
+) -> list[Path]:
+    """Swap prompt/completion in each shard, write reversed shards to disk.
+
+    Args:
+        input_shards (list[Path]): List of input JSONL shard paths.
+        intermediates_dir (Path): Directory to store reversed shards.
+
+    Returns:
+        list[Path]: List of paths to the reversed shard files.
+    """
+    reversed_paths = []
+    for i, shard in enumerate(input_shards):
+        reversed_path = intermediates_dir / f"mirrored_{i:05d}.jsonl"
+        with (
+            shard.open("r", encoding="utf-8") as fin,
+            reversed_path.open("w", encoding="utf-8") as fout,
+        ):
+            for line in fin:
+                pair = json.loads(line)
+                pair["prompt"], pair["completion"] = pair["completion"], pair["prompt"]
+                fout.write(json.dumps(pair, ensure_ascii=False) + "\n")
+        reversed_paths.append(reversed_path)
+    return reversed_paths
 
 
 def download_opus_dataset(
@@ -15,7 +42,7 @@ def download_opus_dataset(
     download_dir: Path,
     intermediates_dir: Path,
     corpus: str,
-    pairs: Optional[int] = None,
+    pairs: int | None = None,
     release: str | None = None,
 ) -> ExtractionResult:
     """Download parallel sentence pairs from OPUS (opus.nlpl.eu) for a given language pair.
@@ -24,12 +51,13 @@ def download_opus_dataset(
     into a JSONL file — one entry per line with 'prompt' and 'completion' keys (TRL format).
 
     Args:
-        source_lang: Source language code (e.g. 'en').
-        target_lang: Target language code (e.g. 'es').
+        source: Source language code (e.g. 'en').
+        target: Target language code (e.g. 'es').
+        download_dir: Directory to store downloaded corpus text files.
+        intermediates_dir: Directory to store intermediate JSONL files.
         corpus: OPUS corpus name (e.g. 'OpenSubtitles', 'CCMatrix', 'Europarl').
-        max_pairs: Maximum number of sentence pairs to extract. None for all.
-        output_dir: Output directory. If None, files are saved in the current directory.
-        release: Version of corpus to download
+        pairs: Maximum number of sentence pairs to extract. None for all.
+        release: Version of corpus to download.
 
     Returns:
         Dict with keys: 'source', 'target', 'corpus', 'num_pairs', 'output_file'.
@@ -59,13 +87,16 @@ def download_opus_dataset(
     if release is not None:
         args["release"] = release
 
-    if download_dir:
-        args["download_dir"] = download_dir.as_posix()
+    args["download_dir"] = str(download_dir)
 
     opus_reader = OpusRead(**args)
     opus_reader.printPairs()
 
     if not src_out.exists() or not tgt_out.exists():
+        if src_out.exists():
+            src_out.unlink()
+        if tgt_out.exists():
+            tgt_out.unlink()
         raise RuntimeError(
             f"Failed to create output files for corpus '{corpus}', "
             f"language pair '{source}-{target}'. "
@@ -111,34 +142,27 @@ def download_opus_dataset(
 
 def smart_sample(
     jsonl_path: str,
-    intermediates_dir: Path,
-    pairs: Optional[int] = None,
-    min_words: int = 2,
-    max_words: int = 50,
-    min_ratio: float = 0.5,
-    max_ratio: float = 2.0,
+    output_path: Path,
+    pairs: int | None = None,
+    min_chars: int = 5,
+    max_chars: int = 500,
     seed: int = 42,
-    corpus: str = "dataset",
 ) -> dict:
     """Apply quality filters and deterministic sampling to a JSONL dataset.
 
     Filters applied in order:
         1. Remove lines with empty src/tgt
-        2. Filter by word count (2-50 words default)
-        3. Filter by length ratio (source/target)
-        4. Deduplicate by MD5 hash of src+tgt
-        5. Deterministic random sample if target_size is specified
+        2. Filter by character length (5-500 chars default)
+        3. Deduplicate by MD5 hash of src+tgt
+        4. Deterministic random sample if target_size is specified
 
     Args:
         jsonl_path: Path to the input JSONL file.
         output_path: Where to write the filtered and sampled JSONL.
-        target_size: Maximum number of pairs to keep after filtering.
-        min_words: Minimum word count for source text.
-        max_words: Maximum word count for source text.
-        min_ratio: Minimum source/target character ratio.
-        max_ratio: Maximum source/target character ratio.
+        pairs: Maximum number of pairs to keep after filtering.
+        min_chars: Minimum character count for source and target text.
+        max_chars: Maximum character count for source and target text.
         seed: Random seed for deterministic sampling.
-        corpus: Corpus name for logging purposes.
 
     Returns:
         Dict with keys: 'raw_count', 'filtered_count', 'kept_count'.
@@ -162,19 +186,9 @@ def smart_sample(
             if not prompt or not completion:
                 continue
 
-            prompt_word_count = len(prompt.split())
-            target_word_count = len(completion.split())
-            if not (min_words <= prompt_word_count <= max_words):
+            if not (min_chars <= len(prompt) <= max_chars):
                 continue
-            if not (min_words <= target_word_count <= max_words):
-                continue
-
-            prompt_len = len(prompt)
-            target_len = len(completion)
-            if target_len == 0:
-                continue
-            ratio = prompt_len / target_len
-            if not (min_ratio <= ratio <= max_ratio):
+            if not (min_chars <= len(completion) <= max_chars):
                 continue
 
             pair_hash = hashlib.md5((prompt + completion).encode("utf-8")).hexdigest()
@@ -188,8 +202,8 @@ def smart_sample(
     if pairs is not None and len(valid_pairs) > pairs:
         final_pairs = rng.sample(valid_pairs, pairs)
 
-    intermediates_dir.parent.mkdir(parents=True, exist_ok=True)
-    with intermediates_dir.open("w", encoding="utf-8") as f_out:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with output_path.open("w", encoding="utf-8") as f_out:
         for pair in final_pairs:
             f_out.write(json.dumps(pair, ensure_ascii=False) + "\n")
 
@@ -213,13 +227,13 @@ def merge_and_dedup(
     and writes the merged result into sharded files: output_00000.jsonl, output_00001.jsonl, etc.
 
     Args:
-        filtered_jsonl_paths: List of paths to filtered JSONL files.
-        output_path: Base path for the merged and deduplicated JSONL shards.
-        shard_size: Number of pairs per shard. Default 100000.
+        filtered_paths (list[str]): List of paths to filtered JSONL files.
+        filtered_file_path (Path): Base path for the merged and deduplicated JSONL shards.
+        shard_size (int): Number of pairs per shard. Default 10000.
 
     Returns:
-        Dict with keys: 'total' (total pairs across all files), 'kept' (pairs after dedup),
-        'duplicates_removed', 'shard_count' (number of shards created).
+        dict: Dict with keys: 'total' (total pairs across all files), 'kept' (pairs after dedup),
+            'duplicates_removed', 'shard_count' (number of shards created).
     """
     hashes = set()
     current_shard_pairs = []

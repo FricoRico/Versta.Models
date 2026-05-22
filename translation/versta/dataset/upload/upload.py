@@ -26,7 +26,7 @@ def clean_quotes(text):
     return re.sub(r'\s+', ' ', text).strip()
 
 
-def clean_batch(batch):
+def clean(batch):
     """Clean input and output fields in a batch by removing surrounding quotes.
 
     Args:
@@ -51,5 +51,5 @@ def upload_dataset(
         dataset_name (str): HuggingFace dataset repository name.
     """
     dataset = load_dataset("json", data_files=[str(p) for p in input_paths])
-    dataset = dataset.map(clean_batch, batched=True, batch_size=1000)
+    dataset = dataset.map(clean, batched=True, batch_size=1000)
     dataset.push_to_hub(dataset_name)

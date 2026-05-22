@@ -13,6 +13,14 @@ from .types import ProcessedEntry
 
 
 def _md5(text: str) -> str:
+    """Computes MD5 hash of the given text.
+
+    Args:
+        text (str): Text to hash.
+
+    Returns:
+        str: Hexadecimal MD5 hash string.
+    """
     return hashlib.md5(text.encode("utf-8")).hexdigest()
 
 
@@ -25,39 +33,6 @@ class ProcessedResult:
     completion: str
 
 
-def process_one(pair: dict, source: str, target: str) -> ProcessedResult:
-    """Process one sentence pair by calling the LLM for tonal translations.
-
-    Args:
-        pair: Dict with 'prompt' and 'completion' keys.
-        source_lang: Source language code.
-        target_lang: Target language code.
-
-    Returns:
-        A ProcessedResult containing a list of ProcessedEntry dicts, one per tone,
-        or empty list on failure.
-    """
-    result = generate_tonal_translations(
-        pair["prompt"], pair["completion"], source, target
-    )
-
-    if not result:
-        return ProcessedResult(entries=[], prompt=pair["prompt"], completion=pair["completion"])
-
-    entries: List[ProcessedEntry] = []
-    for tone, translated in result.items():
-        entry = ProcessedEntry(
-            source=source,
-            target=target,
-            instruction=f"Translate the following text to {target} in a {tone} tone.",
-            input=pair["prompt"],
-            output=translated,
-        )
-        entries.append(entry)
-
-    return ProcessedResult(entries=entries, prompt=pair["prompt"], completion=pair["completion"])
-
-
 def process_dataset(
     input_paths: list[Path],
     output_file: Path,
@@ -66,6 +41,7 @@ def process_dataset(
     target_lang: str,
     max_workers: int = 4,
     shard_size: int = 10000,
+    batch_size: int = 10,
 ) -> List[ProcessedEntry]:
     """Process multiple input shards with streaming writes and automatic resume.
 
@@ -74,16 +50,17 @@ def process_dataset(
     are sharded at `shard_size` pair boundaries.
 
     Args:
-        input_paths: List of input JSONL shard paths.
-        output_file: Base path for the processed JSONL output (stem used for shard naming).
-        intermediates_dir: Cache directory for checkpoint files.
-        source_lang: Source language code.
-        target_lang: Target language code.
-        max_workers: Number of parallel workers for LLM inference.
-        shard_size: Number of pairs per shard. Default 10000.
+        input_paths (list[Path]): List of input JSONL shard paths.
+        output_file (Path): Base path for the processed JSONL output (stem used for shard naming).
+        intermediates_dir (Path): Cache directory for checkpoint files.
+        source_lang (str): Source language code.
+        target_lang (str): Target language code.
+        max_workers (int): Number of parallel workers for LLM inference.
+        shard_size (int): Number of pairs per shard. Default 10000.
+        batch_size (int): Number of pairs to process in a single LLM batch request. Default 10.
 
     Returns:
-        List of ProcessedEntry dicts.
+        List[ProcessedEntry]: List of ProcessedEntry dicts.
     """
     stem = output_file.stem
     output_parent = output_file.parent
@@ -156,46 +133,73 @@ def process_dataset(
 
     init_shard(0)
 
+    batches: list[list[dict]] = []
+    for i in range(0, len(pairs_to_process), batch_size):
+        batches.append(pairs_to_process[i : i + batch_size])
+
+    if batch_size > 1:
+        print(f"[BATCH] Processing {len(pairs_to_process)} pairs in {len(batches)} batches (size={batch_size})")
+
+    def process(batch: list[dict]) -> list[ProcessedResult]:
+        results = generate_tonal_translations(batch, source_lang, target_lang)
+        processed = []
+        for pair, translation in zip(batch, results):
+            if not translation:
+                processed.append(
+                    ProcessedResult(entries=[], prompt=pair["prompt"], completion=pair["completion"])
+                )
+                continue
+            entries: List[ProcessedEntry] = []
+            for tone, translated in translation.items():
+                entry = ProcessedEntry(
+                    source=source_lang,
+                    target=target_lang,
+                    instruction=f"Translate the following text to {target_lang} in a {tone} tone.",
+                    input=pair["prompt"],
+                    output=translated,
+                )
+                entries.append(entry)
+            processed.append(
+                ProcessedResult(entries=entries, prompt=pair["prompt"], completion=pair["completion"])
+            )
+        return processed
+
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [
-            executor.submit(process_one, pair, source_lang, target_lang)
-            for pair in pairs_to_process
-        ]
-        for future in tqdm(
-            as_completed(futures), total=len(futures), desc="Processing"
-        ):
+        futures = [executor.submit(process, batch) for batch in batches]
+        for future in tqdm(as_completed(futures), total=len(futures), desc="Processing"):
             try:
-                result = future.result()
-                all_entries.extend(result.entries)
+                batch_results = future.result()
+                for result in batch_results:
+                    all_entries.extend(result.entries)
 
-                with file_lock:
-                    shard = get_shard(current_shard_idx)
-                    if shard["out"] is None:
-                        for s in list(shards.values()):
-                            if s["out"] is not None:
-                                s["out"].close()
-                                s["out"] = None
-                            if s["ckpt"] is not None:
-                                s["ckpt"].close()
-                                s["ckpt"] = None
-                        current_shard_idx += 1
-                        init_shard(current_shard_idx)
+                    with file_lock:
                         shard = get_shard(current_shard_idx)
+                        if shard["out"] is None:
+                            for s in list(shards.values()):
+                                if s["out"] is not None:
+                                    s["out"].close()
+                                    s["out"] = None
+                                if s["ckpt"] is not None:
+                                    s["ckpt"].close()
+                                    s["ckpt"] = None
+                            current_shard_idx += 1
+                            init_shard(current_shard_idx)
+                            shard = get_shard(current_shard_idx)
 
-                    write_results(result, current_shard_idx)
-                    if result.entries:
-                        shard["pairs"] += 1
+                        write_results(result, current_shard_idx)
+                        if result.entries:
+                            shard["pairs"] += 1
 
-                    if shard["pairs"] >= shard_size:
-                        for s in list(shards.values()):
-                            if s["out"] is not None:
-                                s["out"].close()
-                                s["out"] = None
-                            if s["ckpt"] is not None:
-                                s["ckpt"].close()
-                                s["ckpt"] = None
-                        current_shard_idx += 1
-                        init_shard(current_shard_idx)
+                        if shard["pairs"] >= shard_size:
+                            for s in list(shards.values()):
+                                if s["out"] is not None:
+                                    s["out"].close()
+                                    s["out"] = None
+                                if s["ckpt"] is not None:
+                                    s["ckpt"].close()
+                                    s["ckpt"] = None
+                            current_shard_idx += 1
+                            init_shard(current_shard_idx)
             except Exception as e:
                 print(f"Worker error: {e}")
 
