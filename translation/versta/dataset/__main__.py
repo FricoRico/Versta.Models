@@ -43,7 +43,7 @@ def parse_args():
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("output"),
+        default=Path("output/dataset"),
         help="Path to the output folder.",
         action="store",
     )
@@ -130,7 +130,7 @@ def main(
 
         output_dir = output / f"{source}-{target}"
         download_dir = cache / "corpora"
-        intermediates_dir = cache / f"{source}-{target}" / "intermediates"
+        intermediates_dir = output / f"{source}-{target}" / "intermediates"
 
         output_dir.mkdir(parents=True, exist_ok=True)
         cache.mkdir(parents=True, exist_ok=True)
