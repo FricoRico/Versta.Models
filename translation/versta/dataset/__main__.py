@@ -1,31 +1,16 @@
-import json
 import os
 from argparse import ArgumentParser
 from pathlib import Path
 
-from .extractor import download_opus_dataset, merge_and_dedup, smart_sample
+from .corpus import filter_corpus_config, load_corpus_config
+from .extractor import (
+    _create_reversed_shards,
+    download_opus_dataset,
+    merge_and_dedup,
+    smart_sample,
+)
 from .processor import process_dataset
-from .types import CorpusConfig, LanguagePairConfig
 from .utils import remove_folder
-
-
-def _create_reversed_shards(
-    input_shards: list[Path], intermediates_dir: Path
-) -> list[Path]:
-    """Swap prompt/completion in each shard, write reversed shards to disk."""
-    reversed_paths = []
-    for i, shard in enumerate(input_shards):
-        reversed_path = intermediates_dir / f"mirrored_{i:05d}.jsonl"
-        with (
-            shard.open("r", encoding="utf-8") as fin,
-            reversed_path.open("w", encoding="utf-8") as fout,
-        ):
-            for line in fin:
-                pair = json.loads(line)
-                pair["prompt"], pair["completion"] = pair["completion"], pair["prompt"]
-                fout.write(json.dumps(pair, ensure_ascii=False) + "\n")
-        reversed_paths.append(reversed_path)
-    return reversed_paths
 
 
 def parse_args():
@@ -39,6 +24,20 @@ def parse_args():
         type=str,
         default="corpora.json",
         help="Path to corpora JSON config file.",
+    )
+
+    parser.add_argument(
+        "--source",
+        type=str,
+        default=None,
+        help="Source language code to filter to a single language pair.",
+    )
+
+    parser.add_argument(
+        "--target",
+        type=str,
+        default=None,
+        help="Target language code to filter to a single language pair.",
     )
 
     parser.add_argument(
@@ -74,7 +73,7 @@ def parse_args():
     parser.add_argument(
         "--workers",
         type=int,
-        default=6,
+        default=16,
         help="Number of parallel workers for LLM inference.",
     )
 
@@ -93,54 +92,31 @@ def parse_args():
         help="Number of pairs per shard for input merging and output processing.",
     )
 
-    return parser.parse_args()
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=20,
+        help="Number of sentence pairs to process in a single LLM batch request.",
+    )
 
+    parsed_args = parser.parse_args()
 
-def load_corpus_config(corpus_arg: str) -> list[LanguagePairConfig]:
-    """Load corpus configuration from a JSON file."""
-    corpus_path = Path(corpus_arg)
+    if (parsed_args.source is not None) != (parsed_args.target is not None):
+        parser.error("--source and --target must both be provided together, or neither")
 
-    if not corpus_path.exists() or corpus_path.suffix != ".json":
-        raise ValueError(
-            f"'{corpus_arg}' is not a valid JSON file. "
-            "Please provide a path to a corpora JSON config file."
-        )
-
-    with open(corpus_path, "r", encoding="utf-8") as f:
-        configs = json.load(f)
-
-    typed_configs = []
-    for config in configs:
-        corpora = []
-        for c in config.get("corpora", []):
-            corpora.append(
-                CorpusConfig(
-                    corpus=c["corpus"],
-                    pairs=c.get("pairs"),
-                    release=c.get("release"),
-                )
-            )
-
-        typed_configs.append(
-            LanguagePairConfig(
-                source=config["source"],
-                target=config["target"],
-                corpora=corpora,
-            )
-        )
-
-    return typed_configs
+    return parsed_args
 
 
 def main(
-    corpus_config: list[LanguagePairConfig],
-    cache: Path,
-    output: Path,
+    corpus_config: list,
+    cache: Path = Path("cache"),
+    output: Path = Path("output"),
     pairs: int | None = None,
     workers: int = 4,
     seed: int = 42,
     keep_intermediates: bool = False,
     shard_size: int = 10000,
+    batch_size: int = 20,
 ) -> None:
     """Download corpus(ata), filter, deduplicate, and process for tonal translations.
 
@@ -152,17 +128,12 @@ def main(
         target = config["target"]
         corpora = config["corpora"]
 
-        print(f"\n{'='*60}")
-        print(f"Processing language pair: {source} -> {target}")
-        print(f"{'='*60}\n")
-
         output_dir = output / f"{source}-{target}"
-        cache_dir = cache / f"{source}-{target}"
-        download_dir = cache_dir / "corpora"
-        intermediates_dir = cache_dir / "intermediates"
+        download_dir = cache / "corpora"
+        intermediates_dir = cache / f"{source}-{target}" / "intermediates"
 
         output_dir.mkdir(parents=True, exist_ok=True)
-        cache_dir.mkdir(parents=True, exist_ok=True)
+        cache.mkdir(parents=True, exist_ok=True)
         download_dir.mkdir(parents=True, exist_ok=True)
         intermediates_dir.mkdir(parents=True, exist_ok=True)
 
@@ -189,7 +160,7 @@ def main(
 
             smart_sample(
                 jsonl_path=raw_jsonl_path,
-                intermediates_dir=filtered_jsonl_path,
+                output_path=filtered_jsonl_path,
                 pairs=config_pairs,
                 seed=seed,
             )
@@ -220,6 +191,7 @@ def main(
             target_lang=target,
             max_workers=workers,
             shard_size=shard_size,
+            batch_size=batch_size,
         )
 
         reversed_shards = _create_reversed_shards(shard_files, intermediates_dir)
@@ -232,6 +204,7 @@ def main(
             target_lang=source,
             max_workers=workers,
             shard_size=shard_size,
+            batch_size=batch_size,
         )
 
         if not keep_intermediates:
@@ -246,6 +219,7 @@ if __name__ == "__main__":
         args.pairs = None
 
     corpus_configs = load_corpus_config(args.corpus)
+    corpus_configs = filter_corpus_config(corpus_configs, args.source, args.target)
 
     main(
         corpus_config=corpus_configs,
@@ -256,4 +230,5 @@ if __name__ == "__main__":
         seed=args.seed,
         keep_intermediates=args.keep_intermediates,
         shard_size=args.shard_size,
+        batch_size=args.batch_size,
     )

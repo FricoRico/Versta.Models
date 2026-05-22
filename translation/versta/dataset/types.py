@@ -3,7 +3,7 @@ from typing import TypedDict
 
 class TonalTranslation(TypedDict):
     formal: str
-    informal: str
+    neutral: str
     casual: str
 
 
