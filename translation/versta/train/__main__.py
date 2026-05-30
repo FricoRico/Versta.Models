@@ -1,9 +1,7 @@
 import os
-import shutil
 from argparse import ArgumentParser
 from pathlib import Path
 
-from .config import get_dtype
 from .dataset import language_pair, load_dataset
 from .prune import prune
 from .train import finetune, recover
@@ -75,7 +73,7 @@ def parse_args():
     parser.add_argument(
         "--save-steps",
         type=int,
-        default=1000,
+        default=10000,
         help="Steps interval for saving and evaluation. Default: 1000.",
     )
 
@@ -89,7 +87,7 @@ def main(
     model: str = "LiquidAI/LFM2.5-350M-Base",
     max_seq_len: int = 128,
     batch_size: int = 256,
-    prune_ratio: float = 0.6,
+    prune_ratio: float = 0.8,
     keep_intermediates: bool = False,
     save_steps: int = 1000,
 ) -> None:
@@ -110,49 +108,56 @@ def main(
     output_dir.mkdir(parents=True, exist_ok=True)
     cache_dir.mkdir(parents=True, exist_ok=True)
 
+    os.environ["UNSLOTH_COMPILE_LOCATION"] = cache_dir.as_posix()
+
     source, target = language_pair(dataset)
     lang_pair = f"{source}-{target}"
 
-    intermediates_dir = output_dir / lang_pair / "intermediates"
-    intermediates_dir.mkdir(parents=True, exist_ok=True)
+    language_output_dir = output_dir / lang_pair
+    intermediates_dir = language_output_dir / "intermediates"
+    finetuned_dir = intermediates_dir / "finetuned"
+    pruned_dir = intermediates_dir / "pruned"
+    recovered_dir = intermediates_dir / "recovered"
+    logs_dir = intermediates_dir / "logs"
 
-    os.environ["UNSLOTH_CACHE_DIR"] = cache_dir.as_posix()
-    os.environ["UNSLOTH_COMPILE_CACHE_DIR"] = cache_dir.as_posix()
+    language_output_dir.mkdir(parents=True, exist_ok=True)
+    intermediates_dir.mkdir(parents=True, exist_ok=True)
+    finetuned_dir.mkdir(parents=True, exist_ok=True)
+    pruned_dir.mkdir(parents=True, exist_ok=True)
+    recovered_dir.mkdir(parents=True, exist_ok=True)
+    logs_dir.mkdir(parents=True, exist_ok=True)
 
     dataset_data = load_dataset(
         dataset_name=dataset,
         model_name=model,
     )
 
-    tokenizer, merged_path = finetune(
+    finetuned = finetune(
         model=model,
         dataset=dataset_data,
-        output_dir=output_dir,
+        output_dir=finetuned_dir,
         lang_pair=lang_pair,
-        intermediates_dir=intermediates_dir,
-        cache_dir=cache_dir,
         batch_size=batch_size,
         max_seq_length=max_seq_len,
         save_steps=save_steps,
+        logs_dir=logs_dir,
     )
 
-    pruned_dir = prune(
-        merged_model_path=merged_path,
-        tokenizer=tokenizer,
+    pruned = prune(
+        model=finetuned,
         prune_ratio=prune_ratio,
-        output_dir=intermediates_dir / "pruned",
+        output_dir=pruned_dir,
     )
 
     recover(
-        model=pruned_dir,
-        tokenizer=tokenizer,
+        model=pruned,
         dataset=dataset_data,
-        output_dir=output_dir,
+        output_dir=language_output_dir,
+        intermediates_dir=recovered_dir,
         lang_pair=lang_pair,
-        intermediates_dir=intermediates_dir,
+        logs_dir=logs_dir,
         batch_size=batch_size,
         max_seq_length=max_seq_len,
-        cache_dir=cache_dir,
         save_steps=save_steps,
     )
 

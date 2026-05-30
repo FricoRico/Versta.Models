@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import torch
 import torch.nn as nn
 import torch_pruning as tp
@@ -82,7 +84,8 @@ def _update_config(model: nn.Module) -> None:
     model.config.intermediate_size = pruned_intermediate
     model.config.block_auto_adjust_ff_dim = False
 
-def _save(model: nn.Module, tokenizer: object, output_dir: object) -> None:
+
+def _save_model(model: nn.Module, tokenizer: object, output_dir: Path) -> None:
     """
     Saves the pruned model and tokenizer to the output directory.
 
@@ -91,17 +94,15 @@ def _save(model: nn.Module, tokenizer: object, output_dir: object) -> None:
         tokenizer: Tokenizer for the model.
         output_dir: Directory to save the pruned model.
     """
-    output_dir.mkdir(parents=True, exist_ok=True)
     model.save_pretrained(output_dir)
     tokenizer.save_pretrained(output_dir)
 
 
 def prune(
-    merged_model_path: object,
-    tokenizer: object,
+    model: str | Path,
+    output_dir: Path,
     prune_ratio: float = 0.2,
-    output_dir: object = None,
-) -> object:
+) -> Path:
     """
     Loads a merged model, prunes it, and saves the pruned model.
 
@@ -114,19 +115,25 @@ def prune(
     Returns:
         Path to the pruned model directory.
     """
-    dtype = get_dtype()
     print("Loading merged model for pruning")
-    model, _ = FastLanguageModel.from_pretrained(
-        merged_model_path.as_posix(),
+
+    dtype = get_dtype()
+    if isinstance(model, Path):
+        model = model.as_posix()
+
+    print(model)
+
+    model, tokenizer = FastLanguageModel.from_pretrained(
+        model,
         dtype=dtype,
         load_in_4bit=False,
     )
 
     print("Pruning model")
-    model = _prune(model, prune_ratio)
+    pruned = _prune(model, prune_ratio)
 
     print("Saving pruned model")
-    _update_config(model)
-    _save(model, tokenizer, output_dir)
+    _update_config(pruned)
+    _save_model(model, tokenizer, output_dir)
 
     return output_dir
