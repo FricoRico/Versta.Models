@@ -1,7 +1,7 @@
 import hashlib
 import json
 import threading
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List
@@ -83,33 +83,11 @@ def process_dataset(
     if already_output > 0:
         print(f"[RESUME] Found {already_output} already-processed pairs")
 
-    # Collect all pairs and filter out already-processed ones
-    all_pairs: list[dict] = []
-    for shard_path in input_paths:
-        with open(shard_path, "r", encoding="utf-8") as f:
-            all_pairs.extend(json.loads(line) for line in f if line.strip())
-
-    pairs_to_process: list[dict] = []
-    skipped = 0
-    for pair in all_pairs:
-        prompt = pair.get("prompt", "").strip()
-        completion = pair.get("completion", "").strip()
-        key = f"{prompt}:{completion}"
-        pair_hash = _md5(key)
-
-        if pair_hash in processed_hashes:
-            skipped += 1
-            continue
-        pairs_to_process.append(pair)
-
-    total = skipped + len(pairs_to_process)
-    if skipped:
-        print(f"[RESUME] Skipping {skipped}/{total} already-processed pairs")
-
     all_entries: List[ProcessedEntry] = []
     file_lock = threading.Lock()
     shards: dict[int, dict] = {}
     current_shard_idx = 0
+    skipped = 0
 
     def get_shard(idx: int) -> dict:
         return shards.get(idx, {"out": None, "ckpt": None, "pairs": 0})
@@ -133,13 +111,6 @@ def process_dataset(
 
     init_shard(0)
 
-    batches: list[list[dict]] = []
-    for i in range(0, len(pairs_to_process), batch_size):
-        batches.append(pairs_to_process[i : i + batch_size])
-
-    if batch_size > 1:
-        print(f"[BATCH] Processing {len(pairs_to_process)} pairs in {len(batches)} batches (size={batch_size})")
-
     def process(batch: list[dict]) -> list[ProcessedResult]:
         results = generate_tonal_translations(batch, source_lang, target_lang)
         processed = []
@@ -154,7 +125,7 @@ def process_dataset(
                 entry = ProcessedEntry(
                     source=source_lang,
                     target=target_lang,
-                    instruction=f"Translate the following text to {target_lang} in a {tone} tone.",
+                    instruction=f"{tone.capitalize()}:",
                     input=pair["prompt"],
                     output=translated,
                 )
@@ -164,43 +135,119 @@ def process_dataset(
             )
         return processed
 
+    # Count batches for progress bar (fast local pass)
+    total_batches = 0
+    for shard_path in input_paths:
+        with open(shard_path, "r", encoding="utf-8") as f:
+            acc = 0
+            for line in f:
+                if not line.strip():
+                    continue
+                pair = json.loads(line)
+                prompt = pair.get("prompt", "").strip()
+                completion = pair.get("completion", "").strip()
+                key = f"{prompt}:{completion}"
+                if _md5(key) in processed_hashes:
+                    continue
+                acc += 1
+                if acc >= batch_size:
+                    total_batches += 1
+                    acc = 0
+            if acc > 0:
+                total_batches += 1
+
+    if total_batches > 0:
+        print(f"[BATCH] Processing ~{total_batches} batches (batch_size={batch_size})")
+
+    # Stream input pairs, skipping already-processed ones, yielding batches
+    def batch_generator():
+        nonlocal skipped
+        batch = []
+        for shard_path in input_paths:
+            with open(shard_path, "r", encoding="utf-8") as f:
+                for line in f:
+                    if not line.strip():
+                        continue
+                    pair = json.loads(line)
+                    prompt = pair.get("prompt", "").strip()
+                    completion = pair.get("completion", "").strip()
+                    key = f"{prompt}:{completion}"
+                    pair_hash = _md5(key)
+
+                    if pair_hash in processed_hashes:
+                        skipped += 1
+                        continue
+
+                    batch.append(pair)
+                    if len(batch) >= batch_size:
+                        yield batch
+                        batch = []
+        if batch:
+            yield batch
+
+    def handle_result(result: ProcessedResult):
+        nonlocal current_shard_idx
+        all_entries.extend(result.entries)
+        with file_lock:
+            shard = get_shard(current_shard_idx)
+            if shard["out"] is None:
+                for s in list(shards.values()):
+                    if s["out"] is not None:
+                        s["out"].close()
+                        s["out"] = None
+                    if s["ckpt"] is not None:
+                        s["ckpt"].close()
+                        s["ckpt"] = None
+                current_shard_idx += 1
+                init_shard(current_shard_idx)
+                shard = get_shard(current_shard_idx)
+
+            write_results(result, current_shard_idx)
+            if result.entries:
+                shard["pairs"] += 1
+
+            if shard["pairs"] >= shard_size:
+                for s in list(shards.values()):
+                    if s["out"] is not None:
+                        s["out"].close()
+                        s["out"] = None
+                    if s["ckpt"] is not None:
+                        s["ckpt"].close()
+                        s["ckpt"] = None
+                current_shard_idx += 1
+                init_shard(current_shard_idx)
+
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(process, batch) for batch in batches]
-        for future in tqdm(as_completed(futures), total=len(futures), desc="Processing"):
+        pending: set[Future] = set()
+        batch_iter = iter(batch_generator())
+
+        # Prime with initial batches (bounded in-flight work)
+        for _ in range(max_workers * 2):
             try:
-                batch_results = future.result()
-                for result in batch_results:
-                    all_entries.extend(result.entries)
+                pending.add(executor.submit(process, next(batch_iter)))
+            except StopIteration:
+                break
 
-                    with file_lock:
-                        shard = get_shard(current_shard_idx)
-                        if shard["out"] is None:
-                            for s in list(shards.values()):
-                                if s["out"] is not None:
-                                    s["out"].close()
-                                    s["out"] = None
-                                if s["ckpt"] is not None:
-                                    s["ckpt"].close()
-                                    s["ckpt"] = None
-                            current_shard_idx += 1
-                            init_shard(current_shard_idx)
-                            shard = get_shard(current_shard_idx)
+        pbar = tqdm(total=total_batches, desc="Processing", unit="batch")
 
-                        write_results(result, current_shard_idx)
-                        if result.entries:
-                            shard["pairs"] += 1
+        while pending:
+            done, pending = wait(pending, return_when=FIRST_COMPLETED)
+            for future in done:
+                try:
+                    for result in future.result():
+                        handle_result(result)
+                except Exception as e:
+                    print(f"Worker error: {e}")
+                pbar.update()
 
-                        if shard["pairs"] >= shard_size:
-                            for s in list(shards.values()):
-                                if s["out"] is not None:
-                                    s["out"].close()
-                                    s["out"] = None
-                                if s["ckpt"] is not None:
-                                    s["ckpt"].close()
-                                    s["ckpt"] = None
-                            current_shard_idx += 1
-                            init_shard(current_shard_idx)
-            except Exception as e:
-                print(f"Worker error: {e}")
+            try:
+                pending.add(executor.submit(process, next(batch_iter)))
+            except StopIteration:
+                pass
+
+        pbar.close()
+
+    if skipped:
+        print(f"[RESUME] Skipped {skipped} already-processed pairs")
 
     return all_entries

@@ -9,33 +9,6 @@ from opustools import OpusRead
 from .types import ExtractionResult
 
 
-def _create_reversed_shards(
-    input_shards: list[Path], intermediates_dir: Path
-) -> list[Path]:
-    """Swap prompt/completion in each shard, write reversed shards to disk.
-
-    Args:
-        input_shards (list[Path]): List of input JSONL shard paths.
-        intermediates_dir (Path): Directory to store reversed shards.
-
-    Returns:
-        list[Path]: List of paths to the reversed shard files.
-    """
-    reversed_paths = []
-    for i, shard in enumerate(input_shards):
-        reversed_path = intermediates_dir / f"mirrored_{i:05d}.jsonl"
-        with (
-            shard.open("r", encoding="utf-8") as fin,
-            reversed_path.open("w", encoding="utf-8") as fout,
-        ):
-            for line in fin:
-                pair = json.loads(line)
-                pair["prompt"], pair["completion"] = pair["completion"], pair["prompt"]
-                fout.write(json.dumps(pair, ensure_ascii=False) + "\n")
-        reversed_paths.append(reversed_path)
-    return reversed_paths
-
-
 def download_opus_dataset(
     source: str,
     target: str,
@@ -89,8 +62,11 @@ def download_opus_dataset(
 
     args["download_dir"] = str(download_dir)
 
-    opus_reader = OpusRead(**args)
-    opus_reader.printPairs()
+    if src_out.exists() and tgt_out.exists():
+        print(f"Skipping {corpus} already downloaded")
+    else:
+        opus_reader = OpusRead(**args)
+        opus_reader.printPairs()
 
     if not src_out.exists() or not tgt_out.exists():
         if src_out.exists():
@@ -191,7 +167,7 @@ def smart_sample(
             if not (min_chars <= len(completion) <= max_chars):
                 continue
 
-            pair_hash = hashlib.md5((prompt + completion).encode("utf-8")).hexdigest()
+            pair_hash = hashlib.md5(f"{prompt}:{completion}".encode("utf-8")).hexdigest()
             if pair_hash in seen_hashes:
                 continue
             seen_hashes.add(pair_hash)
@@ -245,6 +221,7 @@ def merge_and_dedup(
             for line in f:
                 if not line.strip():
                     continue
+                total_count += 1
                 try:
                     pair = json.loads(line)
                 except json.JSONDecodeError:
@@ -257,7 +234,7 @@ def merge_and_dedup(
                     continue
 
                 pair_hash = hashlib.md5(
-                    (prompt + completion).encode("utf-8")
+                    f"{prompt}:{completion}".encode("utf-8")
                 ).hexdigest()
                 if pair_hash in hashes:
                     continue
@@ -273,11 +250,6 @@ def merge_and_dedup(
                             f_out.write(json.dumps(pair, ensure_ascii=False) + "\n")
                     current_shard_pairs.clear()
                     shard_count += 1
-
-        with open(path, "r", encoding="utf-8") as f:
-            for line in f:
-                if line.strip():
-                    total_count += 1
 
     if current_shard_pairs:
         shard_name = f"{filtered_file_path.stem}_{shard_count:05d}.jsonl"

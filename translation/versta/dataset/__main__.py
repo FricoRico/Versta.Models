@@ -4,7 +4,6 @@ from pathlib import Path
 
 from .corpus import filter_corpus_config, load_corpus_config
 from .extractor import (
-    _create_reversed_shards,
     download_opus_dataset,
     merge_and_dedup,
     smart_sample,
@@ -189,19 +188,6 @@ def main(
             output_file=output_dir / "dataset.jsonl",
             source_lang=source,
             target_lang=target,
-            max_workers=workers,
-            shard_size=shard_size,
-            batch_size=batch_size,
-        )
-
-        reversed_shards = _create_reversed_shards(shard_files, intermediates_dir)
-        print(f"Mirrored shards: {len(reversed_shards)}")
-        process_dataset(
-            input_paths=reversed_shards,
-            intermediates_dir=intermediates_dir,
-            output_file=output_dir / "dataset.jsonl",
-            source_lang=target,
-            target_lang=source,
             max_workers=workers,
             shard_size=shard_size,
             batch_size=batch_size,
