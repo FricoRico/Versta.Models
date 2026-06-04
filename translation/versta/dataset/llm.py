@@ -5,7 +5,6 @@ import requests
 
 from .config import (
     api_key,
-    default_model,
     max_retries,
     request_timeout,
     retry_backoff,
@@ -42,7 +41,10 @@ def call_llm(
 
     messages = [
         [
-            {"role": "system", "content": "You are a translation assistant specialized in tonal translations."},
+            {
+                "role": "system",
+                "content": "You are a translation assistant specialized in tonal translations.",
+            },
             {"role": "user", "content": prompt},
         ]
         for prompt in prompts
@@ -101,6 +103,7 @@ def generate_tonal_translations(
             "Provide three versions: formal, neutral, and casual. "
             "If you spot a big mistake in the translation, rewrite it or fix it. "
             "Some translations might be missing some numbers or special characters that the input text do have; Add these back into the text in the proper positions. "
+            "Critical Constraint: Do not use filler words unless they are explicitly in the source or translated text. Avoid dialect slang."
             'Format as JSON: `{{"formal": "...", "neutral": "...", "casual": "..."}}`\n\n'
             f"Text: {pair['prompt']}\nTranslation: {pair['completion']}."
         )

@@ -43,6 +43,49 @@
     ]
   },
   {
+    "source": "nl",
+    "target": "en",
+    "corpora": [
+      {
+        "corpus": "WikiMatrix",
+        "pairs": 300000
+      },
+      {
+        "corpus": "TED2020",
+        "pairs": 200000
+      },
+      {
+        "corpus": "Europarl",
+        "pairs": 60000
+      },
+      {
+        "corpus": "CCAligned",
+        "pairs": 200000
+      },
+      {
+        "corpus": "OpenSubtitles",
+        "pairs": 130000,
+        "release": "v2016"
+      },
+      {
+        "corpus": "Tatoeba",
+        "pairs": 70000
+      },
+      {
+        "corpus": "NLLB",
+        "pairs": 300000
+      },
+      {
+        "corpus": "GlobalVoices",
+        "pairs": 40000
+      },
+      {
+        "corpus": "News-Commentary",
+        "pairs": 50000
+      }
+    ]
+  },
+  {
     "source": "en",
     "target": "zh",
     "corpora": [

@@ -15,6 +15,7 @@ def parse_args():
         "--name",
         "--dataset-name",
         type=str,
+        required=True,
         help="HuggingFace Hub dataset name to push to.",
     )
 
@@ -27,6 +28,7 @@ def parse_args():
     )
 
     return parser.parse_args()
+
 
 if __name__ == "__main__":
     args = parse_args()
