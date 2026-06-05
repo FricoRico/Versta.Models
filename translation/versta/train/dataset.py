@@ -1,3 +1,5 @@
+import random
+
 from datasets import load_dataset as loader
 from transformers import AutoTokenizer
 
@@ -18,6 +20,41 @@ def language_pair(dataset_name: str) -> tuple:
     return source, target
 
 
+def balance_tonalities(dataset, seed: int = 1780699690):
+    """
+    Resamples the dataset to achieve a 15% casual / 55% neutral / 30% formal tonality distribution.
+
+    Keeps all neutral rows and subsamples casual/formal proportionally.
+
+    Args:
+        dataset: HuggingFace dataset with an 'instruction' field.
+        seed: Random seed for deterministic sampling and shuffling.
+
+    Returns:
+        Resampled dataset with the target tonality distribution.
+    """
+    instructions = dataset["instruction"]
+    casual_idx = [i for i, inst in enumerate(instructions) if inst.lower().endswith("casual:")]
+    neutral_idx = [i for i, inst in enumerate(instructions) if inst.lower().endswith("neutral:")]
+    formal_idx = [i for i, inst in enumerate(instructions) if inst.lower().endswith("formal:")]
+
+    if not (neutral_idx and casual_idx and formal_idx):
+        return dataset
+
+    target_casual = min(len(casual_idx), int(len(neutral_idx) * 15 / 55))
+    target_formal = min(len(formal_idx), int(len(neutral_idx) * 30 / 55))
+
+    rng = random.Random(seed)
+    selected = (
+        rng.sample(casual_idx, target_casual)
+        + neutral_idx
+        + rng.sample(formal_idx, target_formal)
+    )
+    rng.shuffle(selected)
+
+    return dataset.select(selected)
+
+
 def load_dataset(
     dataset_name: str,
     model_name: str,
@@ -33,6 +70,8 @@ def load_dataset(
         Formatted dataset ready for SFT training.
     """
     dataset = loader(dataset_name, split="train")
+    dataset = balance_tonalities(dataset)
+
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     dataset = dataset.map(
