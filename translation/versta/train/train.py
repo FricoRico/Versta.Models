@@ -110,7 +110,7 @@ def _load(
 
     model = FastLanguageModel.get_peft_model(
         model,
-        r=32,
+        r=64,
         target_modules=[
             "q_proj",
             "k_proj",
@@ -123,7 +123,7 @@ def _load(
             "embed_tokens",
             "lm_head",
         ],
-        lora_alpha=64,
+        lora_alpha=128,
         lora_dropout=0.05,
         bias="none",
         use_gradient_checkpointing="unsloth",
@@ -245,9 +245,8 @@ def recover(
     batch_size: int,
     max_seq_length: int,
     num_train_epochs: float = 1,
-    num_passes: int = 2,
-    learning_rate: float = 8e-5,
-    embedding_learning_rate: float = 5e-5,
+    learning_rate: float = 1e-4,
+    embedding_learning_rate: float = 1e-5,
     save_steps: int = 10000,
 ) -> Path:
     """
@@ -259,71 +258,49 @@ def recover(
         dataset: Formatted dataset for training.
         output_dir: Directory for the final merged model.
         lang_pair: Language pair string (e.g. "en-nl").
-        intermediates_dir: Directory for intermediate files.
         batch_size: Per-device batch size.
         max_seq_length: Maximum sequence length.
-        cache_dir: Cache directory for Unsloth.
         num_train_epochs: Number of training epochs.
         learning_rate: Learning rate.
         embedding_learning_rate: Embedding learning rate.
         save_steps: Steps interval for saving and evaluation.
     """
-    model_path = model
-    tokenizer = None
+    for key in ["UNSLOTH_RETURN_LOGITS", "UNSLOTH_IS_PRESENT"]:
+        os.environ.pop(key, None)
 
-    for pass_num in range(num_passes):
-        for key in ["UNSLOTH_RETURN_LOGITS", "UNSLOTH_IS_PRESENT"]:
-            os.environ.pop(key, None)
+    adapter_dir = intermediates_dir / "adapter"
+    checkpoints_dir = intermediates_dir / "checkpoints"
 
-        pass_dir = intermediates_dir / f"pass_{pass_num}"
-        adapter_dir = pass_dir / "adapter"
-        checkpoints_dir = pass_dir / "checkpoints"
+    checkpoints_dir.mkdir(parents=True, exist_ok=True)
+    adapter_dir.mkdir(parents=True, exist_ok=True)
 
-        pass_dir.mkdir(parents=True, exist_ok=True)
-        checkpoints_dir.mkdir(parents=True, exist_ok=True)
-        adapter_dir.mkdir(parents=True, exist_ok=True)
+    model, tokenizer = _load(
+        model=model,
+        max_seq_length=max_seq_length,
+    )
 
-        model, tokenizer = _load(
-            model=model_path,
-            max_seq_length=max_seq_length,
-        )
+    run_name = f"recover_{lang_pair}_{int(time.time())}"
+    run_logs_dir = logs_dir / run_name
+    run_logs_dir.mkdir(parents=True, exist_ok=True)
 
-        model_path = pass_dir
-        pass_lr = learning_rate * (0.8**pass_num)
-        pass_embed_lr = embedding_learning_rate * (0.9**pass_num)
+    model = _train(
+        model=model,
+        tokenizer=tokenizer,
+        dataset=dataset,
+        batch_size=batch_size,
+        max_seq_length=max_seq_length,
+        checkpoints_dir=checkpoints_dir,
+        logs_dir=run_logs_dir,
+        num_train_epochs=num_train_epochs,
+        learning_rate=learning_rate,
+        embedding_learning_rate=embedding_learning_rate,
+        save_steps=save_steps,
+    )
 
-        print(
-            f"Recovery pass {pass_num + 1}/{num_passes}: learning_rate: {pass_lr:.2e}, embedding_learning_rate: {pass_embed_lr:.2e}"
-        )
+    print("Saving recovered LoRA adapter")
+    _save_adapter(model, tokenizer, adapter_dir)
 
-        run_name = f"recover_{lang_pair}_pass{pass_num}_{int(time.time())}"
-        run_logs_dir = logs_dir / run_name
-        run_logs_dir.mkdir(parents=True, exist_ok=True)
-
-        if num_train_epochs < 1:
-            dataset = dataset.shuffle(seed=1779708246 + pass_num)
-
-        model = _train(
-            model=model,
-            tokenizer=tokenizer,
-            dataset=dataset,
-            batch_size=batch_size,
-            max_seq_length=max_seq_length,
-            checkpoints_dir=checkpoints_dir,
-            logs_dir=run_logs_dir,
-            num_train_epochs=num_train_epochs,
-            learning_rate=pass_lr,
-            embedding_learning_rate=pass_embed_lr,
-            save_steps=save_steps,
-        )
-
-        print(f"Saving recovered LoRA adapter for pass: {pass_num + 1}/{num_passes}")
-        _save_adapter(model, tokenizer, adapter_dir)
-
-        print(f"Saving recovered merged model for pass: {pass_num + 1}/{num_passes}")
-        _save_model(model, tokenizer, pass_dir)
-
-    print("Saving final recovered model")
+    print("Saving recovered merged model")
     _save_model(model, tokenizer, output_dir)
 
     return output_dir

@@ -1,11 +1,15 @@
-import os
 from argparse import ArgumentParser
 from pathlib import Path
+
+from dotenv import load_dotenv
 
 from .dataset import language_pair, load_dataset
 from .prune import prune
 from .train import finetune, recover
 from .utils import remove_folder
+
+# Load .env for HF_TOKEN (auto-picked by HuggingFace SDK)
+load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
 
 def parse_args():
@@ -58,8 +62,8 @@ def parse_args():
     parser.add_argument(
         "--prune-ratio",
         type=float,
-        default=0.8,
-        help="Structured pruning ratio (0.0-1.0). Default: 0.8.",
+        default=0.48,
+        help="Structured pruning ratio (0.0-1.0). Default: 0.48.",
     )
 
     parser.add_argument(
@@ -74,7 +78,7 @@ def parse_args():
         "--save-steps",
         type=int,
         default=10000,
-        help="Steps interval for saving and evaluation. Default: 1000.",
+        help="Steps interval for saving and evaluation. Default: 10000.",
     )
 
     return parser.parse_args()
@@ -87,9 +91,9 @@ def main(
     model: str = "LiquidAI/LFM2.5-350M-Base",
     max_seq_len: int = 128,
     batch_size: int = 256,
-    prune_ratio: float = 0.8,
+    prune_ratio: float = 0.48,
     keep_intermediates: bool = False,
-    save_steps: int = 1000,
+    save_steps: int = 10000,
 ) -> None:
     """
     Main training entry point.
@@ -108,8 +112,6 @@ def main(
     output_dir.mkdir(parents=True, exist_ok=True)
     cache_dir.mkdir(parents=True, exist_ok=True)
 
-    os.environ["UNSLOTH_COMPILE_LOCATION"] = cache_dir.as_posix()
-
     source, target = language_pair(dataset)
     lang_pair = f"{source}-{target}"
 
@@ -117,14 +119,12 @@ def main(
     intermediates_dir = language_output_dir / "intermediates"
     finetuned_dir = intermediates_dir / "finetuned"
     pruned_dir = intermediates_dir / "pruned"
-    recovered_dir = intermediates_dir / "recovered"
     logs_dir = intermediates_dir / "logs"
 
     language_output_dir.mkdir(parents=True, exist_ok=True)
     intermediates_dir.mkdir(parents=True, exist_ok=True)
     finetuned_dir.mkdir(parents=True, exist_ok=True)
     pruned_dir.mkdir(parents=True, exist_ok=True)
-    recovered_dir.mkdir(parents=True, exist_ok=True)
     logs_dir.mkdir(parents=True, exist_ok=True)
 
     dataset_data = load_dataset(
@@ -153,7 +153,7 @@ def main(
         model=pruned,
         dataset=dataset_data,
         output_dir=language_output_dir,
-        intermediates_dir=recovered_dir,
+        intermediates_dir=intermediates_dir,
         lang_pair=lang_pair,
         logs_dir=logs_dir,
         batch_size=batch_size,
