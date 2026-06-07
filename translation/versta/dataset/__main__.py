@@ -4,6 +4,7 @@ from pathlib import Path
 
 from .corpus import filter_corpus_config, load_corpus_config
 from .extractor import (
+    create_reversed_shards,
     download_opus_dataset,
     merge_and_dedup,
     smart_sample,
@@ -127,11 +128,11 @@ def main(
         target = config["target"]
         corpora = config["corpora"]
 
-        output_dir = output / f"{source}-{target}"
+        languages = sorted([source, target])
+        output_dir = output / f"{languages[0]}-{languages[1]}"
         download_dir = cache / "corpora"
-        intermediates_dir = output / f"{source}-{target}" / "intermediates"
+        intermediates_dir = output_dir / "intermediates"
 
-        output_dir.mkdir(parents=True, exist_ok=True)
         cache.mkdir(parents=True, exist_ok=True)
         download_dir.mkdir(parents=True, exist_ok=True)
         intermediates_dir.mkdir(parents=True, exist_ok=True)
@@ -180,14 +181,30 @@ def main(
         else:
             shard_files.append(Path(dataset_paths[0]))
 
-        print(f"Processing the following shards: {shard_files}")
+        output_dir.mkdir(parents=True, exist_ok=True)
 
+        forward_checkpoints = intermediates_dir / f"{source}-{target}"
+        forward_checkpoints.mkdir(parents=True, exist_ok=True)
         process_dataset(
             input_paths=shard_files,
-            intermediates_dir=intermediates_dir,
+            intermediates_dir=forward_checkpoints,
             output_file=output_dir / "dataset.jsonl",
             source_lang=source,
             target_lang=target,
+            max_workers=workers,
+            shard_size=shard_size,
+            batch_size=batch_size,
+        )
+
+        reversed_shards = create_reversed_shards(shard_files, intermediates_dir)
+        reverse_checkpoints = intermediates_dir / f"{target}-{source}"
+        reverse_checkpoints.mkdir(parents=True, exist_ok=True)
+        process_dataset(
+            input_paths=reversed_shards,
+            intermediates_dir=reverse_checkpoints,
+            output_file=output_dir / "dataset.jsonl",
+            source_lang=target,
+            target_lang=source,
             max_workers=workers,
             shard_size=shard_size,
             batch_size=batch_size,

@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List
 
+import pycountry
 from tqdm import tqdm
 
 from .llm import generate_tonal_translations
@@ -120,12 +121,15 @@ def process_dataset(
                     ProcessedResult(entries=[], prompt=pair["prompt"], completion=pair["completion"])
                 )
                 continue
+            target_lang_obj = pycountry.languages.get(alpha_2=target_lang)
+            target_name = target_lang_obj.name if target_lang_obj else target_lang
+
             entries: List[ProcessedEntry] = []
             for tone, translated in translation.items():
                 entry = ProcessedEntry(
                     source=source_lang,
                     target=target_lang,
-                    instruction=f"{tone.capitalize()}:",
+                    instruction=f"Translate to {tone.lower()} {target_name}.",
                     input=pair["prompt"],
                     output=translated,
                 )
@@ -240,10 +244,11 @@ def process_dataset(
                     print(f"Worker error: {e}")
                 pbar.update()
 
-            try:
-                pending.add(executor.submit(process, next(batch_iter)))
-            except StopIteration:
-                pass
+            for _ in range(len(done)):
+                try:
+                    pending.add(executor.submit(process, next(batch_iter)))
+                except StopIteration:
+                    break
 
         pbar.close()
 
