@@ -9,6 +9,33 @@ from opustools import OpusRead
 from .types import ExtractionResult
 
 
+def create_reversed_shards(
+    input_shards: list[Path], intermediates_dir: Path
+) -> list[Path]:
+    """Swap prompt/completion in each shard, write reversed shards to disk.
+
+    Args:
+        input_shards (list[Path]): List of input JSONL shard paths.
+        intermediates_dir (Path): Directory to store reversed shards.
+
+    Returns:
+        list[Path]: List of paths to the reversed shard files.
+    """
+    reversed_paths = []
+    for i, shard in enumerate(input_shards):
+        reversed_path = intermediates_dir / f"mirrored_{i:05d}.jsonl"
+        with (
+            shard.open("r", encoding="utf-8") as fin,
+            reversed_path.open("w", encoding="utf-8") as fout,
+        ):
+            for line in fin:
+                pair = json.loads(line)
+                pair["prompt"], pair["completion"] = pair["completion"], pair["prompt"]
+                fout.write(json.dumps(pair, ensure_ascii=False) + "\n")
+        reversed_paths.append(reversed_path)
+    return reversed_paths
+
+
 def download_opus_dataset(
     source: str,
     target: str,
