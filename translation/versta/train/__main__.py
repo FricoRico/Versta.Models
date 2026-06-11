@@ -1,6 +1,7 @@
 from argparse import ArgumentParser
 from pathlib import Path
 
+from datasets import concatenate_datasets
 from dotenv import load_dotenv
 
 from .dataset import language_pair, load_dataset
@@ -55,7 +56,7 @@ def parse_args():
     parser.add_argument(
         "--batch-size",
         type=int,
-        default=256,
+        default=64,
         help="Per-device batch size. Default: 256.",
     )
 
@@ -90,7 +91,7 @@ def main(
     cache_dir: Path = Path("cache"),
     model: str = "LiquidAI/LFM2.5-350M-Base",
     max_seq_len: int = 128,
-    batch_size: int = 256,
+    batch_size: int = 64,
     prune_ratio: float = 0.48,
     keep_intermediates: bool = False,
     save_steps: int = 10000,

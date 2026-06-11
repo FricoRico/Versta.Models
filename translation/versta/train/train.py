@@ -16,10 +16,11 @@ def _train(
     max_seq_length: int,
     checkpoints_dir: Path,
     logs_dir: Path,
-    num_train_epochs: float = 1,
-    learning_rate: float = 2e-4,
-    embedding_learning_rate: float = 1e-5,
-    save_steps: int = 10000,
+    num_train_epochs: float,
+    learning_rate: float,
+    embedding_learning_rate: float,
+    warmup_steps: int,
+    save_steps: int,
 ) -> Path:
     """
     Trains the model using SFT with the given dataset.
@@ -39,7 +40,7 @@ def _train(
     Returns:
         Trained model.
     """
-    eval_size = 5000
+    eval_size = 10000
     train_dataset = dataset.select(range(len(dataset) - eval_size))
     eval_dataset = dataset.select(range(len(dataset) - eval_size, len(dataset)))
 
@@ -51,17 +52,17 @@ def _train(
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         max_seq_length=max_seq_length,
-        dataset_num_proc=16,
-        dataloader_prefetch_factor=8,
+        dataset_num_proc=8,
+        dataloader_prefetch_factor=4,
         args=UnslothTrainingArguments(
             per_device_train_batch_size=batch_size,
             gradient_accumulation_steps=max(1, 64 // batch_size),
             num_train_epochs=num_train_epochs,
-            warmup_steps=400,
+            warmup_steps=warmup_steps,
             learning_rate=learning_rate,
             embedding_learning_rate=embedding_learning_rate,
             optim="adamw_8bit",
-            weight_decay=0.01,
+            weight_decay=0.001,
             lr_scheduler_type="cosine",
             seed=1779708246,
             packing=True,
@@ -124,7 +125,7 @@ def _load(
             "lm_head",
         ],
         lora_alpha=128,
-        lora_dropout=0.05,
+        lora_dropout=0,
         bias="none",
         use_gradient_checkpointing="unsloth",
         random_state=1779708246,
@@ -170,8 +171,9 @@ def finetune(
     batch_size: int,
     max_seq_length: int,
     num_train_epochs: float = 1,
-    learning_rate: float = 1e-4,
-    embedding_learning_rate: float = 1e-5,
+    learning_rate: float = 2e-4,
+    embedding_learning_rate: float = 5e-5,
+    warmup_steps: int = 500,
     save_steps: int = 10000,
 ) -> Path:
     """
@@ -194,6 +196,9 @@ def finetune(
     Returns:
         Tuple of (tokenizer, merged_model_path).
     """
+    for key in ["UNSLOTH_RETURN_LOGITS", "UNSLOTH_IS_PRESENT"]:
+        os.environ.pop(key, None)
+
     checkpoints_dir = output_dir / "checkpoints"
     adapter_dir = output_dir / "adapter"
 
@@ -224,6 +229,7 @@ def finetune(
         learning_rate=learning_rate,
         embedding_learning_rate=embedding_learning_rate,
         save_steps=save_steps,
+        warmup_steps=warmup_steps,
     )
 
     print("Saving finetuned LoRA adapter")
@@ -245,8 +251,9 @@ def recover(
     batch_size: int,
     max_seq_length: int,
     num_train_epochs: float = 1,
-    learning_rate: float = 1e-4,
-    embedding_learning_rate: float = 1e-5,
+    learning_rate: float = 8e-5,
+    embedding_learning_rate: float = 5e-5,
+    warmup_steps: int = 300,
     save_steps: int = 10000,
 ) -> Path:
     """
@@ -295,6 +302,7 @@ def recover(
         learning_rate=learning_rate,
         embedding_learning_rate=embedding_learning_rate,
         save_steps=save_steps,
+        warmup_steps=warmup_steps,
     )
 
     print("Saving recovered LoRA adapter")
