@@ -1,5 +1,6 @@
 import random
 
+import pyarrow.compute as pc
 from datasets import load_dataset as loader
 from transformers import AutoTokenizer
 
@@ -20,6 +21,27 @@ def language_pair(dataset_name: str) -> tuple:
     return source, target
 
 
+def _get_balanced_indices(dataset, seed: int = 1780699690):
+    """
+    Returns the full index pools and target sample sizes for each tonality.
+    """
+    instructions = dataset.data.column("instruction")
+    casual_idx = (
+        pc.match_substring(instructions, "casual").to_numpy().nonzero()[0].tolist()
+    )
+    neutral_idx = (
+        pc.match_substring(instructions, "neutral").to_numpy().nonzero()[0].tolist()
+    )
+    formal_idx = (
+        pc.match_substring(instructions, "formal").to_numpy().nonzero()[0].tolist()
+    )
+
+    target_casual = min(len(casual_idx), int(len(neutral_idx) * 15 / 55))
+    target_formal = min(len(formal_idx), int(len(neutral_idx) * 30 / 55))
+
+    return casual_idx, neutral_idx, formal_idx, target_casual, target_formal
+
+
 def balance_tonalities(dataset, seed: int = 1780699690):
     """
     Resamples the dataset to achieve a 15% casual / 55% neutral / 30% formal tonality distribution.
@@ -33,16 +55,12 @@ def balance_tonalities(dataset, seed: int = 1780699690):
     Returns:
         Resampled dataset with the target tonality distribution.
     """
-    instructions = dataset["instruction"]
-    casual_idx = [i for i, inst in enumerate(instructions) if inst.lower().endswith("casual:")]
-    neutral_idx = [i for i, inst in enumerate(instructions) if inst.lower().endswith("neutral:")]
-    formal_idx = [i for i, inst in enumerate(instructions) if inst.lower().endswith("formal:")]
+    casual_idx, neutral_idx, formal_idx, target_casual, target_formal = (
+        _get_balanced_indices(dataset, seed)
+    )
 
     if not (neutral_idx and casual_idx and formal_idx):
         return dataset
-
-    target_casual = min(len(casual_idx), int(len(neutral_idx) * 15 / 55))
-    target_formal = min(len(formal_idx), int(len(neutral_idx) * 30 / 55))
 
     rng = random.Random(seed)
     selected = (
@@ -60,7 +78,7 @@ def load_dataset(
     model_name: str,
 ) -> object:
     """
-    Loads and formats the translation dataset for SFT training.
+    Loads and formats the translation dataset for SFT training into two disjoint subsets.
 
     Args:
         dataset_name: Name of the dataset to load.
@@ -70,7 +88,7 @@ def load_dataset(
         Formatted dataset ready for SFT training.
     """
     dataset = loader(dataset_name, split="train")
-    dataset = balance_tonalities(dataset)
+    # dataset = balance_tonalities(dataset)
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
@@ -100,7 +118,8 @@ def _format(examples: dict, tokenizer: object) -> dict:
         examples["instruction"], examples["input"], examples["output"]
     ):
         messages = [
-            {"role": "user", "content": f"{instruction} {input_text}"},
+            {"role": "system", "content": instruction},
+            {"role": "user", "content": input_text},
             {"role": "assistant", "content": output_text},
         ]
         conversation_text = tokenizer.apply_chat_template(
