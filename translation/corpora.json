@@ -2,7 +2,7 @@
   {
     "source": "en",
     "target": "nl",
-    "corpora": [
+    "synthetic": [
       {
         "corpus": "WikiMatrix",
         "pairs": 300000
@@ -40,12 +40,45 @@
         "corpus": "News-Commentary",
         "pairs": 50000
       }
+    ],
+    "natural": [
+      {
+        "corpus": "Europarl",
+        "pairs": 1900000,
+        "register": "formal"
+      },
+      {
+        "corpus": "WikiMatrix",
+        "pairs": 450000,
+        "register": "neutral"
+      },
+      {
+        "corpus": "TildeMODEL",
+        "pairs": 1500000,
+        "register": "neutral"
+      },
+      {
+        "corpus": "NLLB",
+        "pairs": 1500000,
+        "register": "plain"
+      },
+      {
+        "corpus": "CCAligned",
+        "pairs": 1500000,
+        "register": "plain"
+      },
+      {
+        "corpus": "OpenSubtitles",
+        "pairs": 1000000,
+        "register": "plain",
+        "release": "v2024"
+      }
     ]
   },
   {
     "source": "en",
     "target": "zh",
-    "corpora": [
+    "synthetic": [
       {
         "corpus": "WikiMatrix",
         "pairs": 120000
@@ -74,6 +107,7 @@
         "corpus": "NewsCommentary",
         "pairs": 10000
       }
-    ]
+    ],
+    "natural": []
   }
 ]

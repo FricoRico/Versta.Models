@@ -13,6 +13,7 @@ class ProcessedEntry(TypedDict):
     instruction: str
     input: str
     output: str
+    method: str
 
 
 class ExtractionResult(TypedDict):
@@ -27,9 +28,11 @@ class CorpusConfig(TypedDict):
     corpus: str
     pairs: int | None
     release: str | None
+    register: str | None
 
 
 class LanguagePairConfig(TypedDict):
     source: str
     target: str
-    corpora: list[CorpusConfig]
+    synthetic: list[CorpusConfig]
+    natural: list[CorpusConfig]

@@ -28,23 +28,25 @@ def load_corpus_config(corpus_path: Path | str) -> list[LanguagePairConfig]:
     with open(corpus_path, "r", encoding="utf-8") as f:
         configs = json.load(f)
 
+    def _parse_entries(entries: list[dict]) -> list[CorpusConfig]:
+        return [
+            CorpusConfig(
+                corpus=c["corpus"],
+                pairs=c.get("pairs"),
+                release=c.get("release"),
+                register=c.get("register"),
+            )
+            for c in entries
+        ]
+
     typed_configs = []
     for config in configs:
-        corpora = []
-        for c in config.get("corpora", []):
-            corpora.append(
-                CorpusConfig(
-                    corpus=c["corpus"],
-                    pairs=c.get("pairs"),
-                    release=c.get("release"),
-                )
-            )
-
         typed_configs.append(
             LanguagePairConfig(
                 source=config["source"],
                 target=config["target"],
-                corpora=corpora,
+                synthetic=_parse_entries(config.get("synthetic", [])),
+                natural=_parse_entries(config.get("natural", [])),
             )
         )
 
