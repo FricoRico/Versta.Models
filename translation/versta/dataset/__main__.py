@@ -411,7 +411,7 @@ def main(
                         output_file=output_dir / "dataset.jsonl",
                         source_lang=target,
                         target_lang=source,
-                        instruction=f"Translate to {source_name}.",
+                        instruction=f"Translate to {register} {source_name}." if register != "plain" else f"Translate to {source_name}.",
                         shard_size=shard_size,
                     )
 
