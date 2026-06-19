@@ -29,6 +29,7 @@ class CorpusConfig(TypedDict):
     pairs: int | None
     release: str | None
     register: str | None
+    preprocess: str | None
 
 
 class LanguagePairConfig(TypedDict):

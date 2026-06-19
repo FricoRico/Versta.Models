@@ -5,73 +5,88 @@
     "synthetic": [
       {
         "corpus": "WikiMatrix",
-        "pairs": 300000
+        "pairs": 300000,
+        "preprocess": "moses"
       },
       {
         "corpus": "TED2020",
-        "pairs": 200000
+        "pairs": 200000,
+        "preprocess": "moses"
       },
       {
         "corpus": "Europarl",
-        "pairs": 60000
+        "pairs": 60000,
+        "preprocess": "moses"
       },
       {
         "corpus": "CCAligned",
-        "pairs": 200000
+        "pairs": 200000,
+        "preprocess": "moses"
       },
       {
         "corpus": "OpenSubtitles",
         "pairs": 130000,
-        "release": "v2016"
+        "release": "v2016",
+        "preprocess": "moses"
       },
       {
         "corpus": "Tatoeba",
-        "pairs": 70000
+        "pairs": 70000,
+        "preprocess": "moses"
       },
       {
         "corpus": "NLLB",
-        "pairs": 300000
+        "pairs": 300000,
+        "preprocess": "moses"
       },
       {
         "corpus": "GlobalVoices",
-        "pairs": 40000
+        "pairs": 40000,
+        "preprocess": "moses"
       },
       {
         "corpus": "News-Commentary",
-        "pairs": 50000
+        "pairs": 50000,
+        "preprocess": "moses"
       }
     ],
     "natural": [
       {
         "corpus": "Europarl",
         "pairs": 1900000,
-        "register": "formal"
+        "register": "formal",
+        "preprocess": "moses"
       },
       {
         "corpus": "WikiMatrix",
         "pairs": 450000,
-        "register": "neutral"
+        "register": "neutral",
+        "preprocess": "moses"
       },
       {
         "corpus": "TildeMODEL",
         "pairs": 1500000,
-        "register": "neutral"
+        "register": "neutral",
+        "preprocess": "moses"
       },
       {
         "corpus": "NLLB",
         "pairs": 1500000,
-        "register": "plain"
+        "register": "plain",
+        "preprocess": "moses"
       },
       {
         "corpus": "CCAligned",
         "pairs": 1500000,
-        "register": "plain"
+        "register": "plain",
+        "preprocess": "moses"
       },
       {
         "corpus": "OpenSubtitles",
         "pairs": 1000000,
         "register": "plain",
-        "release": "v2024"
+        "release": "v2024",
+        "preprocess": "moses"
       }
     ]
   },
@@ -81,33 +96,76 @@
     "synthetic": [
       {
         "corpus": "WikiMatrix",
-        "pairs": 120000
+        "pairs": 150000,
+        "preprocess": "moses"
       },
       {
         "corpus": "UNPC",
-        "pairs": 100000
+        "pairs": 100000,
+        "preprocess": "moses"
       },
       {
         "corpus": "ParaCrawl",
-        "pairs": 120000
+        "pairs": 200000,
+        "preprocess": "moses"
       },
       {
         "corpus": "NLLB",
-        "pairs": 80000
-      },
-      {
-        "corpus": "Tatoeba",
-        "pairs": 30000
+        "pairs": 180000,
+        "preprocess": "moses"
       },
       {
         "corpus": "tldr-pages",
-        "pairs": 20000
+        "pairs": 12000,
+        "preprocess": "moses"
       },
       {
-        "corpus": "NewsCommentary",
+        "corpus": "News-Commentary",
         "pairs": 10000
       }
     ],
-    "natural": []
+    "natural": [
+      {
+        "corpus": "UNPC",
+        "pairs": 2200000,
+        "register": "formal",
+        "preprocess": "moses"
+      },
+      {
+        "corpus": "MultiUN",
+        "pairs": 1200000,
+        "register": "formal",
+        "preprocess": "moses"
+      },
+      {
+        "corpus": "WikiMatrix",
+        "pairs": 500000,
+        "register": "neutral",
+        "preprocess": "moses"
+      },
+      {
+        "corpus": "News-Commentary",
+        "pairs": 115000,
+        "register": "neutral"
+      },
+      {
+        "corpus": "NLLB",
+        "pairs": 2200000,
+        "register": "plain",
+        "preprocess": "moses"
+      },
+      {
+        "corpus": "ParaCrawl",
+        "pairs": 1800000,
+        "register": "plain",
+        "preprocess": "moses"
+      },
+      {
+        "corpus": "CCMatrix",
+        "pairs": 1200000,
+        "register": "plain",
+        "preprocess": "moses"
+      }
+    ]
   }
 ]

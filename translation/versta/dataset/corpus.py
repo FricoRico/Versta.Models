@@ -35,6 +35,7 @@ def load_corpus_config(corpus_path: Path | str) -> list[LanguagePairConfig]:
                 pairs=c.get("pairs"),
                 release=c.get("release"),
                 register=c.get("register"),
+                preprocess=c.get("preprocess"),
             )
             for c in entries
         ]

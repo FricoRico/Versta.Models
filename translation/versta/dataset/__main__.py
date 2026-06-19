@@ -133,6 +133,7 @@ def _download_and_sample(
             corpus=corpus,
             pairs=config_pairs,
             release=release,
+            preprocess=entry.get("preprocess", "raw"),
         )
 
         raw_jsonl_path = extraction["output_file"]
@@ -269,6 +270,10 @@ def main(
                 coord_dir = intermediates_dir / "coordinated"
                 coord_dir.mkdir(parents=True, exist_ok=True)
 
+                preprocess = syn_entries[0].get("preprocess")
+                if preprocess is None:
+                    preprocess = "raw"
+
                 total_demand = syn_demand + nat_demand
                 extraction = download_opus_dataset(
                     source=source,
@@ -278,11 +283,10 @@ def main(
                     corpus=corpus,
                     pairs=total_demand,
                     release=release,
+                    preprocess=preprocess,
                 )
 
-                sampled_path = (
-                    coord_dir / f"{corpus}_{source}-{target}.sampled.jsonl"
-                )
+                sampled_path = coord_dir / f"{corpus}_{source}-{target}.sampled.jsonl"
                 smart_sample(
                     jsonl_path=extraction["output_file"],
                     output_path=sampled_path,
@@ -290,12 +294,8 @@ def main(
                     seed=seed,
                 )
 
-                syn_file = (
-                    coord_dir / f"{corpus}_{source}-{target}.synthetic.jsonl"
-                )
-                nat_file = (
-                    coord_dir / f"{corpus}_{source}-{target}.natural.jsonl"
-                )
+                syn_file = coord_dir / f"{corpus}_{source}-{target}.synthetic.jsonl"
+                nat_file = coord_dir / f"{corpus}_{source}-{target}.natural.jsonl"
                 _split_sampled_file(sampled_path, syn_file, nat_file, syn_demand)
 
                 synthetic_paths.append(str(syn_file))
@@ -345,9 +345,7 @@ def main(
                     batch_size=batch_size,
                 )
 
-                reversed_shards = create_reversed_shards(
-                    shard_files, syn_merge_dir
-                )
+                reversed_shards = create_reversed_shards(shard_files, syn_merge_dir)
                 reverse_checkpoints = syn_merge_dir / f"{target}-{source}"
                 reverse_checkpoints.mkdir(parents=True, exist_ok=True)
                 process_dataset(
@@ -400,9 +398,7 @@ def main(
                         shard_size=shard_size,
                     )
 
-                    reversed_shards = create_reversed_shards(
-                        shard_files, nat_reg_dir
-                    )
+                    reversed_shards = create_reversed_shards(shard_files, nat_reg_dir)
                     reverse_checkpoints = nat_reg_dir / f"{target}-{source}"
                     reverse_checkpoints.mkdir(parents=True, exist_ok=True)
                     write_natural_dataset(
@@ -411,7 +407,9 @@ def main(
                         output_file=output_dir / "dataset.jsonl",
                         source_lang=target,
                         target_lang=source,
-                        instruction=f"Translate to {register} {source_name}." if register != "plain" else f"Translate to {source_name}.",
+                        instruction=f"Translate to {register} {source_name}."
+                        if register != "plain"
+                        else f"Translate to {source_name}.",
                         shard_size=shard_size,
                     )
 
