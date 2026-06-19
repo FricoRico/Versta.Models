@@ -4,6 +4,8 @@ import random
 import shutil
 from pathlib import Path
 
+from tqdm import tqdm
+
 from opustools import OpusRead
 
 from .types import ExtractionResult
@@ -44,6 +46,7 @@ def download_opus_dataset(
     corpus: str,
     pairs: int | None = None,
     release: str | None = None,
+    preprocess: str = "raw",
 ) -> ExtractionResult:
     """Download parallel sentence pairs from OPUS (opus.nlpl.eu) for a given language pair.
 
@@ -58,6 +61,7 @@ def download_opus_dataset(
         corpus: OPUS corpus name (e.g. 'OpenSubtitles', 'CCMatrix', 'Europarl').
         pairs: Maximum number of sentence pairs to extract. None for all.
         release: Version of corpus to download.
+        preprocess: OPUS preprocessing type (e.g. 'raw' or 'moses'). Default 'raw'.
 
     Returns:
         Dict with keys: 'source', 'target', 'corpus', 'num_pairs', 'output_file'.
@@ -75,22 +79,23 @@ def download_opus_dataset(
         "directory": corpus,
         "source": source,
         "target": target,
-        "preprocess": "raw",
+        "preprocess": preprocess,
         "write_mode": "moses",
         "write": [str(src_out), str(tgt_out)],
         "suppress_prompts": True,
+        "leave_non_alignments_out": True,
     }
-
-    if pairs is not None:
-        args["maximum"] = pairs
 
     if release is not None:
         args["release"] = release
 
+    if pairs is not None and preprocess == "raw":
+        args["maximum"] = pairs
+
     args["download_dir"] = str(download_dir)
 
     if src_out.exists() and tgt_out.exists():
-        print(f"Skipping {corpus} already downloaded")
+        print(f"Using cached extraction for {corpus}")
     else:
         opus_reader = OpusRead(**args)
         opus_reader.printPairs()
@@ -106,33 +111,42 @@ def download_opus_dataset(
             "Check the corpus name and language codes are correct."
         )
 
-    src_sentences = [
-        line.strip()
-        for line in src_out.read_text(encoding="utf-8").splitlines()
-        if line.strip()
-    ]
-    tgt_sentences = [
-        line.strip()
-        for line in tgt_out.read_text(encoding="utf-8").splitlines()
-        if line.strip()
-    ]
+    output_file = intermediates_dir / f"{corpus}_{source}-{target}.jsonl"
+    num_pairs = 0
 
-    num_pairs = min(len(src_sentences), len(tgt_sentences))
+    t = tqdm(total=pairs, unit="pair", desc=f"Converting {corpus}")
+
+    with (
+        src_out.open("r", encoding="utf-8") as src_f,
+        tgt_out.open("r", encoding="utf-8") as tgt_f,
+        output_file.open("w", encoding="utf-8") as out_f,
+    ):
+        for src_line, tgt_line in zip(src_f, tgt_f):
+            src = src_line.strip()
+            tgt = tgt_line.strip()
+            if not src or not tgt:
+                continue
+            if pairs is not None and num_pairs >= pairs:
+                break
+
+            out_f.write(
+                json.dumps(
+                    {"prompt": src, "completion": tgt},
+                    ensure_ascii=False,
+                )
+                + "\n"
+            )
+            num_pairs += 1
+            t.update(1)
+
+    t.close()
+
     if num_pairs == 0:
         raise RuntimeError(
             f"No sentence pairs found for corpus '{corpus}', "
             f"language pair '{source}-{target}'. "
             "Check the corpus name and language codes are correct."
         )
-
-    output_file = intermediates_dir / f"{corpus}_{source}-{target}.jsonl"
-    with output_file.open("w", encoding="utf-8") as f:
-        for i in range(num_pairs):
-            line = json.dumps(
-                {"prompt": src_sentences[i], "completion": tgt_sentences[i]},
-                ensure_ascii=False,
-            )
-            f.write(line + "\n")
 
     return ExtractionResult(
         source=source,
@@ -194,7 +208,9 @@ def smart_sample(
             if not (min_chars <= len(completion) <= max_chars):
                 continue
 
-            pair_hash = hashlib.md5(f"{prompt}:{completion}".encode("utf-8")).hexdigest()
+            pair_hash = hashlib.md5(
+                f"{prompt}:{completion}".encode("utf-8")
+            ).hexdigest()
             if pair_hash in seen_hashes:
                 continue
             seen_hashes.add(pair_hash)
