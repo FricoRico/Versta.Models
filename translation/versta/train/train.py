@@ -52,8 +52,8 @@ def _train(
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         max_seq_length=max_seq_length,
-        dataset_num_proc=8,
-        dataloader_prefetch_factor=4,
+        dataset_num_proc=16,
+        dataloader_prefetch_factor=8,
         args=UnslothTrainingArguments(
             per_device_train_batch_size=batch_size,
             gradient_accumulation_steps=max(1, 64 // batch_size),
@@ -111,7 +111,7 @@ def _load(
 
     model = FastLanguageModel.get_peft_model(
         model,
-        r=64,
+        r=256,
         target_modules=[
             "q_proj",
             "k_proj",
@@ -124,7 +124,7 @@ def _load(
             "embed_tokens",
             "lm_head",
         ],
-        lora_alpha=128,
+        lora_alpha=512,
         lora_dropout=0,
         bias="none",
         use_gradient_checkpointing="unsloth",
