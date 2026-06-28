@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from pathlib import Path
+from shutil import copytree, ignore_patterns
 
-from datasets import concatenate_datasets
 from dotenv import load_dotenv
 
 from .dataset import language_pair, load_dataset
@@ -42,8 +42,8 @@ def parse_args():
     parser.add_argument(
         "--model",
         type=str,
-        default="LiquidAI/LFM2.5-350M-Base",
-        help="Model name. Default: LiquidAI/LFM2.5-350M-Base.",
+        default="LiquidAI/LFM2.5-230M-Base",
+        help="Model name. Default: LiquidAI/LFM2.5-230M-Base.",
     )
 
     parser.add_argument(
@@ -65,6 +65,13 @@ def parse_args():
         type=float,
         default=0.48,
         help="Structured pruning ratio (0.0-1.0). Default: 0.48.",
+    )
+
+    parser.add_argument(
+        "--enable-pruning",
+        action="store_true",
+        default=False,
+        help="Wether to prune the model and recovery train it afterwards. Since the release of LiquidAI/LFM2.5-230M-Base, this will no longer be required.",
     )
 
     parser.add_argument(
@@ -93,6 +100,7 @@ def main(
     max_seq_len: int = 128,
     batch_size: int = 64,
     prune_ratio: float = 0.48,
+    enable_pruning: bool = False,
     keep_intermediates: bool = False,
     save_steps: int = 10000,
 ) -> None:
@@ -144,23 +152,30 @@ def main(
         logs_dir=logs_dir,
     )
 
-    pruned = prune(
-        model=finetuned,
-        prune_ratio=prune_ratio,
-        output_dir=pruned_dir,
-    )
+    if enable_pruning:
+        pruned = prune(
+            model=finetuned,
+            prune_ratio=prune_ratio,
+            output_dir=pruned_dir,
+        )
 
-    recover(
-        model=pruned,
-        dataset=dataset_data,
-        output_dir=language_output_dir,
-        intermediates_dir=intermediates_dir,
-        lang_pair=lang_pair,
-        logs_dir=logs_dir,
-        batch_size=batch_size,
-        max_seq_length=max_seq_len,
-        save_steps=save_steps,
-    )
+        recover(
+            model=pruned,
+            dataset=dataset_data,
+            output_dir=language_output_dir,
+            intermediates_dir=intermediates_dir,
+            lang_pair=lang_pair,
+            logs_dir=logs_dir,
+            batch_size=batch_size,
+            max_seq_length=max_seq_len,
+            save_steps=save_steps,
+        )
+    else:
+        copytree(
+            src=finetuned_dir,
+            dst=output_dir,
+            ignore=ignore_patterns("checkpoints", "adapter"),
+        )
 
     if not keep_intermediates:
         remove_folder(intermediates_dir)
@@ -177,6 +192,7 @@ if __name__ == "__main__":
         model=args.model,
         batch_size=args.batch_size,
         prune_ratio=args.prune_ratio,
+        enable_pruning=args.enable_pruning,
         keep_intermediates=args.keep_intermediates,
         save_steps=args.save_steps,
     )
