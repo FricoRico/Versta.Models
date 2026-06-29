@@ -32,8 +32,13 @@ class CorpusConfig(TypedDict):
     preprocess: str | None
 
 
+class CorpusGroupConfig(TypedDict):
+    synthetic: list[CorpusConfig]
+    natural: list[CorpusConfig]
+
+
 class LanguagePairConfig(TypedDict):
     source: str
     target: str
-    synthetic: list[CorpusConfig]
-    natural: list[CorpusConfig]
+    train: CorpusGroupConfig
+    eval: CorpusGroupConfig

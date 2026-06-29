@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from .types import CorpusConfig, LanguagePairConfig
+from .types import CorpusConfig, CorpusGroupConfig, LanguagePairConfig
 
 
 def load_corpus_config(corpus_path: Path | str) -> list[LanguagePairConfig]:
@@ -40,14 +40,21 @@ def load_corpus_config(corpus_path: Path | str) -> list[LanguagePairConfig]:
             for c in entries
         ]
 
+    def _parse_group(group: dict | None) -> CorpusGroupConfig:
+        group = group or {}
+        return CorpusGroupConfig(
+            synthetic=_parse_entries(group.get("synthetic", [])),
+            natural=_parse_entries(group.get("natural", [])),
+        )
+
     typed_configs = []
     for config in configs:
         typed_configs.append(
             LanguagePairConfig(
                 source=config["source"],
                 target=config["target"],
-                synthetic=_parse_entries(config.get("synthetic", [])),
-                natural=_parse_entries(config.get("natural", [])),
+                train=_parse_group(config.get("train")),
+                eval=_parse_group(config.get("eval")),
             )
         )
 

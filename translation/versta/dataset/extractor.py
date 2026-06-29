@@ -1,8 +1,8 @@
 import hashlib
 import json
 import random
-import shutil
 from pathlib import Path
+from typing import Literal
 
 from tqdm import tqdm
 
@@ -47,6 +47,7 @@ def download_opus_dataset(
     pairs: int | None = None,
     release: str | None = None,
     preprocess: str = "raw",
+    skip_hashes: set[str] | None = None,
 ) -> ExtractionResult:
     """Download parallel sentence pairs from OPUS (opus.nlpl.eu) for a given language pair.
 
@@ -62,6 +63,7 @@ def download_opus_dataset(
         pairs: Maximum number of sentence pairs to extract. None for all.
         release: Version of corpus to download.
         preprocess: OPUS preprocessing type (e.g. 'raw' or 'moses'). Default 'raw'.
+        skip_hashes: MD5 hashes of source texts to skip (eval dedup against training).
 
     Returns:
         Dict with keys: 'source', 'target', 'corpus', 'num_pairs', 'output_file'.
@@ -89,8 +91,11 @@ def download_opus_dataset(
     if release is not None:
         args["release"] = release
 
-    if pairs is not None and preprocess == "raw":
-        args["maximum"] = pairs
+    if pairs is not None:
+        if skip_hashes is not None:
+            args["maximum"] = pairs * 10
+        elif preprocess == "raw":
+            args["maximum"] = pairs
 
     args["download_dir"] = str(download_dir)
 
@@ -114,7 +119,11 @@ def download_opus_dataset(
     output_file = intermediates_dir / f"{corpus}_{source}-{target}.jsonl"
     num_pairs = 0
 
-    t = tqdm(total=pairs, unit="pair", desc=f"Converting {corpus}")
+    t = tqdm(
+        total=None if skip_hashes is not None else pairs,
+        unit="pair",
+        desc=f"Converting {corpus}",
+    )
 
     with (
         src_out.open("r", encoding="utf-8") as src_f,
@@ -126,6 +135,10 @@ def download_opus_dataset(
             tgt = tgt_line.strip()
             if not src or not tgt:
                 continue
+            if skip_hashes is not None:
+                src_hash = hashlib.md5(src.encode("utf-8")).hexdigest()
+                if src_hash in skip_hashes:
+                    continue
             if pairs is not None and num_pairs >= pairs:
                 break
 
@@ -164,6 +177,7 @@ def smart_sample(
     min_chars: int = 5,
     max_chars: int = 500,
     seed: int = 42,
+    sample_mode: Literal["random", "tail"] = "random",
 ) -> dict:
     """Apply quality filters and deterministic sampling to a JSONL dataset.
 
@@ -171,7 +185,7 @@ def smart_sample(
         1. Remove lines with empty src/tgt
         2. Filter by character length (5-500 chars default)
         3. Deduplicate by MD5 hash of src+tgt
-        4. Deterministic random sample if target_size is specified
+        4. Sample ``pairs`` entries using the chosen mode
 
     Args:
         jsonl_path: Path to the input JSONL file.
@@ -180,6 +194,8 @@ def smart_sample(
         min_chars: Minimum character count for source and target text.
         max_chars: Maximum character count for source and target text.
         seed: Random seed for deterministic sampling.
+        sample_mode: ``"random"`` for random shuffle + take (training),
+            ``"tail"`` for last N pairs (eval — avoids training overlap).
 
     Returns:
         Dict with keys: 'raw_count', 'filtered_count', 'kept_count'.
@@ -219,7 +235,10 @@ def smart_sample(
 
     final_pairs = valid_pairs
     if pairs is not None and len(valid_pairs) > pairs:
-        final_pairs = rng.sample(valid_pairs, pairs)
+        if sample_mode == "tail":
+            final_pairs = valid_pairs[-pairs:]
+        else:
+            final_pairs = rng.sample(valid_pairs, pairs)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8") as f_out:
