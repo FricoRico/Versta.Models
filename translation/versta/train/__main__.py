@@ -4,7 +4,7 @@ from shutil import copytree, ignore_patterns
 
 from dotenv import load_dotenv
 
-from .dataset import language_pair, load_dataset
+from .dataset import language_pair, load_dataset, load_eval_dataset
 from .prune import prune
 from .train import finetune, recover
 from .utils import remove_folder
@@ -15,7 +15,7 @@ load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
 def parse_args():
     parser = ArgumentParser(
-        description="Fine-tune LFM2.5-350M for English→Dutch translation."
+        description="Fine-tune LFM2.5-230M for English→Dutch translation."
     )
 
     parser.add_argument(
@@ -54,6 +54,20 @@ def parse_args():
     )
 
     parser.add_argument(
+        "--eval-dataset",
+        type=str,
+        default=None,
+        help="Dataset name for evaluation (defaults to --dataset).",
+    )
+
+    parser.add_argument(
+        "--eval-split",
+        type=str,
+        default="eval",
+        help="Dataset split for evaluation. Default: eval.",
+    )
+
+    parser.add_argument(
         "--batch-size",
         type=int,
         default=64,
@@ -85,7 +99,7 @@ def parse_args():
     parser.add_argument(
         "--save-steps",
         type=int,
-        default=10000,
+        default=5000,
         help="Steps interval for saving and evaluation. Default: 10000.",
     )
 
@@ -96,13 +110,15 @@ def main(
     dataset: str,
     output_dir: Path = Path("output/train"),
     cache_dir: Path = Path("cache"),
-    model: str = "LiquidAI/LFM2.5-350M-Base",
+    model: str = "LiquidAI/LFM2.5-230M-Base",
     max_seq_len: int = 128,
     batch_size: int = 64,
     prune_ratio: float = 0.48,
     enable_pruning: bool = False,
     keep_intermediates: bool = False,
     save_steps: int = 10000,
+    eval_dataset: str | None = None,
+    eval_split: str = "eval",
 ) -> None:
     """
     Main training entry point.
@@ -117,6 +133,8 @@ def main(
         prune_ratio: Structured pruning ratio.
         keep_intermediates: Whether to keep intermediate files.
         save_steps: Steps interval for saving and evaluation.
+        eval_dataset: Dataset name for evaluation (defaults to dataset).
+        eval_split: Dataset split for evaluation.
     """
     output_dir.mkdir(parents=True, exist_ok=True)
     cache_dir.mkdir(parents=True, exist_ok=True)
@@ -141,9 +159,18 @@ def main(
         model_name=model,
     )
 
+    eval_dataset = eval_dataset or dataset
+    eval_data = load_eval_dataset(
+        dataset_name=eval_dataset,
+        model_name=model,
+        max_seq_length=max_seq_len,
+        split=eval_split,
+    )
+
     finetuned = finetune(
         model=model,
         dataset=dataset_data,
+        eval_dataset=eval_data,
         output_dir=finetuned_dir,
         lang_pair=lang_pair,
         batch_size=batch_size,
@@ -162,6 +189,7 @@ def main(
         recover(
             model=pruned,
             dataset=dataset_data,
+            eval_dataset=eval_data,
             output_dir=language_output_dir,
             intermediates_dir=intermediates_dir,
             lang_pair=lang_pair,
@@ -195,4 +223,6 @@ if __name__ == "__main__":
         enable_pruning=args.enable_pruning,
         keep_intermediates=args.keep_intermediates,
         save_steps=args.save_steps,
+        eval_dataset=args.eval_dataset,
+        eval_split=args.eval_split,
     )

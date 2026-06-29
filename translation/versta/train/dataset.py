@@ -88,12 +88,93 @@ def load_dataset(
         Formatted dataset ready for SFT training.
     """
     dataset = loader(dataset_name, split="train")
-    # dataset = balance_tonalities(dataset)
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
 
     dataset = dataset.map(
         lambda examples: _format(examples, tokenizer),
+        batched=True,
+        remove_columns=["source", "target", "instruction", "input", "output"],
+        load_from_cache_file=True,
+    )
+
+    return dataset
+
+
+def load_eval_dataset(
+    dataset_name: str,
+    model_name: str,
+    max_seq_length: int,
+    split: str = "eval",
+) -> object:
+    """
+    Loads a separate evaluation dataset with prompt masking for metric computation.
+
+    Each row is tokenized so that only the assistant response (the translation output)
+    contributes to the loss/metrics. Prompt positions (system + user) are masked with -100
+    in the labels.
+
+    Args:
+        dataset_name: Name of the dataset to load.
+        model_name: Name of the model for tokenizer.
+        max_seq_length: Maximum sequence length for truncation.
+        split: Dataset split to load (default: "eval").
+
+    Returns:
+        Dataset with input_ids, attention_mask, and labels columns.
+    """
+    dataset = loader(dataset_name, split=split)
+
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    if tokenizer.pad_token is None:
+        tokenizer.pad_token = tokenizer.eos_token
+
+    def _format_eval(examples):
+        batch_input_ids = []
+        batch_labels = []
+        batch_attention_mask = []
+
+        for instruction, input_text, output_text in zip(
+            examples["instruction"], examples["input"], examples["output"]
+        ):
+            prompt_text = tokenizer.apply_chat_template(
+                [
+                    {"role": "system", "content": instruction},
+                    {"role": "user", "content": input_text},
+                ],
+                tokenize=False,
+                add_generation_prompt=True,
+            )
+            prompt_ids = tokenizer.encode(
+                prompt_text,
+                truncation=True,
+                max_length=max_seq_length,
+            )
+            prompt_len = len(prompt_ids)
+
+            output_ids = tokenizer.encode(
+                output_text,
+                add_special_tokens=False,
+                truncation=True,
+                max_length=max(1, max_seq_length - prompt_len),
+            )
+
+            input_ids = prompt_ids + output_ids
+            labels = [-100] * prompt_len + output_ids
+            attention_mask = [1] * len(input_ids)
+
+            batch_input_ids.append(input_ids)
+            batch_labels.append(labels)
+            batch_attention_mask.append(attention_mask)
+
+        return {
+            "input_ids": batch_input_ids,
+            "labels": batch_labels,
+            "attention_mask": batch_attention_mask,
+        }
+
+    dataset = dataset.map(
+        _format_eval,
         batched=True,
         remove_columns=["source", "target", "instruction", "input", "output"],
         load_from_cache_file=True,
