@@ -3,6 +3,9 @@ import shutil
 import time
 from pathlib import Path
 
+import numpy as np
+import sacrebleu
+import torch
 from unsloth import FastLanguageModel, UnslothTrainer, UnslothTrainingArguments
 
 from .config import get_dtype
@@ -11,6 +14,7 @@ from .config import get_dtype
 def _train(
     model: str | Path,
     tokenizer: object,
+    eval_dataset: object,
     dataset: object,
     batch_size: int,
     max_seq_length: int,
@@ -27,6 +31,7 @@ def _train(
 
     Args:
         model: Model with LoRA adapters.
+        eval_dataset: Separate dataset for evaluation with prompt masking.
         dataset: Formatted dataset for training.
         tokenizer: Tokenizer for the model.
         batch_size: Per-device batch size.
@@ -40,20 +45,42 @@ def _train(
     Returns:
         Trained model.
     """
-    eval_size = 10000
-    train_dataset = dataset.select(range(len(dataset) - eval_size))
-    eval_dataset = dataset.select(range(len(dataset) - eval_size, len(dataset)))
-
     os.environ["TENSORBOARD_LOGGING_DIR"] = logs_dir.as_posix()
+    os.environ["UNSLOTH_RETURN_LOGITS"] = "1"
+
+    def preprocess_logits_for_metrics(logits, labels):
+        pred_ids = torch.argmax(logits, dim=-1)
+        return pred_ids
+
+    def compute_metrics(eval_preds):
+        predictions = eval_preds.predictions
+        labels = eval_preds.label_ids
+
+        pad_id = tokenizer.pad_token_id or tokenizer.eos_token_id
+        predictions = np.where(labels == -100, pad_id, predictions)
+        labels = np.where(labels == -100, pad_id, labels)
+
+        decoded_preds = tokenizer.batch_decode(predictions, skip_special_tokens=True)
+        decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+
+        bleu = sacrebleu.corpus_bleu(decoded_preds, [decoded_labels])
+        chrf = sacrebleu.corpus_chrf(decoded_preds, [decoded_labels])
+
+        return {
+            "bleu": bleu.score,
+            "chrf": chrf.score,
+        }
 
     trainer = UnslothTrainer(
         model=model,
         tokenizer=tokenizer,
-        train_dataset=train_dataset,
+        train_dataset=dataset,
         eval_dataset=eval_dataset,
         max_seq_length=max_seq_length,
         dataset_num_proc=16,
         dataloader_prefetch_factor=8,
+        compute_metrics=compute_metrics,
+        preprocess_logits_for_metrics=preprocess_logits_for_metrics,
         args=UnslothTrainingArguments(
             per_device_train_batch_size=batch_size,
             gradient_accumulation_steps=max(1, 64 // batch_size),
@@ -62,16 +89,17 @@ def _train(
             learning_rate=learning_rate,
             embedding_learning_rate=embedding_learning_rate,
             optim="adamw_8bit",
-            weight_decay=0.001,
+            weight_decay=0.01,
             lr_scheduler_type="cosine",
             seed=1779708246,
-            packing=True,
+            packing=False,
             output_dir=checkpoints_dir.as_posix(),
             save_strategy="steps",
             save_steps=save_steps,
-            save_total_limit=3,
+            save_total_limit=6,
             load_best_model_at_end=True,
-            metric_for_best_model="eval_loss",
+            metric_for_best_model="eval_chrf",
+            greater_is_better=True,
             eval_strategy="steps",
             eval_steps=save_steps,
             report_to="tensorboard",
@@ -165,6 +193,7 @@ def _save_model(model: object, tokenizer: object, output_dir: object) -> None:
 def finetune(
     model: str | Path,
     dataset: object,
+    eval_dataset: object,
     output_dir: Path,
     lang_pair: str,
     logs_dir: Path,
@@ -173,8 +202,8 @@ def finetune(
     num_train_epochs: float = 1,
     learning_rate: float = 2e-4,
     embedding_learning_rate: float = 5e-5,
-    warmup_steps: int = 500,
-    save_steps: int = 10000,
+    warmup_steps: int = 4000,
+    save_steps: int = 5000,
 ) -> Path:
     """
     Finetunes the model with LoRA adapters and saves outputs.
@@ -182,6 +211,7 @@ def finetune(
     Args:
         model: Name of the model to load.
         dataset: Formatted dataset for training.
+        eval_dataset: Separate dataset for evaluation with prompt masking.
         output_dir: Directory for the final merged model.
         lang_pair: Language pair string (e.g. "en-nl").
         intermediates_dir: Directory for intermediate files.
@@ -220,6 +250,7 @@ def finetune(
     model = _train(
         model=model,
         tokenizer=tokenizer,
+        eval_dataset=eval_dataset,
         dataset=dataset,
         batch_size=batch_size,
         max_seq_length=max_seq_length,
@@ -244,6 +275,7 @@ def finetune(
 def recover(
     model: str | Path,
     dataset: object,
+    eval_dataset: object,
     output_dir: Path,
     intermediates_dir: Path,
     logs_dir: Path,
@@ -263,6 +295,7 @@ def recover(
         model: Path to the pruned model directory.
         tokenizer: Tokenizer for the model.
         dataset: Formatted dataset for training.
+        eval_dataset: Separate dataset for evaluation with prompt masking.
         output_dir: Directory for the final merged model.
         lang_pair: Language pair string (e.g. "en-nl").
         batch_size: Per-device batch size.
@@ -293,6 +326,7 @@ def recover(
     model = _train(
         model=model,
         tokenizer=tokenizer,
+        eval_dataset=eval_dataset,
         dataset=dataset,
         batch_size=batch_size,
         max_seq_length=max_seq_length,
