@@ -29,7 +29,7 @@ class VerstaEngine(InferenceEngine):
         )
 
         FastLanguageModel.for_inference(model)
-        model.generation_config.max_new_tokens = max_seq_length
+        model.generation_config.max_length = max_seq_length
         self.model = model
         self.tokenizer = tokenizer
 
@@ -42,7 +42,10 @@ class VerstaEngine(InferenceEngine):
                 target = item.get("target", "")
                 target_lang_obj = pycountry.languages.get(alpha_2=target)
                 target_name = target_lang_obj.name if target_lang_obj else target
-                instruction = f"Translate to {tone.lower()} {target_name}."
+                if tone == "plain":
+                    instruction = f"Translate to {target_name}."
+                else:
+                    instruction = f"Translate to {tone.lower()} {target_name}."
             input_text = item.get("input", "")
             messages = [
                 {"role": "system", "content": instruction},

@@ -34,12 +34,13 @@ def filter_dataset(
     ]
 
     if not is_flores and tones:
+        specific_tones = [t for t in tones if t != "plain"]
+        has_plain = "plain" in tones
         filtered = [
             item
             for item in filtered
-            if any(
-                tone.lower() in item.get("instruction", "").lower() for tone in tones
-            )
+            if (has_plain and not any(t in item.get("instruction", "").lower() for t in ["formal", "neutral", "casual"]))
+            or any(tone.lower() in item.get("instruction", "").lower() for tone in specific_tones)
         ]
 
     rng = random.Random(seed)

@@ -97,8 +97,13 @@ def evaluate(config: EvaluationConfig) -> EvaluationResult:
     else:
         for item in filtered_data:
             group_key = None
+            instruction = item.get("instruction", "").lower()
             for tone in config["tones"]:
-                if tone in item.get("instruction", "").lower():
+                if tone == "plain":
+                    if not any(t in instruction for t in ["formal", "neutral", "casual"]):
+                        group_key = "plain"
+                        break
+                elif tone in instruction:
                     group_key = tone
                     break
             item["_tone"] = group_key or "neutral"

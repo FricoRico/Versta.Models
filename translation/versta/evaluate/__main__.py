@@ -6,7 +6,7 @@ from pathlib import Path
 from .evaluate import evaluate
 from .types import EvaluationConfig
 
-TONES = ["formal", "neutral", "casual"]
+TONES = ["formal", "neutral", "casual", "plain"]
 
 
 def parse_args():
@@ -66,8 +66,8 @@ def parse_args():
     parser.add_argument(
         "--max-seq-len",
         type=int,
-        default=4096,
-        help="Maximum sequence length. Default: 512",
+        default=256,
+        help="Maximum sequence length. Default: 256",
     )
 
     parser.add_argument(
