@@ -43,13 +43,15 @@ def clean(batch):
 def upload_dataset(
     input_paths: list[Path],
     dataset_name: str = "Neurora/versta-tonality-en-nl",
+    split: str = "train",
 ) -> None:
     """Load processed JSONL dataset, clean it, and push to HuggingFace Hub.
 
     Args:
         input_paths (list[Path]): List of paths to JSONL files.
         dataset_name (str): HuggingFace dataset repository name.
+        split (str): Dataset split to push to. Default "train".
     """
-    dataset = load_dataset("json", data_files=[str(p) for p in input_paths])
+    dataset = load_dataset("json", data_files=[str(p) for p in input_paths])["train"]
     dataset = dataset.map(clean, batched=True, batch_size=1000)
-    dataset.push_to_hub(dataset_name)
+    dataset.push_to_hub(dataset_name, split=split)

@@ -27,9 +27,16 @@ def parse_args():
         help="Path(s) to processed JSONL file(s).",
     )
 
+    parser.add_argument(
+        "--split",
+        type=str,
+        default="train",
+        help="What dataset split to target.",
+    )
+
     return parser.parse_args()
 
 
 if __name__ == "__main__":
     args = parse_args()
-    upload_dataset(input_paths=args.input, dataset_name=args.name)
+    upload_dataset(input_paths=args.input, dataset_name=args.name, split=args.split)

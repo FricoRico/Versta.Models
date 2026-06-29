@@ -46,7 +46,7 @@ def parse_args():
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("output/dataset"),
+        default=Path("output/dataset/train"),
         help="Path to the output folder.",
         action="store",
     )
@@ -217,8 +217,8 @@ def main(
     for config in corpus_config:
         source = config["source"]
         target = config["target"]
-        synthetic = config["synthetic"]
-        natural = config["natural"]
+        synthetic = config["train"]["synthetic"]
+        natural = config["train"]["natural"]
 
         languages = sorted([source, target])
         output_dir = output / f"{languages[0]}-{languages[1]}"
