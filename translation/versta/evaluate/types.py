@@ -35,10 +35,21 @@ class ToneResults(TypedDict):
     chrf: float | None
 
 
+class SentenceScore(TypedDict):
+    source: str
+    reference: str
+    hypothesis: str
+    tone: str | None
+    bleu: float | None
+    chrf: float | None
+    comet: float | None
+
+
 class EvaluationResult(TypedDict):
     config: EvaluationConfig
     overall: ToneResults
     by_tone: dict[str, ToneResults]
+    sentence_scores: list[SentenceScore]
     num_samples: int
     model_name: str
     dataset_type: str

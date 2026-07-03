@@ -6,7 +6,7 @@ import torch
 from .dataset import filter_dataset, is_flores_dataset, load_dataset
 from .inference import get_engine
 from .metrics import BleuMetric, ChrfMetric, CometMetric
-from .types import EvaluationConfig, EvaluationResult, ToneResults
+from .types import EvaluationConfig, EvaluationResult, SentenceScore, ToneResults
 
 
 def _compute_metrics(
@@ -15,12 +15,13 @@ def _compute_metrics(
     use_comet: bool,
     use_bleu: bool,
     use_chrf: bool,
+    sources: List[str] | None = None,
 ) -> ToneResults:
     result: ToneResults = {"comet": None, "bleu": None, "chrf": None}
 
     if use_comet:
         comet_metric = CometMetric()
-        result["comet"] = comet_metric.compute(references, hypotheses)
+        result["comet"] = comet_metric.compute(references, hypotheses, sources=sources)
 
     if use_bleu:
         bleu_metric = BleuMetric()
@@ -112,11 +113,12 @@ def evaluate(config: EvaluationConfig) -> EvaluationResult:
     by_tone: dict[str, ToneResults] = {}
     references_per_tone: dict[str, List[str]] = {}
     hypotheses_per_tone: dict[str, List[str]] = {}
+    sources_per_tone: dict[str, List[str]] = {}
 
     for item in filtered_data:
         tone_key = item["_group_key"]
-        references_per_tone[tone_key] = references_per_tone.get(tone_key, [])
-        references_per_tone[tone_key].append(item.get("output", ""))
+        references_per_tone.setdefault(tone_key, []).append(item.get("output", ""))
+        sources_per_tone.setdefault(tone_key, []).append(item.get("input", ""))
 
     hypotheses = engine.generate(
         data=filtered_data,
@@ -128,11 +130,11 @@ def evaluate(config: EvaluationConfig) -> EvaluationResult:
 
     for idx, item in enumerate(filtered_data):
         tone_key = item["_group_key"]
-        hypotheses_per_tone[tone_key] = hypotheses_per_tone.get(tone_key, [])
-        hypotheses_per_tone[tone_key].append(hypotheses[idx])
+        hypotheses_per_tone.setdefault(tone_key, []).append(hypotheses[idx])
 
     for tone_key, refs in references_per_tone.items():
         hyps = hypotheses_per_tone.get(tone_key, [])
+        srcs = sources_per_tone.get(tone_key, [])
         if refs and hyps:
             by_tone[tone_key] = _compute_metrics(
                 refs,
@@ -140,11 +142,51 @@ def evaluate(config: EvaluationConfig) -> EvaluationResult:
                 config["use_comet"],
                 config["use_bleu"],
                 config["use_chrf"],
+                sources=srcs,
             )
 
     overall = _aggregate_results(
         by_tone, config["use_comet"], config["use_bleu"], config["use_chrf"]
     )
+
+    all_sources = [item.get("input", "") for item in filtered_data]
+    all_references = [item.get("output", "") for item in filtered_data]
+    all_tones = [item.get("_group_key", None) for item in filtered_data]
+
+    sentence_scores_list: list[SentenceScore] = []
+
+    if config["use_bleu"]:
+        bleu_metric = BleuMetric()
+        sentence_bleu = bleu_metric.sentence_scores(all_references, hypotheses)
+    else:
+        sentence_bleu = [None] * len(hypotheses)
+
+    if config["use_chrf"]:
+        chrf_metric = ChrfMetric()
+        sentence_chrf = chrf_metric.sentence_scores(all_references, hypotheses)
+    else:
+        sentence_chrf = [None] * len(hypotheses)
+
+    if config["use_comet"]:
+        comet_metric = CometMetric()
+        sentence_comet = comet_metric.sentence_scores(
+            all_references, hypotheses, sources=all_sources
+        )
+    else:
+        sentence_comet = [None] * len(hypotheses)
+
+    for i in range(len(hypotheses)):
+        sentence_scores_list.append(
+            SentenceScore(
+                source=all_sources[i],
+                reference=all_references[i],
+                hypothesis=hypotheses[i],
+                tone=all_tones[i],
+                bleu=sentence_bleu[i],
+                chrf=sentence_chrf[i],
+                comet=sentence_comet[i],
+            )
+        )
 
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
@@ -153,6 +195,7 @@ def evaluate(config: EvaluationConfig) -> EvaluationResult:
         config=config,
         overall=overall,
         by_tone=by_tone,
+        sentence_scores=sentence_scores_list,
         num_samples=raw_sample_count,
         model_name=config["model"],
         dataset_type=dataset_type,
