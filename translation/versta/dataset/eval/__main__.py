@@ -4,6 +4,8 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
+from translation.versta.dataset.types import CorpusGroupConfig
+
 from ..corpus import filter_corpus_config, load_corpus_config
 
 load_dotenv(Path(__file__).parent.parent.parent.parent / ".env")
@@ -46,7 +48,7 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--train-split",
+        "--split",
         type=str,
         default="train",
         help="Split name of the existing training set. Default: train.",
@@ -90,51 +92,60 @@ def parse_args():
     return parser.parse_args()
 
 
-def main():
-    args = parse_args()
-
-    corpus_configs = load_corpus_config(args.corpus)
-    filtered = filter_corpus_config(corpus_configs, args.source, args.target)
-
-    if not filtered:
-        print(
-            f"No corpus config found for {args.source}-{args.target}. "
-            "Check the corpus JSON file."
-        )
-        return
-
-    config = filtered[0]
-    group = config.get("eval")
-    if group is None:
-        print(
-            f"No 'eval' section found in corpus config for "
-            f"{args.source}-{args.target}. "
-            "Add an 'eval' key to your corpora JSON file."
-        )
-        return
-
-    source = args.source
-    target = args.target
+def main(
+    group: CorpusGroupConfig,
+    source: str,
+    target: str,
+    dataset: str,
+    split: str = "train",
+    seed: int = 1778419142,
+    output: Path = Path("output/dataset/eval"),
+    cache: Path = Path("cache"),
+    batch_size: int = 20,
+    workers: int = 16,
+) -> None:
     lang_pair = f"{source}-{target}"
-    output_dir = args.output / lang_pair
-    download_dir = args.cache / "corpora"
+    output_dir = output / lang_pair
+    download_dir = cache / "corpora"
     intermediates_dir = output_dir / "intermediates"
+
+    download_dir.mkdir(parents=True, exist_ok=True)
+    intermediates_dir.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     generate_eval_dataset(
         source=source,
         target=target,
-        dataset=args.dataset,
+        dataset=dataset,
         synthetic_configs=group.get("synthetic", []),
         natural_configs=group.get("natural", []),
-        train_split=args.train_split,
-        seed=args.seed,
+        split=split,
+        seed=seed,
         download_dir=download_dir,
         intermediates_dir=intermediates_dir,
-        batch_size=args.batch_size,
-        max_workers=args.workers,
+        batch_size=batch_size,
+        max_workers=workers,
         output_path=output_dir / "dataset.jsonl",
     )
 
 
 if __name__ == "__main__":
-    main()
+    args = parse_args()
+
+    corpus_configs = load_corpus_config(args.corpus)
+    corpus_configs = filter_corpus_config(corpus_configs, args.source, args.target)
+
+    group = corpus_configs[0].get("eval")
+
+    main(
+        group=group,
+        source=args.source,
+        target=args.target,
+        dataset=args.dataset,
+        split=args.split,
+        seed=args.seed,
+        output=args.output,
+        cache=args.cache,
+        batch_size=args.batch_size,
+        workers=args.workers,
+    )

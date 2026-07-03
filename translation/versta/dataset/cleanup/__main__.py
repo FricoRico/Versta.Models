@@ -26,7 +26,7 @@ def parse_args():
     )
 
     parser.add_argument(
-        "--base-output",
+        "--output",
         type=Path,
         default=Path("output/dataset"),
         help="Base output directory containing language pair folders.",
@@ -47,15 +47,29 @@ def parse_args():
     return parsed_args
 
 
-if __name__ == "__main__":
-    args = parse_args()
-
-    if args.source and args.target:
-        langs = sorted([args.source, args.target])
-        pair_dir = args.base_output / f"{langs[0]}-{langs[1]}"
+def main(
+    source: str | None,
+    target: str | None,
+    output: Path = Path("output/dataset"),
+    dry_run: bool = False,
+) -> None:
+    if source and target:
+        langs = sorted([source, target])
+        pair_dir = output / f"{langs[0]}-{langs[1]}"
         if not pair_dir.exists():
             print(f"Error: Language pair directory not found: {pair_dir}")
-            exit(1)
-        cleanup_lang_pair(pair_dir, dry_run=args.dry_run)
+            return
+
+        cleanup_lang_pair(pair_dir, dry_run=dry_run)
     else:
-        cleanup_all(args.base_output, dry_run=args.dry_run)
+        cleanup_all(output, dry_run=dry_run)
+
+
+if __name__ == "__main__":
+    args = parse_args()
+    main(
+        source=args.source,
+        target=args.target,
+        output=args.output,
+        dry_run=args.dry_run,
+    )

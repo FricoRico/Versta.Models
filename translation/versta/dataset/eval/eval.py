@@ -132,7 +132,7 @@ def generate_eval_dataset(
     dataset: str,
     synthetic_configs: list[CorpusConfig],
     natural_configs: list[CorpusConfig],
-    train_split: str = "train",
+    split: str = "train",
     seed: int = 1778419142,
     download_dir: Path = Path("cache/corpora"),
     intermediates_dir: Path = Path("output/eval/intermediates"),
@@ -168,12 +168,9 @@ def generate_eval_dataset(
     Returns:
         List of generated ``ProcessedEntry`` dicts.
     """
-    download_dir.mkdir(parents=True, exist_ok=True)
-    intermediates_dir.mkdir(parents=True, exist_ok=True)
-
     source_lang_name = _language_name(source)
     target_lang_name = _language_name(target)
-    training_hashes = _load_training_hashes(dataset, train_split)
+    training_hashes = _load_training_hashes(dataset, split)
 
     all_entries: list[ProcessedEntry] = []
 
@@ -279,7 +276,6 @@ def generate_eval_dataset(
         print("Warning: no eval entries were produced.")
         return []
 
-    output_path.parent.mkdir(parents=True, exist_ok=True)
     with output_path.open("w", encoding="utf-8") as f:
         for entry in all_entries:
             f.write(json.dumps(entry, ensure_ascii=False) + "\n")
