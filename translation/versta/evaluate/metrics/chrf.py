@@ -17,16 +17,6 @@ class ChrfMetric(Metric):
         references: list[str],
         hypotheses: list[str],
     ) -> float:
-        """
-        Compute chrF score using sacrebleu.
-
-        Args:
-            references: List of reference translations.
-            hypotheses: List of generated translations.
-
-        Returns:
-            chrF score as a float.
-        """
         if not references or not hypotheses:
             return 0.0
 
@@ -35,3 +25,15 @@ class ChrfMetric(Metric):
             [references],
         )
         return chrf.score
+
+    def sentence_scores(
+        self,
+        references: list[str],
+        hypotheses: list[str],
+    ) -> list[float]:
+        if not references or not hypotheses:
+            return []
+        return [
+            sacrebleu.sentence_chrf(hyp, [ref]).score
+            for hyp, ref in zip(hypotheses, references)
+        ]

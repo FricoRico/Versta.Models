@@ -30,3 +30,20 @@ class CometMetric(Metric):
             data, batch_size=8, gpus=1 if torch.cuda.is_available() else 0
         )
         return float(results.system_score)
+
+    def sentence_scores(
+        self,
+        references: list[str],
+        hypotheses: list[str],
+        sources: list[str] | None = None,
+    ) -> list[float]:
+        data = [
+            {"src": src or "", "mt": hyp, "ref": ref}
+            for src, hyp, ref in zip(
+                sources or [""] * len(hypotheses), hypotheses, references
+            )
+        ]
+        results = self.model.predict(
+            data, batch_size=8, gpus=1 if torch.cuda.is_available() else 0
+        )
+        return [float(s) for s in results.scores]

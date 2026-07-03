@@ -17,16 +17,6 @@ class BleuMetric(Metric):
         references: list[str],
         hypotheses: list[str],
     ) -> float:
-        """
-        Compute BLEU score using sacrebleu.
-
-        Args:
-            references: List of reference translations.
-            hypotheses: List of generated translations.
-
-        Returns:
-            BLEU score as a float.
-        """
         if not references or not hypotheses:
             return 0.0
 
@@ -35,3 +25,15 @@ class BleuMetric(Metric):
             [references],
         )
         return bleu.score
+
+    def sentence_scores(
+        self,
+        references: list[str],
+        hypotheses: list[str],
+    ) -> list[float]:
+        if not references or not hypotheses:
+            return []
+        return [
+            sacrebleu.sentence_bleu(hyp, [ref]).score
+            for hyp, ref in zip(hypotheses, references)
+        ]

@@ -1,3 +1,4 @@
+import csv
 import json
 import time
 from argparse import ArgumentParser
@@ -136,12 +137,22 @@ def main():
 
     result = evaluate(config)
 
-    results_path = output_dir / f"results_{int(time.time())}.json"
+    timestamp = int(time.time())
+    results_path = output_dir / f"results_{timestamp}.json"
 
     with open(results_path, "w", encoding="utf-8") as f:
         json.dump(result, f, indent=2, ensure_ascii=False, default=str)
 
     print(f"Evaluation completed. Results saved to: {results_path}")
+
+    csv_path = output_dir / f"results_{timestamp}.csv"
+    fieldnames = ["source", "reference", "hypothesis", "tone", "bleu", "chrf", "comet"]
+    with open(csv_path, "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(result["sentence_scores"])
+
+    print(f"Per-sentence scores saved to: {csv_path}")
 
 
 if __name__ == "__main__":
