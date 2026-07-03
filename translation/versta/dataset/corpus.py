@@ -4,7 +4,7 @@ from pathlib import Path
 from .types import CorpusConfig, CorpusGroupConfig, LanguagePairConfig
 
 
-def load_corpus_config(corpus_path: Path | str) -> list[LanguagePairConfig]:
+def load_corpus_config(corpus_path: Path) -> list[LanguagePairConfig]:
     """Load and validate corpus configuration from a JSON file.
 
     Args:
@@ -81,8 +81,7 @@ def filter_corpus_config(
     """
     if source is not None and target is not None:
         filtered = [
-            c for c in configs
-            if c["source"] == source and c["target"] == target
+            c for c in configs if c["source"] == source and c["target"] == target
         ]
         if not filtered:
             available = ", ".join(f"{c['source']}-{c['target']}" for c in configs)

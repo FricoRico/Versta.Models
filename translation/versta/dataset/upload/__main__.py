@@ -13,7 +13,6 @@ def parse_args():
 
     parser.add_argument(
         "--name",
-        "--dataset-name",
         type=str,
         required=True,
         help="HuggingFace Hub dataset name to push to.",
@@ -37,6 +36,10 @@ def parse_args():
     return parser.parse_args()
 
 
+def main(input_paths: list[Path], dataset_name: str, split: str = "train") -> None:
+    upload_dataset(input_paths=input_paths, dataset_name=dataset_name, split=split)
+
+
 if __name__ == "__main__":
     args = parse_args()
-    upload_dataset(input_paths=args.input, dataset_name=args.name, split=args.split)
+    main(input_paths=args.input, dataset_name=args.name, split=args.split)
