@@ -35,7 +35,7 @@ def parse_args():
     parser.add_argument(
         "--max-seq-len",
         type=int,
-        default=128,
+        default=256,
         help="Maximum sequence length. Default: 128.",
     )
 
@@ -103,6 +103,13 @@ def parse_args():
         help="Steps interval for saving and evaluation. Default: 10000.",
     )
 
+    parser.add_argument(
+        "--enable-metrics",
+        action="store_true",
+        default=False,
+        help="Enable custom BLEU/chrF metrics calculator (disables packing). Default: disabled.",
+    )
+
     return parser.parse_args()
 
 
@@ -115,8 +122,9 @@ def main(
     batch_size: int = 64,
     prune_ratio: float = 0.48,
     enable_pruning: bool = False,
+    enable_metrics: bool = False,
     keep_intermediates: bool = False,
-    save_steps: int = 10000,
+    save_steps: int = 5000,
     eval_dataset: str | None = None,
     eval_split: str = "eval",
 ) -> None:
@@ -175,6 +183,7 @@ def main(
         lang_pair=lang_pair,
         batch_size=batch_size,
         max_seq_length=max_seq_len,
+        enable_metrics=enable_metrics,
         save_steps=save_steps,
         logs_dir=logs_dir,
     )
@@ -197,6 +206,7 @@ def main(
             batch_size=batch_size,
             max_seq_length=max_seq_len,
             save_steps=save_steps,
+            enable_metrics=enable_metrics,
         )
     else:
         copytree(
@@ -221,6 +231,7 @@ if __name__ == "__main__":
         batch_size=args.batch_size,
         prune_ratio=args.prune_ratio,
         enable_pruning=args.enable_pruning,
+        enable_metrics=args.enable_metrics,
         keep_intermediates=args.keep_intermediates,
         save_steps=args.save_steps,
         eval_dataset=args.eval_dataset,
