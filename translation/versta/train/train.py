@@ -1,5 +1,4 @@
 import os
-import shutil
 import time
 from pathlib import Path
 
@@ -23,7 +22,7 @@ def _train(
     num_train_epochs: float,
     learning_rate: float,
     embedding_learning_rate: float,
-    warmup_steps: int,
+    enable_metrics: bool,
     save_steps: int,
 ) -> Path:
     """
@@ -46,30 +45,38 @@ def _train(
         Trained model.
     """
     os.environ["TENSORBOARD_LOGGING_DIR"] = logs_dir.as_posix()
-    os.environ["UNSLOTH_RETURN_LOGITS"] = "1"
 
-    def preprocess_logits_for_metrics(logits, labels):
-        pred_ids = torch.argmax(logits, dim=-1)
-        return pred_ids
+    trainer_kwargs = {}
+    if enable_metrics:
+        os.environ["UNSLOTH_RETURN_LOGITS"] = "1"
 
-    def compute_metrics(eval_preds):
-        predictions = eval_preds.predictions
-        labels = eval_preds.label_ids
+        def _preprocess_logits_for_metrics(logits, labels):
+            pred_ids = torch.argmax(logits, dim=-1)
+            return pred_ids
 
-        pad_id = tokenizer.pad_token_id or tokenizer.eos_token_id
-        predictions = np.where(labels == -100, pad_id, predictions)
-        labels = np.where(labels == -100, pad_id, labels)
+        def _compute_metrics(eval_preds):
+            predictions = eval_preds.predictions
+            labels = eval_preds.label_ids
 
-        decoded_preds = tokenizer.batch_decode(predictions, skip_special_tokens=True)
-        decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
+            pad_id = tokenizer.pad_token_id or tokenizer.eos_token_id
+            predictions = np.where(labels == -100, pad_id, predictions)
+            labels = np.where(labels == -100, pad_id, labels)
 
-        bleu = sacrebleu.corpus_bleu(decoded_preds, [decoded_labels])
-        chrf = sacrebleu.corpus_chrf(decoded_preds, [decoded_labels])
+            decoded_preds = tokenizer.batch_decode(
+                predictions, skip_special_tokens=True
+            )
+            decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
 
-        return {
-            "bleu": bleu.score,
-            "chrf": chrf.score,
-        }
+            bleu = sacrebleu.corpus_bleu(decoded_preds, [decoded_labels])
+            chrf = sacrebleu.corpus_chrf(decoded_preds, [decoded_labels])
+
+            return {
+                "bleu": bleu.score,
+                "chrf": chrf.score,
+            }
+
+        trainer_kwargs["compute_metrics"] = _compute_metrics
+        trainer_kwargs["preprocess_logits_for_metrics"] = _preprocess_logits_for_metrics
 
     trainer = UnslothTrainer(
         model=model,
@@ -77,29 +84,28 @@ def _train(
         train_dataset=dataset,
         eval_dataset=eval_dataset,
         max_seq_length=max_seq_length,
-        dataset_num_proc=16,
+        dataset_num_proc=8,
         dataloader_prefetch_factor=8,
-        compute_metrics=compute_metrics,
-        preprocess_logits_for_metrics=preprocess_logits_for_metrics,
+        **trainer_kwargs,
         args=UnslothTrainingArguments(
             per_device_train_batch_size=batch_size,
             gradient_accumulation_steps=max(1, 64 // batch_size),
             num_train_epochs=num_train_epochs,
-            warmup_steps=warmup_steps,
+            warmup_ratio=0.02,
             learning_rate=learning_rate,
             embedding_learning_rate=embedding_learning_rate,
             optim="adamw_8bit",
             weight_decay=0.01,
             lr_scheduler_type="cosine",
             seed=1779708246,
-            packing=False,
+            packing=not enable_metrics,
             output_dir=checkpoints_dir.as_posix(),
             save_strategy="steps",
             save_steps=save_steps,
             save_total_limit=6,
             load_best_model_at_end=True,
-            metric_for_best_model="eval_chrf",
-            greater_is_better=True,
+            metric_for_best_model="eval_chrf" if enable_metrics else "eval_loss",
+            greater_is_better=enable_metrics,
             eval_strategy="steps",
             eval_steps=save_steps,
             report_to="tensorboard",
@@ -139,7 +145,7 @@ def _load(
 
     model = FastLanguageModel.get_peft_model(
         model,
-        r=256,
+        r=64,
         target_modules=[
             "q_proj",
             "k_proj",
@@ -152,7 +158,7 @@ def _load(
             "embed_tokens",
             "lm_head",
         ],
-        lora_alpha=512,
+        lora_alpha=128,
         lora_dropout=0,
         bias="none",
         use_gradient_checkpointing="unsloth",
@@ -202,7 +208,7 @@ def finetune(
     num_train_epochs: float = 1,
     learning_rate: float = 2e-4,
     embedding_learning_rate: float = 5e-5,
-    warmup_steps: int = 4000,
+    enable_metrics: bool = False,
     save_steps: int = 5000,
 ) -> Path:
     """
@@ -259,8 +265,8 @@ def finetune(
         num_train_epochs=num_train_epochs,
         learning_rate=learning_rate,
         embedding_learning_rate=embedding_learning_rate,
+        enable_metrics=enable_metrics,
         save_steps=save_steps,
-        warmup_steps=warmup_steps,
     )
 
     print("Saving finetuned LoRA adapter")
@@ -285,8 +291,8 @@ def recover(
     num_train_epochs: float = 1,
     learning_rate: float = 8e-5,
     embedding_learning_rate: float = 5e-5,
-    warmup_steps: int = 300,
-    save_steps: int = 10000,
+    save_steps: int = 5000,
+    enable_metrics: bool = False,
 ) -> Path:
     """
     Loads a pruned model, applies LoRA adapters, trains, and saves outputs.
@@ -335,8 +341,8 @@ def recover(
         num_train_epochs=num_train_epochs,
         learning_rate=learning_rate,
         embedding_learning_rate=embedding_learning_rate,
+        enable_metrics=enable_metrics,
         save_steps=save_steps,
-        warmup_steps=warmup_steps,
     )
 
     print("Saving recovered LoRA adapter")
