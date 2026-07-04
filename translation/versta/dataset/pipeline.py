@@ -6,6 +6,7 @@ import pycountry
 from .extractor import (
     create_reversed_shards,
     download_opus_dataset,
+    extract_opus_paragraphs,
     merge_and_dedup,
     smart_sample,
 )
@@ -26,17 +27,29 @@ def _download_and_sample(
         corpus = entry["corpus"]
         config_pairs = entry["pairs"]
         release = entry.get("release")
+        preprocess = entry.get("preprocess", "raw")
 
-        extraction = download_opus_dataset(
-            source=source,
-            target=target,
-            download_dir=download_dir,
-            intermediates_dir=intermediates_dir,
-            corpus=corpus,
-            pairs=config_pairs,
-            release=release,
-            preprocess=entry.get("preprocess", "raw"),
-        )
+        if preprocess == "raw-paragraph":
+            extraction = extract_opus_paragraphs(
+                source=source,
+                target=target,
+                download_dir=download_dir,
+                intermediates_dir=intermediates_dir,
+                corpus=corpus,
+                pairs=config_pairs,
+                release=release,
+            )
+        else:
+            extraction = download_opus_dataset(
+                source=source,
+                target=target,
+                download_dir=download_dir,
+                intermediates_dir=intermediates_dir,
+                corpus=corpus,
+                pairs=config_pairs,
+                release=release,
+                preprocess=preprocess,
+            )
 
         raw_jsonl_path = extraction["output_file"]
         filtered_jsonl_path = (
@@ -150,16 +163,27 @@ def run_pipeline(
                 preprocess = "raw"
 
             total_demand = syn_demand + nat_demand
-            extraction = download_opus_dataset(
-                source=source,
-                target=target,
-                download_dir=download_dir,
-                intermediates_dir=coord_dir,
-                corpus=corpus,
-                pairs=total_demand,
-                release=release,
-                preprocess=preprocess,
-            )
+            if preprocess == "raw-paragraph":
+                extraction = extract_opus_paragraphs(
+                    source=source,
+                    target=target,
+                    download_dir=download_dir,
+                    intermediates_dir=coord_dir,
+                    corpus=corpus,
+                    pairs=total_demand,
+                    release=release,
+                )
+            else:
+                extraction = download_opus_dataset(
+                    source=source,
+                    target=target,
+                    download_dir=download_dir,
+                    intermediates_dir=coord_dir,
+                    corpus=corpus,
+                    pairs=total_demand,
+                    release=release,
+                    preprocess=preprocess,
+                )
 
             sampled_path = coord_dir / f"{corpus}_{source}-{target}.sampled.jsonl"
             smart_sample(

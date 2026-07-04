@@ -26,7 +26,6 @@ def _load_training_hashes(
         return set()
 
     hashes: set[str] = set()
-    log_interval = max(1, max_rows // 10)
     for i, row in enumerate(dataset):
         src = row.get("input", "")
         if src:
