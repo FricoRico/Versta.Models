@@ -4,12 +4,11 @@ from pathlib import Path
 
 from dotenv import load_dotenv
 
-from translation.versta.dataset.types import CorpusGroupConfig
-
 from ..corpus import filter_corpus_config, load_corpus_config
+from ..types import CorpusGroupConfig
+from .eval import generate_eval_dataset
 
 load_dotenv(Path(__file__).parent.parent.parent.parent / ".env")
-from .eval import generate_eval_dataset
 
 
 def parse_args():

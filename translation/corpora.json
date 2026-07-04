@@ -12,7 +12,7 @@
         {
           "corpus": "TED2020",
           "pairs": 200000,
-          "preprocess": "moses"
+          "preprocess": "raw-paragraph"
         },
         {
           "corpus": "Europarl",
@@ -48,7 +48,7 @@
         {
           "corpus": "News-Commentary",
           "pairs": 50000,
-          "preprocess": "moses"
+          "preprocess": "raw-paragraph"
         }
       ],
       "natural": [
@@ -56,7 +56,7 @@
           "corpus": "Europarl",
           "pairs": 1900000,
           "register": "formal",
-          "preprocess": "moses"
+          "preprocess": "raw-paragraph"
         },
         {
           "corpus": "WikiMatrix",
@@ -66,7 +66,7 @@
         },
         {
           "corpus": "TildeMODEL",
-          "pairs": 1500000,
+          "pairs": 800000,
           "register": "neutral",
           "preprocess": "moses"
         },
@@ -78,7 +78,7 @@
         },
         {
           "corpus": "CCAligned",
-          "pairs": 1500000,
+          "pairs": 1000000,
           "register": "plain",
           "preprocess": "moses"
         },
@@ -86,7 +86,42 @@
           "corpus": "OpenSubtitles",
           "pairs": 1000000,
           "register": "plain",
-          "release": "v2024",
+          "preprocess": "moses"
+        },
+        {
+          "corpus": "Wikipedia",
+          "pairs": 700000,
+          "register": "neutral",
+          "preprocess": "moses"
+        },
+        {
+          "corpus": "GNOME",
+          "pairs": 230000,
+          "register": "plain",
+          "preprocess": "moses"
+        },
+        {
+          "corpus": "KDE4",
+          "pairs": 170000,
+          "register": "plain",
+          "preprocess": "moses"
+        },
+        {
+          "corpus": "EMEA",
+          "pairs": 400000,
+          "register": "formal",
+          "preprocess": "moses"
+        },
+        {
+          "corpus": "tldr-pages",
+          "pairs": 13000,
+          "register": "plain",
+          "preprocess": "moses"
+        },
+        {
+          "corpus": "QED",
+          "pairs": 300000,
+          "register": "neutral",
           "preprocess": "moses"
         }
       ]
@@ -96,27 +131,37 @@
         {
           "corpus": "TED2020",
           "pairs": 1000,
+          "preprocess": "raw-paragraph"
+        },
+        {
+          "corpus": "Tatoeba",
+          "pairs": 1000,
           "preprocess": "moses"
         },
         {
           "corpus": "News-Commentary",
           "pairs": 1000,
-          "preprocess": "moses"
+          "preprocess": "raw-paragraph"
         }
       ],
       "natural": [
         {
-          "corpus": "Tatoeba",
-          "pairs": 500,
+          "corpus": "Wikipedia",
+          "pairs": 3000,
           "preprocess": "moses"
         },
         {
           "corpus": "NLLB",
-          "pairs": 500,
+          "pairs": 3000,
           "preprocess": "moses"
         },
         {
           "corpus": "Europarl",
+          "pairs": 3000,
+          "preprocess": "moses"
+        },
+        {
+          "corpus": "QED",
           "pairs": 1000,
           "preprocess": "moses"
         }
