@@ -98,6 +98,7 @@ def _clean_output_shards(
         "synthetic_removed": 0,
         "kept": 0,
     }
+    seen_hashes: set[int] = set()
 
     for shard_file in sorted(output_dir.glob("dataset_*.jsonl")):
         stats["files"] += 1
@@ -124,14 +125,24 @@ def _clean_output_shards(
                 continue
 
             if method == "natural":
+                dedup_key = _md5(f"{inp}:{out}:{entry.get('instruction', '')}")
+                if dedup_key in seen_hashes:
+                    natural_removed += 1
+                    continue
                 h = _md5(f"{inp}:{out}")
                 if h in pair_hashes:
+                    seen_hashes.add(dedup_key)
                     kept.append(line)
                 else:
                     natural_removed += 1
             elif method == "synthetic":
+                dedup_key = _md5(f"{inp}:{out}:{entry.get('instruction', '')}")
+                if dedup_key in seen_hashes:
+                    synthetic_removed += 1
+                    continue
                 h = _md5(inp)
                 if h in input_hashes:
+                    seen_hashes.add(dedup_key)
                     kept.append(line)
                 else:
                     synthetic_removed += 1
