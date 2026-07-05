@@ -84,8 +84,8 @@ def _train(
         train_dataset=dataset,
         eval_dataset=eval_dataset,
         max_seq_length=max_seq_length,
-        dataset_num_proc=8,
-        dataloader_prefetch_factor=8,
+        dataset_num_proc=16,
+        dataloader_prefetch_factor=16,
         **trainer_kwargs,
         args=UnslothTrainingArguments(
             per_device_train_batch_size=batch_size,

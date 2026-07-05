@@ -35,8 +35,8 @@ def parse_args():
     parser.add_argument(
         "--max-seq-len",
         type=int,
-        default=256,
-        help="Maximum sequence length. Default: 128.",
+        default=384,
+        help="Maximum sequence length. Default: 384.",
     )
 
     parser.add_argument(
@@ -213,6 +213,7 @@ def main(
             src=finetuned_dir,
             dst=output_dir,
             ignore=ignore_patterns("checkpoints", "adapter"),
+            dirs_exist_ok=True,
         )
 
     if not keep_intermediates:
