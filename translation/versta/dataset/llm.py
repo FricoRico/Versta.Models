@@ -1,6 +1,7 @@
 import json
 import time
 
+import pycountry
 import requests
 
 from .config import (
@@ -17,6 +18,7 @@ def call_llm(
     prompts: list[str],
     retries: int | None = None,
     timeout: int | None = None,
+    response_format: dict | None = None,
 ) -> list[str | None]:
     """Make a batched LLM inference call via HTTP POST with retries on timeout.
 
@@ -26,6 +28,9 @@ def call_llm(
         prompts: List of prompt strings to send in a single batch.
         retries: Number of retry attempts on timeout. Defaults to config value.
         timeout: Request timeout in seconds. Defaults to config value.
+        response_format: Optional response format dict (e.g. {"type": "json_object"}).
+            Defaults to {"type": "json_object"} for backward compatibility.
+            Pass None or {"type": "text"} for plain text responses.
 
     Returns:
         List of response content strings (one per prompt), or None for failed items.
@@ -50,11 +55,12 @@ def call_llm(
         for prompt in prompts
     ]
 
-    payload = {
+    payload: dict = {
         "messages": messages,
-        "response_format": {"type": "json_object"},
         "max_completion_tokens": 2048,
     }
+    if response_format is not None:
+        payload["response_format"] = response_format
 
     for attempt in range(retries):
         try:
@@ -109,7 +115,7 @@ def generate_tonal_translations(
         )
         prompts.append(prompt)
 
-    contents = call_llm(prompts)
+    contents = call_llm(prompts, response_format={"type": "json_object"})
 
     results: list[TonalTranslation | None] = []
     for content in contents:
@@ -130,3 +136,47 @@ def generate_tonal_translations(
             results.append(None)
 
     return results
+
+
+def _lang_name(code: str) -> str:
+    try:
+        lang = pycountry.languages.get(alpha_2=code)
+        if lang is not None:
+            return lang.name
+    except KeyError:
+        pass
+    return code
+
+
+def translate_texts(
+    texts: list[str],
+    source_lang: str,
+    target_lang: str,
+) -> list[str | None]:
+    """Translate multiple texts using batched LLM inference.
+
+    Sends a plain-text translation prompt (no JSON response format) to the LLM.
+
+    Args:
+        texts: List of source-language text strings.
+        source_lang: ISO 639-1 source language code.
+        target_lang: ISO 639-1 target language code.
+
+    Returns:
+        List of translated strings or None for failed items.
+    """
+    if not texts:
+        return []
+
+    source_name = _lang_name(source_lang)
+    target_name = _lang_name(target_lang)
+
+    prompts = [
+        (
+            f"Translate the following {source_name} text to {target_name}. "
+            "Only respond with the translation, no commentary, no explanations.\n\n"
+            f"{text}"
+        )
+        for text in texts
+    ]
+    return call_llm(prompts, response_format=None)

@@ -36,3 +36,7 @@ def sample_seed() -> int:
 
 def sample_buffer() -> float:
     return float(os.environ.get("SAMPLE_BUFFER", "3.0"))
+
+
+def wikipedia_access_token() -> str | None:
+    return os.environ.get("WIKIPEDIA_ACCESS_TOKEN") or None
