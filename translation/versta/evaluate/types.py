@@ -9,6 +9,7 @@ class GenerationConfig(TypedDict):
     top_k: int
     do_sample: bool
     repetition_penalty: float
+    no_repeat_ngram_size: int
 
 
 class EvaluationConfig(TypedDict):

@@ -127,11 +127,12 @@ def main():
         "use_chrf": not args.no_chrf,
         "gen_config": {
             "temperature": 0.1,
-            "top_p": 1.0,
+            "top_p": 0.95,
             "min_p": 0.1,
             "top_k": 50,
             "do_sample": True,
             "repetition_penalty": 1.05,
+            "no_repeat_ngram_size": 8,
         },
     }
 
