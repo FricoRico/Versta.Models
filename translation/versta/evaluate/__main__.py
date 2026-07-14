@@ -141,8 +141,9 @@ def main():
     timestamp = int(time.time())
     results_path = output_dir / f"results_{timestamp}.json"
 
+    json_result = {k: v for k, v in result.items() if k != "sentence_scores"}
     with open(results_path, "w", encoding="utf-8") as f:
-        json.dump(result, f, indent=2, ensure_ascii=False, default=str)
+        json.dump(json_result, f, indent=2, ensure_ascii=False, default=str)
 
     print(f"Evaluation completed. Results saved to: {results_path}")
 

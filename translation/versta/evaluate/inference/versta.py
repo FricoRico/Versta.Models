@@ -1,10 +1,6 @@
-import os
-
-os.environ["UNSLOTH_COMPILE_LOCATION"] = "cache/unsloth/"
-
 import pycountry
 import torch
-from unsloth import FastLanguageModel
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from .base import InferenceEngine
 
@@ -15,21 +11,27 @@ class VerstaEngine(InferenceEngine):
     def __init__(self) -> None:
         self.model = None
         self.tokenizer = None
+        self._device = None
 
     def load(
         self, model_path: str, max_seq_length: int, device: str | None = None
     ) -> None:
+        self._device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float16
 
-        model, tokenizer = FastLanguageModel.from_pretrained(
-            model_name=model_path,
-            max_seq_length=max_seq_length,
-            dtype=dtype,
-            load_in_4bit=False,
-        )
+        tokenizer = AutoTokenizer.from_pretrained(model_path)
+        if tokenizer.pad_token is None:
+            tokenizer.pad_token = tokenizer.eos_token
 
-        FastLanguageModel.for_inference(model)
+        model = AutoModelForCausalLM.from_pretrained(
+            model_path,
+            torch_dtype=dtype,
+        ).to(self._device)
+
+        model.eval()
         model.generation_config.max_length = max_seq_length
+        if model.generation_config.pad_token_id is None:
+            model.generation_config.pad_token_id = model.generation_config.eos_token_id
         self.model = model
         self.tokenizer = tokenizer
 
