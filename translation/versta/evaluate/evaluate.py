@@ -71,6 +71,7 @@ def evaluate(config: EvaluationConfig) -> EvaluationResult:
     raw_data = load_dataset(config["dataset"], config["source"], config["target"])
 
     is_flores = dataset_type == "flores_plus"
+    supports_tones = config.get("model_type", "") == "versta"
 
     if is_flores:
         filtered_data = raw_data
@@ -79,14 +80,18 @@ def evaluate(config: EvaluationConfig) -> EvaluationResult:
             raw_data,
             config["source"],
             config["target"],
-            config["tones"],
+            config["tones"] if supports_tones else ["plain"],
             config["percentage"],
             is_flores=is_flores,
         )
 
     raw_sample_count = len(filtered_data)
 
-    if is_flores:
+    if not supports_tones:
+        for item in filtered_data:
+            item["_tone"] = "plain"
+            item["_group_key"] = "plain"
+    elif is_flores:
         expanded = []
         for item in filtered_data:
             for tone in config["tones"]:

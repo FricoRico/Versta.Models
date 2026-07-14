@@ -7,6 +7,3 @@ from dotenv import load_dotenv
 load_dotenv(Path(__file__).parent.parent.parent / ".env")
 
 os.environ["UNSLOTH_COMPILE_LOCATION"] = "cache/unsloth/"
-
-# Import unsloth first to fix import order issues with transformers
-import unsloth
