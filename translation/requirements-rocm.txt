@@ -1,5 +1,0 @@
--i https://download.pytorch.org/whl/rocm7.1
-torch>=2.10,<2.11.0
-torchvision>=0.25,<0.26
-torchaudio>=2.10,<2.11.0
-xformers>=0.0.35,<0.0.36
