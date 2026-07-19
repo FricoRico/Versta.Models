@@ -1,978 +1,948 @@
 [
-  [
-    {
-      "base_model": "Neurora/opus-tatoeba-ara-eng",
-      "source_language": "ar",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 44.9,
-      "version": "v1.1.0",
-      "size": 188336688,
-      "bundle": "https://models.versta.app/translation/v1.1.0/ar-en-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/ar-en-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Neurora/opus-tatoeba-eng-ara",
-      "source_language": "en",
-      "target_language": "ar",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 14.0,
-      "version": "v1.1.0",
-      "size": 188336688,
-      "bundle": "https://models.versta.app/translation/v1.1.0/ar-en-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/ar-en-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Neurora/opus-tatoeba-hye-eng",
-      "source_language": "hy",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 34.6,
-      "version": "v1.1.0",
-      "size": 90378082,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-hy-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-hy-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Neurora/opus-tatoeba-eng-hye",
-      "source_language": "en",
-      "target_language": "hy",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 16.6,
-      "version": "v1.1.0",
-      "size": 90378082,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-hy-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-hy-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-bg-en",
-      "source_language": "bg",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 59.4,
-      "version": "v1.1.0",
-      "size": 191279973,
-      "bundle": "https://models.versta.app/translation/v1.1.0/bg-en-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/bg-en-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-bg",
-      "source_language": "en",
-      "target_language": "bg",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 50.6,
-      "version": "v1.1.0",
-      "size": 191279973,
-      "bundle": "https://models.versta.app/translation/v1.1.0/bg-en-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/bg-en-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-ca-en",
-      "source_language": "ca",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 51.4,
-      "version": "v1.1.0",
-      "size": 206974698,
-      "bundle": "https://models.versta.app/translation/v1.1.0/ca-en-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/ca-en-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-ca",
-      "source_language": "en",
-      "target_language": "ca",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 47.4,
-      "version": "v1.1.0",
-      "size": 206974698,
-      "bundle": "https://models.versta.app/translation/v1.1.0/ca-en-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/ca-en-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-zh-en",
-      "source_language": "zh",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 36.1,
-      "version": "v1.1.0",
-      "size": 194580885,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-zh-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-zh-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-zh",
-      "source_language": "en",
-      "target_language": "zh",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 31.4,
-      "version": "v1.1.0",
-      "size": 194580885,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-zh-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-zh-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Neurora/hplt-hr-en-v2.0",
-      "source_language": "hr",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 52.2,
-      "version": "v1.2.0",
-      "size": 195398044,
-      "bundle": "https://models.versta.app/translation/v1.2.0/en-hr-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.2.0/en-hr-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Neurora/hplt-en-hr-v2.0",
-      "source_language": "en",
-      "target_language": "hr",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 42.7,
-      "version": "v1.2.0",
-      "size": 195398044,
-      "bundle": "https://models.versta.app/translation/v1.2.0/en-hr-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.2.0/en-hr-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-cs-en",
-      "source_language": "cs",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 58.0,
-      "version": "v1.1.0",
-      "size": 185182673,
-      "bundle": "https://models.versta.app/translation/v1.1.0/cs-en-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/cs-en-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-cs",
-      "source_language": "en",
-      "target_language": "cs",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 46.1,
-      "version": "v1.1.0",
-      "size": 185182673,
-      "bundle": "https://models.versta.app/translation/v1.1.0/cs-en-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/cs-en-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-da-en",
-      "source_language": "da",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 63.6,
-      "version": "v1.1.0",
-      "size": 178615256,
-      "bundle": "https://models.versta.app/translation/v1.1.0/da-en-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/da-en-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-da",
-      "source_language": "en",
-      "target_language": "da",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 60.4,
-      "version": "v1.1.0",
-      "size": 178615256,
-      "bundle": "https://models.versta.app/translation/v1.1.0/da-en-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/da-en-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-nl-en",
-      "source_language": "nl",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 60.9,
-      "version": "v1.1.0",
-      "size": 176478973,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-nl-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-nl-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Neurora/opus-tatoeba-eng-nld",
-      "source_language": "en",
-      "target_language": "nl",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 57.2,
-      "version": "v1.1.0",
-      "size": 176478973,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-nl-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-nl-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-et-en",
-      "source_language": "et",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 59.9,
-      "version": "v1.1.0",
-      "size": 187508176,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-et-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-et-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-et",
-      "source_language": "en",
-      "target_language": "et",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 54.0,
-      "version": "v1.1.0",
-      "size": 187508176,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-et-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-et-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Neurora/opus-tatoeba-fas-eng",
-      "source_language": "fa",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 38.2,
-      "version": "v1.1.0",
-      "size": 179985731,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-fa-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-fa-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Neurora/opus-tatoeba-eng-fas",
-      "source_language": "en",
-      "target_language": "fa",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 11.8,
-      "version": "v1.1.0",
-      "size": 179985731,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-fa-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-fa-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Neurora/opus-tatoeba-fin-eng",
-      "source_language": "fi",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 53.4,
-      "version": "v1.1.0",
-      "size": 181355540,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-fi-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-fi-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-fi",
-      "source_language": "en",
-      "target_language": "fi",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 43.2,
-      "version": "v1.1.0",
-      "size": 181355540,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-fi-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-fi-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-fr-en",
-      "source_language": "fr",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 57.5,
-      "version": "v1.1.0",
-      "size": 165516060,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-fr-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-fr-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-fr",
-      "source_language": "en",
-      "target_language": "fr",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 50.5,
-      "version": "v1.1.0",
-      "size": 165516060,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-fr-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-fr-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-de-en",
-      "source_language": "de",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 55.4,
-      "version": "v1.1.0",
-      "size": 173304756,
-      "bundle": "https://models.versta.app/translation/v1.1.0/de-en-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/de-en-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-de",
-      "source_language": "en",
-      "target_language": "de",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 47.3,
-      "version": "v1.1.0",
-      "size": 173304756,
-      "bundle": "https://models.versta.app/translation/v1.1.0/de-en-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/de-en-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Neurora/opus-tatoeba-ell-eng",
-      "source_language": "el",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 69.2,
-      "version": "v1.1.0",
-      "size": 187418595,
-      "bundle": "https://models.versta.app/translation/v1.1.0/el-en-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/el-en-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-el",
-      "source_language": "en",
-      "target_language": "el",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 56.4,
-      "version": "v1.1.0",
-      "size": 187418595,
-      "bundle": "https://models.versta.app/translation/v1.1.0/el-en-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/el-en-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Neurora/opus-tatoeba-heb-eng",
-      "source_language": "he",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 52.0,
-      "version": "v1.1.0",
-      "size": 195772279,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-he-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-he-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-he",
-      "source_language": "en",
-      "target_language": "he",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 40.1,
-      "version": "v1.1.0",
-      "size": 195772279,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-he-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-he-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-hu-en",
-      "source_language": "hu",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 52.9,
-      "version": "v1.1.0",
-      "size": 191354183,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-hu-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-hu-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-hu",
-      "source_language": "en",
-      "target_language": "hu",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 40.1,
-      "version": "v1.1.0",
-      "size": 191354183,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-hu-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-hu-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-id-en",
-      "source_language": "id",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 47.7,
-      "version": "v1.1.0",
-      "size": 182830091,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-id-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-id-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-id",
-      "source_language": "en",
-      "target_language": "id",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 38.3,
-      "version": "v1.1.0",
-      "size": 182830091,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-id-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-id-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-it-en",
-      "source_language": "it",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 70.9,
-      "version": "v1.1.0",
-      "size": 180548032,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-it-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-it-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-it",
-      "source_language": "en",
-      "target_language": "it",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 48.2,
-      "version": "v1.1.0",
-      "size": 180548032,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-it-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-it-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Neurora/hplt-ja-en-v2.0",
-      "source_language": "ja",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 61.8,
-      "version": "v1.2.0",
-      "size": 202019569,
-      "bundle": "https://models.versta.app/translation/v1.2.0/en-ja-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.2.0/en-ja-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Neurora/hplt-en-ja-v2.0",
-      "source_language": "en",
-      "target_language": "ja",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 48.1,
-      "version": "v1.2.0",
-      "size": 202019569,
-      "bundle": "https://models.versta.app/translation/v1.2.0/en-ja-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.2.0/en-ja-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Neurora/opus-hplt-ko-en-v2.0",
-      "source_language": "ko",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 65.7,
-      "version": "v1.2.0",
-      "size": 198986222,
-      "bundle": "https://models.versta.app/translation/v1.2.0/en-ko-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.2.0/en-ko-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Neurora/opus-hplt-en-ko-v2.0",
-      "source_language": "en",
-      "target_language": "ko",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 41.3,
-      "version": "v1.2.0",
-      "size": 198986222,
-      "bundle": "https://models.versta.app/translation/v1.2.0/en-ko-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.2.0/en-ko-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-lv-en",
-      "source_language": "lv",
-      "target_language": "en",
-      "bidirectional": false,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 53.3,
-      "version": "v1.1.0",
-      "size": 89354712,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-lv-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-lv-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-pl-en",
-      "source_language": "pl",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 54.9,
-      "version": "v1.1.0",
-      "size": 182200475,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-pl-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-pl-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Neurora/opus-tatoeba-eng-pol",
-      "source_language": "en",
-      "target_language": "pl",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 47.5,
-      "version": "v1.1.0",
-      "size": 182200475,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-pl-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-pl-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Neurora/opus-tatoeba-por-eng",
-      "source_language": "pt",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 62.7,
-      "version": "v1.1.0",
-      "size": 167881027,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-pt-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-pt-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Neurora/opus-tatoeba-eng-por",
-      "source_language": "en",
-      "target_language": "pt",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 43.9,
-      "version": "v1.1.0",
-      "size": 167881027,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-pt-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-pt-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Neurora/opus-tatoeba-ron-eng",
-      "source_language": "ro",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 59.3,
-      "version": "v1.1.0",
-      "size": 173972801,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-ro-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-ro-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-ro",
-      "source_language": "en",
-      "target_language": "ro",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 45.3,
-      "version": "v1.1.0",
-      "size": 173972801,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-ro-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-ro-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-ru-en",
-      "source_language": "ru",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 61.1,
-      "version": "v1.1.0",
-      "size": 183632525,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-ru-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-ru-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-ru",
-      "source_language": "en",
-      "target_language": "ru",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 48.4,
-      "version": "v1.1.0",
-      "size": 183632525,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-ru-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-ru-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-sk-en",
-      "source_language": "sk",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 42.2,
-      "version": "v1.1.0",
-      "size": 189357382,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-sk-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-sk-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-sk",
-      "source_language": "en",
-      "target_language": "sk",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 36.8,
-      "version": "v1.1.0",
-      "size": 189357382,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-sk-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-sk-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Neurora/opus-tatoeba-slv-eng",
-      "source_language": "sl",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 24.6,
-      "version": "v1.1.0",
-      "size": 180237283,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-sl-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-sl-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Neurora/opus-tatoeba-eng-slv-bt",
-      "source_language": "en",
-      "target_language": "sl",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 19.8,
-      "version": "v1.1.0",
-      "size": 180237283,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-sl-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-sl-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-es-en",
-      "source_language": "es",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 59.6,
-      "version": "v1.1.0",
-      "size": 184238367,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-es-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-es-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-es",
-      "source_language": "en",
-      "target_language": "es",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 54.9,
-      "version": "v1.1.0",
-      "size": 184238367,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-es-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-es-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-sv-en",
-      "source_language": "sv",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 64.5,
-      "version": "v1.1.0",
-      "size": 181212699,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-sv-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-sv-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-sv",
-      "source_language": "en",
-      "target_language": "sv",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 60.1,
-      "version": "v1.1.0",
-      "size": 181212699,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-sv-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-sv-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-tr-en",
-      "source_language": "tr",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 63.5,
-      "version": "v1.1.0",
-      "size": 188696273,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-tr-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-tr-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Neurora/opus-tatoeba-eng-tur-bt",
-      "source_language": "en",
-      "target_language": "tr",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 41.5,
-      "version": "v1.1.0",
-      "size": 188696273,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-tr-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-tr-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-uk-en",
-      "source_language": "uk",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 64.1,
-      "version": "v1.1.0",
-      "size": 177126486,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-uk-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-uk-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-uk",
-      "source_language": "en",
-      "target_language": "uk",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 50.2,
-      "version": "v1.1.0",
-      "size": 177126486,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-uk-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-uk-bundle.tar.sha256"
-    }
-  ],
-  [
-    {
-      "base_model": "Helsinki-NLP/opus-mt-vi-en",
-      "source_language": "vi",
-      "target_language": "en",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 42.8,
-      "version": "v1.1.0",
-      "size": 168523976,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-vi-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-vi-bundle.tar.sha256"
-    },
-    {
-      "base_model": "Helsinki-NLP/opus-mt-en-vi",
-      "source_language": "en",
-      "target_language": "vi",
-      "bidirectional": true,
-      "architectures": [
-        "MarianMTModel"
-      ],
-      "score": 37.2,
-      "version": "v1.1.0",
-      "size": 168523976,
-      "bundle": "https://models.versta.app/translation/v1.1.0/en-vi-bundle.tar.gz",
-      "checksum": "https://models.versta.app/translation/v1.1.0/en-vi-bundle.tar.sha256"
-    }
-  ]
+    [
+        {
+            "base_model": "Firefox/ar-en",
+            "source_language": "ar",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 86.0,
+            "version": "v2.0.0",
+            "size": 50713079,
+            "bundle": "https://models.versta.app/translation/ar-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/ar-en-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-ar",
+            "source_language": "en",
+            "target_language": "ar",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 86.0,
+            "version": "v2.0.0",
+            "size": 50713079,
+            "bundle": "https://models.versta.app/translation/ar-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/ar-en-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/bg-en",
+            "source_language": "bg",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 87.2,
+            "version": "v2.0.0",
+            "size": 50339953,
+            "bundle": "https://models.versta.app/translation/bg-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/bg-en-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-bg",
+            "source_language": "en",
+            "target_language": "bg",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 89.8,
+            "version": "v2.0.0",
+            "size": 50339953,
+            "bundle": "https://models.versta.app/translation/bg-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/bg-en-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/ca-en",
+            "source_language": "ca",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 87.8,
+            "version": "v2.0.0",
+            "size": 40887052,
+            "bundle": "https://models.versta.app/translation/ca-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/ca-en-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-ca",
+            "source_language": "en",
+            "target_language": "ca",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 85.8,
+            "version": "v2.0.0",
+            "size": 40887052,
+            "bundle": "https://models.versta.app/translation/ca-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/ca-en-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/zh-Hans-en",
+            "source_language": "zh-Hans",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 84.8,
+            "version": "v2.0.0",
+            "size": 61178156,
+            "bundle": "https://models.versta.app/translation/en-zh-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-zh-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-zh-Hans",
+            "source_language": "en",
+            "target_language": "zh-Hans",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 86.3,
+            "version": "v2.0.0",
+            "size": 61178156,
+            "bundle": "https://models.versta.app/translation/en-zh-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-zh-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/hr-en",
+            "source_language": "hr",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 85.6,
+            "version": "v2.0.0",
+            "size": 29886488,
+            "bundle": "https://models.versta.app/translation/en-hr-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-hr-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-hr",
+            "source_language": "en",
+            "target_language": "hr",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 87.4,
+            "version": "v2.0.0",
+            "size": 29886488,
+            "bundle": "https://models.versta.app/translation/en-hr-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-hr-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/cs-en",
+            "source_language": "cs",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 86.7,
+            "version": "v2.0.0",
+            "size": 29672786,
+            "bundle": "https://models.versta.app/translation/cs-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/cs-en-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-cs",
+            "source_language": "en",
+            "target_language": "cs",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 87.5,
+            "version": "v2.0.0",
+            "size": 29672786,
+            "bundle": "https://models.versta.app/translation/cs-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/cs-en-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/da-en",
+            "source_language": "da",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 89.1,
+            "version": "v2.0.0",
+            "size": 29719942,
+            "bundle": "https://models.versta.app/translation/da-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/da-en-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-da",
+            "source_language": "en",
+            "target_language": "da",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 89.1,
+            "version": "v2.0.0",
+            "size": 29719942,
+            "bundle": "https://models.versta.app/translation/da-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/da-en-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/nl-en",
+            "source_language": "nl",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 86.6,
+            "version": "v2.0.0",
+            "size": 51507268,
+            "bundle": "https://models.versta.app/translation/en-nl-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-nl-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-nl",
+            "source_language": "en",
+            "target_language": "nl",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 86.5,
+            "version": "v2.0.0",
+            "size": 51507268,
+            "bundle": "https://models.versta.app/translation/en-nl-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-nl-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/et-en",
+            "source_language": "et",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 88.1,
+            "version": "v2.0.0",
+            "size": 50639328,
+            "bundle": "https://models.versta.app/translation/en-et-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-et-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-et",
+            "source_language": "en",
+            "target_language": "et",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 90.4,
+            "version": "v2.0.0",
+            "size": 50639328,
+            "bundle": "https://models.versta.app/translation/en-et-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-et-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/fa-en",
+            "source_language": "fa",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 85.7,
+            "version": "v2.0.0",
+            "size": 30531725,
+            "bundle": "https://models.versta.app/translation/en-fa-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-fa-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-fa",
+            "source_language": "en",
+            "target_language": "fa",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 84.6,
+            "version": "v2.0.0",
+            "size": 30531725,
+            "bundle": "https://models.versta.app/translation/en-fa-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-fa-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/fi-en",
+            "source_language": "fi",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 88.6,
+            "version": "v2.0.0",
+            "size": 40178795,
+            "bundle": "https://models.versta.app/translation/en-fi-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-fi-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-fi",
+            "source_language": "en",
+            "target_language": "fi",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 88.2,
+            "version": "v2.0.0",
+            "size": 40178795,
+            "bundle": "https://models.versta.app/translation/en-fi-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-fi-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/fr-en",
+            "source_language": "fr",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 88.6,
+            "version": "v2.0.0",
+            "size": 51867459,
+            "bundle": "https://models.versta.app/translation/en-fr-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-fr-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-fr",
+            "source_language": "en",
+            "target_language": "fr",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 86.5,
+            "version": "v2.0.0",
+            "size": 51867459,
+            "bundle": "https://models.versta.app/translation/en-fr-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-fr-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/de-en",
+            "source_language": "de",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 88.1,
+            "version": "v2.0.0",
+            "size": 51037668,
+            "bundle": "https://models.versta.app/translation/de-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/de-en-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-de",
+            "source_language": "en",
+            "target_language": "de",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 86.7,
+            "version": "v2.0.0",
+            "size": 51037668,
+            "bundle": "https://models.versta.app/translation/de-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/de-en-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/el-en",
+            "source_language": "el",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 85.5,
+            "version": "v2.0.0",
+            "size": 29468041,
+            "bundle": "https://models.versta.app/translation/el-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/el-en-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-el",
+            "source_language": "en",
+            "target_language": "el",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 87.2,
+            "version": "v2.0.0",
+            "size": 29468041,
+            "bundle": "https://models.versta.app/translation/el-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/el-en-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/he-en",
+            "source_language": "he",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 85.7,
+            "version": "v2.0.0",
+            "size": 30500260,
+            "bundle": "https://models.versta.app/translation/en-he-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-he-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-he",
+            "source_language": "en",
+            "target_language": "he",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 86.8,
+            "version": "v2.0.0",
+            "size": 30500260,
+            "bundle": "https://models.versta.app/translation/en-he-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-he-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/hu-en",
+            "source_language": "hu",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 85.9,
+            "version": "v2.0.0",
+            "size": 30710434,
+            "bundle": "https://models.versta.app/translation/en-hu-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-hu-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-hu",
+            "source_language": "en",
+            "target_language": "hu",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 85.2,
+            "version": "v2.0.0",
+            "size": 30710434,
+            "bundle": "https://models.versta.app/translation/en-hu-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-hu-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/id-en",
+            "source_language": "id",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 87.4,
+            "version": "v2.0.0",
+            "size": 29742739,
+            "bundle": "https://models.versta.app/translation/en-id-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-id-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-id",
+            "source_language": "en",
+            "target_language": "id",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 90.5,
+            "version": "v2.0.0",
+            "size": 29742739,
+            "bundle": "https://models.versta.app/translation/en-id-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-id-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/it-en",
+            "source_language": "it",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 86.9,
+            "version": "v2.0.0",
+            "size": 52623440,
+            "bundle": "https://models.versta.app/translation/en-it-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-it-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-it",
+            "source_language": "en",
+            "target_language": "it",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 86.6,
+            "version": "v2.0.0",
+            "size": 52623440,
+            "bundle": "https://models.versta.app/translation/en-it-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-it-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/ja-en",
+            "source_language": "ja",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 85.1,
+            "version": "v2.0.0",
+            "size": 60504133,
+            "bundle": "https://models.versta.app/translation/en-ja-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-ja-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-ja",
+            "source_language": "en",
+            "target_language": "ja",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 90.0,
+            "version": "v2.0.0",
+            "size": 60504133,
+            "bundle": "https://models.versta.app/translation/en-ja-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-ja-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/ko-en",
+            "source_language": "ko",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 85.0,
+            "version": "v2.0.0",
+            "size": 62005703,
+            "bundle": "https://models.versta.app/translation/en-ko-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-ko-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-ko",
+            "source_language": "en",
+            "target_language": "ko",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 87.1,
+            "version": "v2.0.0",
+            "size": 62005703,
+            "bundle": "https://models.versta.app/translation/en-ko-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-ko-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/mt-lv",
+            "source_language": "lv",
+            "target_language": "en",
+            "bidirectional": false,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 85.0,
+            "version": "v2.0.0",
+            "size": 15162852,
+            "bundle": "https://models.versta.app/translation/en-lv-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-lv-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/pl-en",
+            "source_language": "pl",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 84.7,
+            "version": "v2.0.0",
+            "size": 50278916,
+            "bundle": "https://models.versta.app/translation/en-pl-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-pl-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-pl",
+            "source_language": "en",
+            "target_language": "pl",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 86.8,
+            "version": "v2.0.0",
+            "size": 50278916,
+            "bundle": "https://models.versta.app/translation/en-pl-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-pl-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/po-en",
+            "source_language": "pt",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 88.7,
+            "version": "v2.0.0",
+            "size": 51348973,
+            "bundle": "https://models.versta.app/translation/en-pt-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-pt-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-po",
+            "source_language": "en",
+            "target_language": "pt",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 88.9,
+            "version": "v2.0.0",
+            "size": 51348973,
+            "bundle": "https://models.versta.app/translation/en-pt-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-pt-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/ro-en",
+            "source_language": "ro",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 87.7,
+            "version": "v2.0.0",
+            "size": 29622460,
+            "bundle": "https://models.versta.app/translation/en-ro-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-ro-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-ro",
+            "source_language": "en",
+            "target_language": "ro",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 88.5,
+            "version": "v2.0.0",
+            "size": 29622460,
+            "bundle": "https://models.versta.app/translation/en-ro-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-ro-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/ru-en",
+            "source_language": "ru",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 84.2,
+            "version": "v2.0.0",
+            "size": 29066605,
+            "bundle": "https://models.versta.app/translation/en-ru-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-ru-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-ru",
+            "source_language": "en",
+            "target_language": "ru",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 84.6,
+            "version": "v2.0.0",
+            "size": 29066605,
+            "bundle": "https://models.versta.app/translation/en-ru-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-ru-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/sk-en",
+            "source_language": "sk",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 85.6,
+            "version": "v2.0.0",
+            "size": 30083981,
+            "bundle": "https://models.versta.app/translation/en-sk-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-sk-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-sk",
+            "source_language": "en",
+            "target_language": "sk",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 85.5,
+            "version": "v2.0.0",
+            "size": 30083981,
+            "bundle": "https://models.versta.app/translation/en-sk-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-sk-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/sl-en",
+            "source_language": "sl",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 84.7,
+            "version": "v2.0.0",
+            "size": 30012146,
+            "bundle": "https://models.versta.app/translation/en-sl-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-sl-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-sl",
+            "source_language": "en",
+            "target_language": "sl",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 85.6,
+            "version": "v2.0.0",
+            "size": 30012146,
+            "bundle": "https://models.versta.app/translation/en-sl-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-sl-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/es-en",
+            "source_language": "es",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 85.7,
+            "version": "v2.0.0",
+            "size": 51493339,
+            "bundle": "https://models.versta.app/translation/en-es-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-es-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-es",
+            "source_language": "en",
+            "target_language": "es",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 85.4,
+            "version": "v2.0.0",
+            "size": 51493339,
+            "bundle": "https://models.versta.app/translation/en-es-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-es-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/sv-en",
+            "source_language": "sv",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 88.5,
+            "version": "v2.0.0",
+            "size": 30401531,
+            "bundle": "https://models.versta.app/translation/en-sv-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-sv-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-sv",
+            "source_language": "en",
+            "target_language": "sv",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 89.2,
+            "version": "v2.0.0",
+            "size": 30401531,
+            "bundle": "https://models.versta.app/translation/en-sv-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-sv-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/tr-en",
+            "source_language": "tr",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 86.6,
+            "version": "v2.0.0",
+            "size": 30222780,
+            "bundle": "https://models.versta.app/translation/en-tr-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-tr-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-tr",
+            "source_language": "en",
+            "target_language": "tr",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 87.5,
+            "version": "v2.0.0",
+            "size": 30222780,
+            "bundle": "https://models.versta.app/translation/en-tr-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-tr-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/uk-en",
+            "source_language": "uk",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 84.6,
+            "version": "v2.0.0",
+            "size": 29249149,
+            "bundle": "https://models.versta.app/translation/en-uk-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-uk-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-uk",
+            "source_language": "en",
+            "target_language": "uk",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 86.1,
+            "version": "v2.0.0",
+            "size": 29249149,
+            "bundle": "https://models.versta.app/translation/en-uk-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-uk-bundle.tar.sha256"
+        }
+    ],
+    [
+        {
+            "base_model": "Firefox/vi-en",
+            "source_language": "vi",
+            "target_language": "en",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 84.9,
+            "version": "v2.0.0",
+            "size": 41934829,
+            "bundle": "https://models.versta.app/translation/en-vi-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-vi-bundle.tar.sha256"
+        },
+        {
+            "base_model": "Firefox/en-vi",
+            "source_language": "en",
+            "target_language": "vi",
+            "bidirectional": true,
+            "architectures": [
+                "BergamotTinyModel"
+            ],
+            "score": 87.1,
+            "version": "v2.0.0",
+            "size": 41934829,
+            "bundle": "https://models.versta.app/translation/en-vi-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/en-vi-bundle.tar.sha256"
+        }
+    ]
 ]

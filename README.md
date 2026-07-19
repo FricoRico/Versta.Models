@@ -1,43 +1,30 @@
 # Versta.Models
-This repository contains tooling to easily quantize, convert and bundle AI models to be compatible with Versta mobile app.
+This repository contains tooling to easily download, bundle and deploy AI models to be compatible with the Versta mobile app.
 
 ## Translation Models
-The Versta mobile app uses translation models based on [Helsinki-NLP's](https://huggingface.co/Helsinki-NLP) opensource [Opus-MT](https://github.com/Helsinki-NLP/OPUS-MT) models. These models are conveniently split up in single direction language pairs (ie. English to Japanese).
+The Versta mobile app uses translation models based on [Mozilla's Firefox Translations](https://github.com/mozilla/translations) models, powered by the [Bergamot](https://browser.mt/) (Marian) engine. These models are already shipped in the native on-device format (`.bin` / `.spm` files) and are conveniently split up in single direction language pairs (ie. English to Japanese). They are hosted on Mozilla's public Google Cloud Storage bucket and described by a [model registry](https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/db/models.json).
 
-Follow this guide to convert the PyTorch models to ORT format, which are compatible with the app.
+Follow this guide to download the models and bundle them, which makes them compatible with the app.
 
-### Converting MarianMT to Pythorch
-The models are trained using the MarianMT framework, which is not directly compatible with the ONNX format. We need to convert the models to PyTorch format first. This can be done using the following commands. If you don't have Python installed, you can download it from [here](https://www.python.org/downloads/).
-
-1. Install the required packages:
-```bash
-pip install -r requirements.txt
-```
-2. Run the conversion using the CLI:
-```bash
-python -m versta.convert --model_uri $OPUS_MODEL_URI --export_dir $EXPORT_DIR
-```
-
-If you are not using Opus Tatoeba models, make sure to pass `--model_type opus` argument to the CLI. Replace `$OPUS_MODEL_URI` with the model URI of choice (eg. `https://object.pouta.csc.fi/Tatoeba-MT-models/eng-nld/opus-2021-02-18.zip`) and `$EXPORT_DIR` with the directory where you want the PyTorch models to be saved. After conversion, you will have the PyTorch models in the specified export directory.
-
-After the model is converted, make sure to upload it to Hugging Face to be able to use the export functionality.
-
-### Exporting ONNX to ORT
-To convert to ORT format, we use the [onnxruntime-tools](https://pypi.org/project/onnxruntime-tools/) package. This means you need to have Python installed on your system.
+### Downloading Firefox models
+The models are downloaded directly from Mozilla's storage bucket. No conversion step is required, as the
+models are already in the format expected by the Bergamot engine.
 
 1. Install the required packages:
 ```bash
 pip install -r requirements.txt
 ```
-2. Run the exporting using the CLI:
+2. Run the download using the CLI:
 ```bash
-python -m verta.export --model $HUGGING_FACE_MODEL_NAME --output_dir $OUTPUT_DIR
+python -m versta.download --src en --tgt es --architecture tiny --output_dir ./output
 ```
 
-Replace `$HUGGING_FACE_MODEL_NAME` with the model of choice (eg. `Helsinki-NLP/opus-mt-nl-en`) `$OUTPUT_DIR` with the directory where you want the ORT models to be saved. After conversion, you will have the ORT models in the specified output directory inside the specific language folder. If no output directory is specified, the models will be saved in the `./output` directory.
+Replace `--src` and `--tgt` with the source and target language codes of choice (eg. `en` and `es`),
+and `--architecture` with one of `tiny`, `base` or `base-memory` (defaults to `tiny`). After downloading,
+you will have the model files in the `./output/en-es` directory, together with a `metadata.json` file.
 
 ### Bundling Models
-After exporting the models to ORT format, we need to bundle them to be used in the Android application. The models are side-loaded by the user during runtime. To make it convenient for the user to do so, we intent to bundle the assets required for the models into a tarball. This can conveniently be done using the custom CLI tool.
+After downloading the models, we need to bundle them to be used in the Android application. The models are side-loaded by the user during runtime. To make it convenient for the user to do so, we bundle the assets required for the models into a tarball. This can conveniently be done using the custom CLI tool.
 
 1. Install the required packages:
 ```bash
@@ -48,57 +35,39 @@ pip install -r requirements.txt
 python -m versta.bundle --input_dir [$INPUT_DIR] --output_dir $OUTPUT_DIR
 ```
 
-Replace `[$INPUT_DIR]` with each directory containing the ORT models, separated by a space (eg. `en-nl nl-en`). After bundling, you will have a tarball in the same directory as the input directory. If no output directory is specified, the tarball will be saved in the `./output` directory.
+Replace `[$INPUT_DIR]` with each directory containing the downloaded models, separated by a space (eg. `en-es es-en`). After bundling, you will have a tarball in the same directory as the input directory. If no output directory is specified, the tarball will be saved in the `./output` directory.
 
 By default we expect to deliver languages in pairs, so usually two or more input directories are expected. If you only want to support a single direction translation model, you can pass the optional argument `--language_pairs False` to the CLI.
 
 ### Example workflow
-This is an example workflow to convert the models and bundle them for the Android application. The models we will convert are `Helsinki-NLP/opus-mt-nl-en` and `Helsinki-NLP/opus-mt-en-nl`.
+This is an example workflow to download the models and bundle them for the Android application. The models we will download are the English-Spanish pair in both directions.
 
-1. Convert the models to ORT format models:
+1. Download the models:
 ```bash
-python -m verta.export --model Helsinki-NLP/opus-mt-nl-en --output_dir ./output
-python -m verta.export --model Helsinki-NLP/opus-mt-en-nl --output_dir ./output
+python -m versta.download --src en --tgt es --architecture tiny --output_dir ./output
+python -m versta.download --src es --tgt en --architecture tiny --output_dir ./output
 ```
 2. Bundle the models:
 ```bash
-python -m versta.bundle --input_dir ./output/en-nl ./output/nl-en --output_dir ./output
+python -m versta.bundle --input_dir ./output/en-es ./output/es-en --output_dir ./output
 ```
 
-After running these commands, you will have a tarball in the `./output/en-nl-bundle` directory containing the models.
+After running these commands, you will have a tarball in the `./output/en-es-bundle` directory containing the models.
 
-### Optional: ONNX Runtime
-Since the ONNX models contain operations that are not available in the prepackaged ONNX Runtime for Android, we need to build the runtime from source. This is an optional step only for those who want to contribute new versions of the runtime to the project.
+### Batch workflow
+To download and bundle many language pairs at once, provide a JSON file describing the pairs to the batch CLI:
 
-In the previous step, we converted the ONNX models to ORT format. Along with the ORT models, the conversion script also generated a `required_operators_and_types.with_runtime_opt.config`, which contains the list of operators required by the model. We need to build the ONNX Runtime with these operators enabled.
+```json
+[
+  [
+    { "source_language": "en", "target_language": "es", "architecture": "tiny" },
+    { "source_language": "es", "target_language": "en", "architecture": "tiny" }
+  ]
+]
+```
 
-To be able to compile the project, you need to have the Android NDK and SDK installed on your system. You can download and install the SDK and NDK through Android Studio or download them separately from the [Android Developer website](https://developer.android.com/studio). Make sure to set the `ANDROID_HOME` and `ANDROID_NDK` environment variables to the SDK and NDK paths, respectively.
-
-1. Clone the [ONNX Runtime repository](https://github.com/microsoft/onnxruntime) to your system:
 ```bash
-git clone git@github.com:microsoft/onnxruntime.git
-```
-2. Checkout the release tag for compilation:
-```bash
-git checkout tags/vX.XX.X
-```
-3. Build the ONNX Runtime with the required operators:
-```bash
-./build.sh --config Release \
-           --build_shared_lib \
-           --android \
-           --android_api 28 \
-           --android_sdk $ANDROID_HOME \
-           --android_ndk $ANDROID_NDK \
-           --android_abi $ARCHITECTURE \
-           --minimal_build extended \
-           --build_java \
-           --use_xnnpack \
-           --use_nnapi \ 
-           --include_ops_by_config $REQUIRED_CONFIG_PATH \
-           --parallel
+python -m versta.batch --input_file pairs.json --output_dir ./output
 ```
 
-Be sure to replace `$ARCHITECTURE` with the architecture you want to build for with any of these choices: `armeabi-v7a`, `arm64-v8a`,`x86`, `x86_64`. Also replace `$REQUIRED_CONFIG_PATH` with the path to the `required_operators.config` file generated during the conversion step.
-
-After compilation is finished, you will have the ONNX Runtime shared library in the `build/Android/Release/java/build/android/outputs/aar` directory. Copy the `onnxruntime-release.aar` file to the `app/src/main/app/libs` library folder in the Android project. Be sure to name it appropriately to update the `build.gradle.kts` file.
+This generates one tarball per language pair and a `models.json` definition that can be deployed to the cloud object storage.

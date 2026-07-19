@@ -1,11 +1,1 @@
-onnxruntime>=1.20,<1.21
-onnxruntime-tools>=1.7,<1.8
-onnxconverter-common>=1.14,<1.15
-
-opustools>=1.8,<1.9
-sacremoses>=0.1,<0.2
-optimum[exporters]>=2.1,<2.2
-transformers>=5.4,<5.5
-sentencepiece>=0.2,<0.3
-
-pycountry>=24.6,<24.7
+requests>=2.31,<3

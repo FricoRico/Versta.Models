@@ -33,9 +33,9 @@ def str2bool(v):
 def parse_args():
     parser = ArgumentParser(
         os.path.basename(__file__),
-        description="""Bundle multiple translation models into a single tarball file.
+        description="""Bundle multiple Firefox (Bergamot) translation models into a single tarball file.
         The tarball is directly deployable to the Versta application for translation purposes.
-        The provided models should first have been converted using the 'convert' module.
+        The provided models should first have been downloaded using the 'download' module.
         """,
     )
 
@@ -106,15 +106,15 @@ def main(
         keep_input: bool = False,
 ) -> Output:
     """
-    Main function to bundle multiple translation models into a single tarball file.
+    Main function to bundle multiple Firefox (Bergamot) translation models into a single tarball file.
     The tarball is directly deployable to the Versta application for translation purposes.
-    The provided models should first have been converted using the 'convert' module.
+    The provided models should first have been downloaded using the 'download' module.
 
     Args:
         input_dirs (list[Path]): List of directories containing the models to bundle.
         output_dir (Path): Directory where the bundled file will be saved.
         bidirectional (bool): Whether the languages are a bidirectional pair, e.g. 'en-nl' and 'nl-en'.
-        keep_intermediates (bool): Whether to remove intermediate files created during the conversion process.
+        keep_intermediates (bool): Whether to remove intermediate files created during the bundling process.
         keep_input (bool): Whether to remove input file directories after bundling.
 
     Returns:
@@ -164,7 +164,7 @@ def main(
         for input_dir in input_dirs:
             remove_folder(input_dir)
 
-        print(f"Input directories removed.")
+        print("Input directories removed.")
 
     return Output(
         bundle=bundle_file,
