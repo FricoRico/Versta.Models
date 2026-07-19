@@ -175,10 +175,6 @@ cython_debug/
 # OpenCode
 .opencode
 
-# Devbox
-.devbox
-devbox.lock
-
 # PyPI configuration file
 .pypirc
 

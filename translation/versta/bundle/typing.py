@@ -1,27 +1,18 @@
 from pathlib import Path
-from typing import TypedDict, List
+from typing import TypedDict
+
+class LanguageModelFilesMetadata(TypedDict):
+    model: str
+    vocabulary: str
+    target_vocabulary: str | None
+    shortlist: str
 
 class BundleMetadata(TypedDict):
     directory: Path
     source_language: str
     target_language: str
-
-class LanguageTokenizerFiles(TypedDict):
-    config: Path
-    vocabulary: Path
-    source: Path
-    target: Path
-
-class LanguageORTFiles(TypedDict):
-    encoder: Path
-    decoder: Path
-
-class LanguageFiles(TypedDict):
-    tokenizer: LanguageTokenizerFiles
-    inference: LanguageORTFiles
-
-class LanguageMetadata(TypedDict):
-    source_language: str
-    target_language: str
-    architectures: List[str]
-    files: LanguageFiles
+    architecture: str
+    base_model: str
+    score: float
+    version: str
+    files: LanguageModelFilesMetadata

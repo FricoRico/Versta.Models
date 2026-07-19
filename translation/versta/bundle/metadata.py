@@ -18,19 +18,22 @@ def load_metadata(model_dir: Path) -> BundleMetadata:
     """
     metadata_file = model_dir / "metadata.json"
 
-    metadata = BundleMetadata(
-        directory=None,
-        source_language=None,
-        target_language=None
-    )
+
 
     if metadata_file.exists():
         with open(metadata_file, "r", encoding="utf-8") as file:
             data = json.load(file)
 
-            metadata["directory"] = metadata_file.parent.name
-            metadata["source_language"] = data.get("source_language")
-            metadata["target_language"] = data.get("target_language")
+            metadata = BundleMetadata(
+                directory=Path(metadata_file.parent.name),
+                source_language=data.get("source_language"),
+                target_language=data.get("target_language"),
+                architecture=data.get("architecture"),
+                base_model=data.get("base_model"),
+                score=data.get("score"),
+                version=data.get("version"),
+                files=data.get("files"),
+            )
 
         missing_entries = [key for key, value in metadata.items() if value is None]
 
@@ -86,7 +89,7 @@ def generate_metadata(version: str, output_dir: Path, languages: List[str], lang
     return metadata_file
 
 # Custom serialization function to handle non-serializable objects (like Path)
-def serialize_metadata(obj: BundleMetadata) -> dict:
+def serialize_metadata(obj: BundleMetadata) -> str:
     if isinstance(obj, Path):
         return str(obj)
     raise TypeError(f"Object of type {type(obj)} is not JSON serializable")

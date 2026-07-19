@@ -1,12 +1,10 @@
 from pathlib import Path
-from typing import TypedDict, List
+from typing import TypedDict
 
 class ModelFile(TypedDict):
-    base_model: str
     source_language: str
     target_language: str
-    bidirectional: bool
-    architectures: List[str]
+    architecture: str
     score: float
     version: str
     size: int
@@ -15,20 +13,18 @@ class ModelFile(TypedDict):
 
 class ExportedModel(TypedDict):
     path: Path
-    base_model: str
     source_language: str
     target_language: str
-    architectures: List[str]
+    architecture: str
     score: float
     version: str
 
 class ExportedBundle(TypedDict):
     path: Path
     checksum: Path
-    base_model: str
-    bidirectional: bool
     source_language: str
     target_language: str
-    architectures: List[str]
+    architecture: str
+    bidirectional: bool
     score: float
     version: str

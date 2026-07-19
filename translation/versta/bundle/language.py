@@ -1,10 +1,7 @@
-import json
-
 from pathlib import Path
-from typing import List, Tuple, TypedDict
+from typing import List, Tuple
 
 from .metadata import BundleMetadata
-from .typing import LanguageMetadata
 
 
 def validate_translation_pairs(metadata_list: List[BundleMetadata]) -> List[Tuple[str, str]]:
@@ -56,51 +53,3 @@ def extract_unique_languages(metadata: List[BundleMetadata]) -> List[str]:
 
     # Return the unique languages as a sorted list
     return sorted(unique_languages)
-
-def update_metadata_file(file: Path, path: Path) -> None:
-    """
-    Update all file paths in the 'files' section of the given metadata.json file by
-    prepending the specified folder prefix to each path.
-
-    Args:
-        file (Path): Path to the metadata.json file.
-        path (Path): The folder prefix to prepend to all file paths in the 'files' section.
-
-    Returns:
-        None: The function updates the metadata.json file with the new file paths.
-    """
-    # Load the metadata.json
-    with open(file, "r") as f:
-        metadata = json.load(f)
-
-    # Update the paths in the 'files' section with the folder prefix
-    metadata['files'] = update_metadata_file_paths(metadata['files'], path)
-
-    # Save the updated metadata back to the original file
-    with open(file, "w") as f:
-        json.dump(metadata, f, indent=4)
-
-def update_metadata_file_paths(metadata: LanguageMetadata, path: Path) -> LanguageMetadata:
-    """
-    Recursively update file paths in the metadata dictionary by adding a folder prefix.
-
-    Args:
-        metadata (LanguageMetadata): The metadata dictionary to update.
-        path (Path): The folder prefix to prepend to each file path.
-
-    Returns:
-        LanguageMetadata: The updated metadata dictionary with the new file paths
-    """
-    if isinstance(metadata, dict):
-        updated_metadata = {}
-
-        for key, value in metadata.items():
-            if isinstance(value, dict):
-                updated_metadata[key] = update_metadata_file_paths(value, path)
-            elif isinstance(value, str) and Path(value).suffix:
-                updated_metadata[key] = str(path / Path(value))
-            else:
-                updated_metadata[key] = value
-        return updated_metadata
-
-    return metadata
