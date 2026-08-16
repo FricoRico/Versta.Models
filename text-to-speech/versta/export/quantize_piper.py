@@ -5,9 +5,7 @@ from onnxruntime.quantization.registry import QLinearOpsRegistry
 from onnx import load, save, AttributeProto
 
 BLOCKED_NODES = []
-BLOCKED_OPS = [
-    "Transpose"
-]
+BLOCKED_OPS = ["Transpose"]
 
 
 def quantize_piper(export_dir: Path, model_filename: str, quantization_dir: Path):
@@ -20,7 +18,7 @@ def quantize_piper(export_dir: Path, model_filename: str, quantization_dir: Path
         quantization_dir (Path): Path to the directory where the quantized model will be saved.
     """
     print(f"Preparing Piper model for quantization: {model_filename}")
-    
+
     # Clear model descriptions to reduce file size
     _clear_descriptions(export_dir / model_filename, export_dir / model_filename)
 
@@ -32,7 +30,7 @@ def quantize_piper(export_dir: Path, model_filename: str, quantization_dir: Path
     config = AutoQuantizationConfig.arm64(
         is_static=False,
         nodes_to_exclude=nodes_to_exclude,
-        operators_to_quantize=operators_to_quantize
+        operators_to_quantize=operators_to_quantize,
     )
 
     quantizer = ORTQuantizer.from_pretrained(export_dir, model_filename)
@@ -42,7 +40,7 @@ def quantize_piper(export_dir: Path, model_filename: str, quantization_dir: Path
 def _clear_descriptions(model_path: Path, output_path: Path):
     """
     Clears node descriptions from the ONNX model to reduce file size.
-    
+
     Args:
         model_path (Path): Path to the input ONNX model.
         output_path (Path): Path to save the modified model.
@@ -58,11 +56,11 @@ def _clear_descriptions(model_path: Path, output_path: Path):
 def _get_excluded_nodes(model_path: Path, blocked_nodes: list[str]) -> list[str]:
     """
     Gets a list of nodes that should be excluded from quantization.
-    
+
     Args:
         model_path (Path): Path to the ONNX model.
         blocked_nodes (list[str]): List of node name prefixes to block.
-    
+
     Returns:
         list[str]: List of node names to exclude from quantization.
     """
@@ -79,18 +77,18 @@ def _get_excluded_nodes(model_path: Path, blocked_nodes: list[str]) -> list[str]
 def _get_operators(model_path: Path, blocked_ops: list[str]) -> list[str]:
     """
     Gets a list of operators that can be quantized, excluding blocked ones.
-    
+
     Args:
         model_path (Path): Path to the ONNX model.
         blocked_ops (list[str]): List of operator types to exclude.
-    
+
     Returns:
         list[str]: List of operator types to quantize.
     """
     model = load(model_path)
 
     operators = list()
-    
+
     def traverse_graph(graph):
         for node in graph.node:
             if node.op_type not in QLinearOpsRegistry:

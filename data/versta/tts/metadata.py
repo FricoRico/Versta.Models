@@ -2,7 +2,14 @@ import json
 
 from pathlib import Path
 
-def generate_metadata(id: str, version: str, output_dir: Path, espeak_data_path: Path, open_jtalk_data_path: Path) -> Path:
+
+def generate_metadata(
+    id: str,
+    version: str,
+    output_dir: Path,
+    espeak_data_path: Path,
+    open_jtalk_data_path: Path,
+) -> Path:
     """
     Generates a metadata file for the model conversion process.
 
@@ -20,7 +27,7 @@ def generate_metadata(id: str, version: str, output_dir: Path, espeak_data_path:
         "files": {
             "espeak": espeak_data_path.name,
             "open_jtalk": open_jtalk_data_path.name,
-        }
+        },
     }
 
     # Define the path for the metadata.json file

@@ -51,11 +51,12 @@ def load_model_file(file_path: Path) -> List[List[ModelFile]]:
 
     return model_files
 
+
 def save_model_file(
-        bundles: List[List[ExportedBundle]],
-        link_prefix: str,
-        output_dir: Path,
-        version: str,
+    bundles: List[List[ExportedBundle]],
+    link_prefix: str,
+    output_dir: Path,
+    version: str,
 ) -> Path:
     """
     Save the model file to the specified path.
@@ -92,7 +93,6 @@ def save_model_file(
             )
 
         model_output["models"].append(model_pairs)
-
 
     with open(file_path, "w") as f:
         json.dump(model_output, f, indent=4)
@@ -141,9 +141,13 @@ def update_models_json(existing_path: Path, generated_path: Path, version: str) 
         generated = load(f)
 
     computed_by_key: Dict[Tuple[str, str], dict] = {}
-    for group in generated.get("models", generated if isinstance(generated, list) else []):
+    for group in generated.get(
+        "models", generated if isinstance(generated, list) else []
+    ):
         for entry in group:
-            computed_by_key[_entry_key(entry["source_language"], entry["target_language"])] = entry
+            computed_by_key[
+                _entry_key(entry["source_language"], entry["target_language"])
+            ] = entry
 
     def lookup(source_language: str, target_language: str, bidirectional: bool):
         key = _entry_key(source_language, target_language)

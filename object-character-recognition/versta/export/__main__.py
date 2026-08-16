@@ -17,6 +17,7 @@ from .utils import remove_folder
 with open(Path(__file__).parent / ".." / "version.txt", "r") as version_file:
     version = version_file.read().strip()
 
+
 def parse_args():
     parser = ArgumentParser(
         os.path.basename(__file__),
@@ -31,7 +32,7 @@ def parse_args():
         "--model",
         type=str,
         help="Provide the HuggingFace model for the pre-trained model to convert."
-             "For the moment, only a PaddleOCR model is supported.",
+        "For the moment, only a PaddleOCR model is supported.",
         required=True,
     )
 
@@ -40,7 +41,7 @@ def parse_args():
         type=str,
         default="recognizer",
         help="Specify the format of the model to convert."
-             "This could be either 'detector' or 'recognizer', defaulting to 'detector'."
+        "This could be either 'detector' or 'recognizer', defaulting to 'detector'.",
     )
 
     parser.add_argument(
@@ -48,7 +49,7 @@ def parse_args():
         type=Path,
         default=Path("export"),
         help="Provide an output directory for the converted model's and configuration file."
-             "If unspecified, the converted ORT format model's will be in the '/output' directory, in the provided language.",
+        "If unspecified, the converted ORT format model's will be in the '/output' directory, in the provided language.",
     )
 
     parser.add_argument(
@@ -56,7 +57,7 @@ def parse_args():
         action="store_true",
         default=False,
         help="Whether to remove intermediate files created during the conversion process."
-             "This will default to False if not specified.",
+        "This will default to False if not specified.",
     )
 
     parser.add_argument(
@@ -64,30 +65,31 @@ def parse_args():
         action="store_true",
         default=False,
         help="Whether to remove the downloaded files from HuggingFace cache."
-             "This will default to False if not specified.",
+        "This will default to False if not specified.",
     )
 
     parsed_args = parser.parse_args()
     return parsed_args
+
 
 def repository_exists(repo_name):
     url = f"https://huggingface.co/{repo_name}"
     response = head(url)
     return response.status_code == 200
 
+
 def main(
-        model: str,
-        export_dir: Path,
-        module: str = "detector",
-        keep_intermediates: bool = False,
-        clear_cache: bool = False,
+    model: str,
+    export_dir: Path,
+    module: str = "detector",
+    keep_intermediates: bool = False,
+    clear_cache: bool = False,
 ):
     if repository_exists(model):
         output = snapshot_download(repo_id=model)
         model_path = Path(output)
     else:
         raise "The provided model path does not exist."
-
 
     output_dir = export_dir / model.split("/")[-1].lower()
     intermediates_dir = output_dir / "intermediates"
@@ -130,6 +132,7 @@ def main(
     if clear_cache:
         remove_folder(Path(default_cache_path) / f"models/{model}".replace("/", "--"))
         print("HuggingFace cache cleaned.")
+
 
 if __name__ == "__main__":
     args = parse_args()

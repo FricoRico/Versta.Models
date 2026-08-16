@@ -18,13 +18,13 @@ def extract_unique_languages(metadata_list: List[OCRBundleMetadata]) -> List[str
 
     # Check for wildcard first
     for metadata in metadata_list:
-        languages = metadata.get('languages', [])
+        languages = metadata.get("languages", [])
         if "*" in languages:
             return ["*"]
 
     # Collect all unique languages
     for metadata in metadata_list:
-        languages = metadata.get('languages', [])
+        languages = metadata.get("languages", [])
         unique_languages.update(languages)
 
     # Return the unique languages as a sorted list
@@ -44,10 +44,9 @@ def extract_unique_modules(metadata_list: List[OCRBundleMetadata]) -> List[str]:
     unique_modules = set()
 
     for metadata in metadata_list:
-        module = metadata.get('module')
+        module = metadata.get("module")
         if module:
             unique_modules.add(module)
 
     # Return the unique modules as a sorted list
     return sorted(unique_modules)
-

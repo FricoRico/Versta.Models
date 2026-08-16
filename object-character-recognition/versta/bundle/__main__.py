@@ -40,7 +40,7 @@ def parse_args():
         nargs="+",
         type=Path,
         help="Provide the directories containing the OCR models to bundle. "
-             "Multiple directories can be provided for different models or module types.",
+        "Multiple directories can be provided for different models or module types.",
         required=True,
     )
 
@@ -49,7 +49,7 @@ def parse_args():
         type=Path,
         default=Path("output"),
         help="Provide an output directory for the bundled model and configuration file. "
-             "If unspecified, the bundle will be in the '/output' directory.",
+        "If unspecified, the bundle will be in the '/output' directory.",
     )
 
     parser.add_argument(
@@ -57,7 +57,7 @@ def parse_args():
         action="store_true",
         default=False,
         help="Whether to keep intermediate files created during the bundling process. "
-             "This will default to False if not specified.",
+        "This will default to False if not specified.",
     )
 
     parser.add_argument(
@@ -65,7 +65,7 @@ def parse_args():
         action="store_true",
         default=False,
         help="Whether to keep input file directories after bundling. "
-             "This will default to False if not specified.",
+        "This will default to False if not specified.",
     )
 
     parsed_args = parser.parse_args()
@@ -73,11 +73,11 @@ def parse_args():
 
 
 def main(
-        unique_id: str,
-        input_dirs: List[Path],
-        output_dir: Path,
-        keep_intermediates: bool = False,
-        keep_input: bool = False,
+    unique_id: str,
+    input_dirs: List[Path],
+    output_dir: Path,
+    keep_intermediates: bool = False,
+    keep_input: bool = False,
 ) -> Output:
     """
     Main function to bundle multiple OCR models into a single tarball file.
@@ -114,7 +114,9 @@ def main(
     copy_folders(input_dirs, intermediates_dir)
 
     # Step 5: Generate metadata for the bundle
-    generate_metadata(unique_id, version, intermediates_dir, languages, modules, metadata)
+    generate_metadata(
+        unique_id, version, intermediates_dir, languages, modules, metadata
+    )
 
     # Step 6: Bundle the folders into a single .tar.gz file
     output_archive = bundle_output_dir / f"{modules_name}-bundle.tar.gz"
@@ -150,4 +152,3 @@ if __name__ == "__main__":
         keep_intermediates=args.keep_intermediates,
         keep_input=args.keep_input,
     )
-

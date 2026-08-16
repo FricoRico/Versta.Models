@@ -1,6 +1,7 @@
 from shutil import rmtree, copy2
 from pathlib import Path
 
+
 def copy_folder(src: Path, dest: Path):
     """
     Copies the contents of the source directory to the destination directory.
@@ -18,6 +19,7 @@ def copy_folder(src: Path, dest: Path):
                 copy_folder(item, dest)
             else:
                 copy2(item, dest_item)
+
 
 def remove_folder(dir: Path):
     """

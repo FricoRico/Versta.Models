@@ -6,10 +6,10 @@ from ..version import VERSION
 
 
 def generate_bundle_metadata(
-        id: str,
-        model_metadata: dict,
-        output_dir: Path,
-        directory: str,
+    id: str,
+    model_metadata: dict,
+    output_dir: Path,
+    directory: str,
 ) -> Path:
     """
     Generates the bundle-level metadata.json following the SpeechRecognitionBundleMetadata

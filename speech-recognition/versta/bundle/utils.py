@@ -2,6 +2,7 @@ from shutil import rmtree, copy2
 from pathlib import Path
 from typing import List
 
+
 def copy_folder(src: Path, dest: Path):
     """
     Copies the contents of the source directory to the destination directory.
@@ -20,6 +21,7 @@ def copy_folder(src: Path, dest: Path):
             else:
                 copy2(item, dest_item)
 
+
 def copy_folders(src_dir: Path, dest: Path):
     """
     Copies the contents of multiple source directories to the destination directory.
@@ -29,6 +31,7 @@ def copy_folders(src_dir: Path, dest: Path):
         dest (Path): Destination directory
     """
     copy_folder(src_dir, dest)
+
 
 def copy_contents(src_dir: Path, dest: Path):
     """
@@ -49,6 +52,7 @@ def copy_contents(src_dir: Path, dest: Path):
             copy_folder(item, dest)
         else:
             copy2(item, dest_item)
+
 
 def remove_folder(dir: Path):
     """

@@ -6,6 +6,7 @@ from pathlib import Path
 from .model_file import load_model_file, save_model_file
 from .export import export_models
 
+
 def parse_args():
     parser = ArgumentParser(
         os.path.basename(__file__),
@@ -19,7 +20,7 @@ def parse_args():
         "--input_file",
         type=Path,
         help="Provie the file containing the HuggingFace model names to convert. "
-             "This JSON file will be used to download the models from HuggingFace and convert them to ONNX format.",
+        "This JSON file will be used to download the models from HuggingFace and convert them to ONNX format.",
         required=True,
     )
 
@@ -28,7 +29,7 @@ def parse_args():
         type=Path,
         default=Path("output"),
         help="Provide an output directory for the converted model's and configuration file. "
-             "If unspecified, the converted ORT format model's will be in the '/output' directory.",
+        "If unspecified, the converted ORT format model's will be in the '/output' directory.",
     )
 
     parser.add_argument(
@@ -36,7 +37,7 @@ def parse_args():
         type=str,
         default="https://models.versta.app/translation/",
         help="Provide the prefix for the links to the models. "
-             "This will be used to generate the links to the models in the output definition file.",
+        "This will be used to generate the links to the models in the output definition file.",
     )
 
     parser.add_argument(
@@ -44,7 +45,7 @@ def parse_args():
         action="store_true",
         default=False,
         help="Whether to remove intermediate files created during the conversion process."
-             "This will default to False if not specified.",
+        "This will default to False if not specified.",
     )
 
     parser.add_argument(
@@ -52,18 +53,19 @@ def parse_args():
         action="store_true",
         default=False,
         help="Whether to remove the downloaded files from HuggingFace cache."
-             "This will default to False if not specified.",
+        "This will default to False if not specified.",
     )
 
     parsed_args = parser.parse_args()
     return parsed_args
 
+
 def main(
-        input_file: Path,
-        output_dir: Path,
-        link_prefix: str,
-        keep_intermediates: bool = False,
-        clear_cache: bool = False,
+    input_file: Path,
+    output_dir: Path,
+    link_prefix: str,
+    keep_intermediates: bool = False,
+    clear_cache: bool = False,
 ):
     # Step 1: Load the model file
     models = load_model_file(input_file)
@@ -73,6 +75,7 @@ def main(
 
     # Step 3: Save the model file
     save_model_file(bundles, link_prefix, output_dir)
+
 
 if __name__ == "__main__":
     args = parse_args()

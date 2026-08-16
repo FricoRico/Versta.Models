@@ -6,7 +6,10 @@ from .quantize_piper import quantize_piper
 BLOCKED_NODES = []
 BLOCKED_OPS = []
 
-def quantize_model(export_dir: Path, model_filename: str, quantization_dir: Path, model_format: str):
+
+def quantize_model(
+    export_dir: Path, model_filename: str, quantization_dir: Path, model_format: str
+):
     """
     Quantizes a specific ONNX model file and saves the quantized model to the given directory.
 

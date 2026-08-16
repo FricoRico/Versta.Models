@@ -22,12 +22,12 @@ with open(Path(__file__).parent / ".." / "version.txt", "r") as version_file:
 def str2bool(v):
     if isinstance(v, bool):
         return v
-    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+    if v.lower() in ("yes", "true", "t", "y", "1"):
         return True
-    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+    elif v.lower() in ("no", "false", "f", "n", "0"):
         return False
     else:
-        raise ArgumentTypeError('Boolean value expected.')
+        raise ArgumentTypeError("Boolean value expected.")
 
 
 def parse_args():
@@ -44,8 +44,8 @@ def parse_args():
         nargs="+",
         type=Path,
         help="Provide the directories containing the models to bundle."
-             "When translation pairs is enabled, multiple directories should be provided for each language in the pair."
-             "For example, if the languages are 'en' and 'nl', provide the directories for 'en-nl' and 'nl-en'.",
+        "When translation pairs is enabled, multiple directories should be provided for each language in the pair."
+        "For example, if the languages are 'en' and 'nl', provide the directories for 'en-nl' and 'nl-en'.",
         required=True,
     )
 
@@ -54,18 +54,18 @@ def parse_args():
         type=Path,
         default=Path("output"),
         help="Provide an output directory for the converted model's and configuration file. "
-             "If unspecified, the converted ORT format model's will be in the '/output' directory.",
+        "If unspecified, the converted ORT format model's will be in the '/output' directory.",
     )
 
     parser.add_argument(
         "--bidirectional",
         type=str2bool,
-        nargs='?',
+        nargs="?",
         const=True,
         default=True,
         help="Whether the languages are a bidirectional pair, e.g. 'en-nl' and 'nl-en'."
-             "A language pair allows for the translation model to be used in both directions easily."
-             "This will default to True if not specified.",
+        "A language pair allows for the translation model to be used in both directions easily."
+        "This will default to True if not specified.",
     )
 
     parser.add_argument(
@@ -73,8 +73,8 @@ def parse_args():
         type=bool,
         default=False,
         help="Whether the output should be moved out of the subdirectory."
-             "It will temporarily place the files in a subdirectory and then move them out if subdirectory is False."
-             "This will default to False if not specified.",
+        "It will temporarily place the files in a subdirectory and then move them out if subdirectory is False."
+        "This will default to False if not specified.",
     )
 
     parser.add_argument(
@@ -82,7 +82,7 @@ def parse_args():
         action="store_true",
         default=False,
         help="Whether to remove intermediate files created during the conversion process."
-             "This will default to False if not specified.",
+        "This will default to False if not specified.",
     )
 
     parser.add_argument(
@@ -90,7 +90,7 @@ def parse_args():
         action="store_true",
         default=False,
         help="Whether to remove input file directories after bundeling."
-             "This will default to False if not specified.",
+        "This will default to False if not specified.",
     )
 
     parsed_args = parser.parse_args()
@@ -98,12 +98,12 @@ def parse_args():
 
 
 def main(
-        input_dirs: List[Path],
-        output_dir: Path,
-        bidirectional: bool = True,
-        subdirectory: bool = False,
-        keep_intermediates: bool = False,
-        keep_input: bool = False,
+    input_dirs: List[Path],
+    output_dir: Path,
+    bidirectional: bool = True,
+    subdirectory: bool = False,
+    keep_intermediates: bool = False,
+    keep_input: bool = False,
 ) -> Output:
     """
     Main function to bundle multiple Firefox (Bergamot) translation models into a single tarball file.
@@ -132,11 +132,10 @@ def main(
 
     if not subdirectory:
         bundle_output_dir = output_dir
-        intermediates_dir = bundle_output_dir / f"{"-".join(languages)}-intermediates"
+        intermediates_dir = bundle_output_dir / f"{'-'.join(languages)}-intermediates"
     else:
-        bundle_output_dir = output_dir / f"{"-".join(languages)}-bundle"
+        bundle_output_dir = output_dir / f"{'-'.join(languages)}-bundle"
         intermediates_dir = bundle_output_dir / "intermediates"
-
 
     bundle_output_dir.mkdir(parents=True, exist_ok=True)
     intermediates_dir.mkdir(parents=True, exist_ok=True)
@@ -148,7 +147,7 @@ def main(
     generate_metadata(version, intermediates_dir, languages, metadata, bidirectional)
 
     # Step 6: Bundle the folders into a single .tar.gz file
-    output_archive = bundle_output_dir / f"{"-".join(languages)}-bundle.tar.gz"
+    output_archive = bundle_output_dir / f"{'-'.join(languages)}-bundle.tar.gz"
     output_files = list(intermediates_dir.iterdir())
 
     bundle_file = bundle_files(output_files, output_archive)

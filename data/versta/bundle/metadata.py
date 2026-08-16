@@ -3,8 +3,10 @@ import json
 from pathlib import Path
 from typing import List, TypedDict
 
+
 class BundleMetadata(TypedDict):
     directory: Path
+
 
 def load_metadata(model_dir: Path) -> BundleMetadata:
     """
@@ -29,11 +31,14 @@ def load_metadata(model_dir: Path) -> BundleMetadata:
         missing_entries = [key for key, value in metadata.items() if value is None]
 
         if missing_entries:
-            raise ValueError(f"Missing required metadata entries: {', '.join(missing_entries)}")
+            raise ValueError(
+                f"Missing required metadata entries: {', '.join(missing_entries)}"
+            )
 
         return metadata
     else:
         raise FileNotFoundError(f"BundleMetadata file not found in {model_dir}")
+
 
 def load_metadata_for_input_dirs(input_dir: Path) -> BundleMetadata:
     """
@@ -49,7 +54,10 @@ def load_metadata_for_input_dirs(input_dir: Path) -> BundleMetadata:
 
     return metadata
 
-def generate_metadata(id: str, version: str, output_dir: Path, metadata: BundleMetadata) -> Path:
+
+def generate_metadata(
+    id: str, version: str, output_dir: Path, metadata: BundleMetadata
+) -> Path:
     """
     Generates a metadata file for the model conversion process.
 
@@ -59,11 +67,7 @@ def generate_metadata(id: str, version: str, output_dir: Path, metadata: BundleM
         output_dir (Path): Path to the directory where the metadata file will be saved.
         metadata (BundleMetadata): List of BundleMetadata dictionaries containing source and target language pairs.
     """
-    metadata = {
-        "id": id,
-        "version": version,
-        "metadata": metadata
-    }
+    metadata = {"id": id, "version": version, "metadata": metadata}
 
     # Define the path for the metadata.json file
     metadata_file_path = output_dir / "metadata.json"
@@ -73,6 +77,7 @@ def generate_metadata(id: str, version: str, output_dir: Path, metadata: BundleM
         json.dump(metadata, metadata_file, default=serialize_metadata, indent=4)
 
     return metadata_file_path
+
 
 # Custom serialization function to handle non-serializable objects (like Path)
 def serialize_metadata(obj: BundleMetadata) -> dict:

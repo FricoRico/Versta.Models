@@ -4,6 +4,7 @@ from hashlib import sha256
 from pathlib import Path
 from typing import List
 
+
 def bundle_files(files: List[Path], output_file: Path) -> Path:
     """
     Bundles the specified folders into a single .tar.gz file.
@@ -19,6 +20,7 @@ def bundle_files(files: List[Path], output_file: Path) -> Path:
             tar.add(file, arcname=file.name)
 
     return output_file
+
 
 def create_checksum(file_path: Path) -> Path:
     """

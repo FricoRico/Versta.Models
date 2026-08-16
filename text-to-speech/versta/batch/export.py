@@ -7,7 +7,13 @@ from ..bundle import __main__ as bundle
 
 from .typing import ModelFile, ExportedBundle, ExportedModel
 
-def export_models(model: List[List[ModelFile]], output_dir: Path, keep_intermediates: bool, clear_cache: bool) -> List[List[ExportedBundle]]:
+
+def export_models(
+    model: List[List[ModelFile]],
+    output_dir: Path,
+    keep_intermediates: bool,
+    clear_cache: bool,
+) -> List[List[ExportedBundle]]:
     """
     Export the models to a specified directory.
 
@@ -49,11 +55,16 @@ def export_models(model: List[List[ModelFile]], output_dir: Path, keep_intermedi
                 )
             )
 
-        exported_bundles.append(_export_bundle(exported_pair, output_dir, keep_intermediates))
+        exported_bundles.append(
+            _export_bundle(exported_pair, output_dir, keep_intermediates)
+        )
 
     return exported_bundles
 
-def _export_bundle(model: List[ExportedModel], output_dir: Path, keep_intermediates: bool) -> List[ExportedBundle]:
+
+def _export_bundle(
+    model: List[ExportedModel], output_dir: Path, keep_intermediates: bool
+) -> List[ExportedBundle]:
     """
     Export the models to a specified directory.
     Args:

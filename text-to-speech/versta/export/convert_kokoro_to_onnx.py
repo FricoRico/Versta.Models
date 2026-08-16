@@ -27,8 +27,9 @@ VOICES = [
     "pf_dora",
     "pm_alex",
     "zf_xiaobei",
-    "zm_yunjian"
+    "zm_yunjian",
 ]
+
 
 def convert_kokoro_to_onnx(model_name: str, export_path: Path) -> Path:
     """
@@ -72,7 +73,9 @@ def _convert_model(kmodel: KModel, export_path: Path) -> Path:
         export_path (Path): Path to the file where the ONNX model will be saved.
     Returns:
     """
-    print("Skipping Kokoro model conversion, as it is currently broken for unknown reasons.")
+    print(
+        "Skipping Kokoro model conversion, as it is currently broken for unknown reasons."
+    )
     return export_path
 
     model = KModelForONNX(kmodel).eval()
@@ -99,11 +102,7 @@ def _convert_model(kmodel: KModel, export_path: Path) -> Path:
         do_constant_folding=True,
     )
 
-    check_model(
-        model=load(export_path),
-        full_check=True,
-        check_custom_domain=True
-    )
+    check_model(model=load(export_path), full_check=True, check_custom_domain=True)
 
     return export_path
 
@@ -145,9 +144,9 @@ def _extract_vocab(export_dir: Path, config_file: Path) -> Path:
     with open(optimized_vocabulary, "wb") as f:
         for word, index in source_vocabulary.items():
             # Write the word as a null-terminated byte string
-            f.write(word.encode('utf-8') + b'\0')
+            f.write(word.encode("utf-8") + b"\0")
             # Write the index as a 4-byte little-endian integer
-            f.write(pack('<I', index))
+            f.write(pack("<I", index))
 
     return optimized_vocabulary
 
@@ -203,10 +202,7 @@ class KModelForONNX(torch.nn.Module):
         self.kmodel = kmodel
 
     def forward(
-            self,
-            input_ids: torch.LongTensor,
-            ref_s: torch.FloatTensor,
-            speed: float = 1
+        self, input_ids: torch.LongTensor, ref_s: torch.FloatTensor, speed: float = 1
     ) -> torch.Tensor:
         waveform, duration = self.kmodel.forward_with_tokens(input_ids, ref_s, speed)
         return waveform.unsqueeze(0)

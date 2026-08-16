@@ -3,6 +3,7 @@ from pathlib import Path
 
 from .convert_piper_to_onnx import get_language_from_config
 
+
 def copy_folder(src: Path, dest: Path):
     """
     Copies the contents of the source directory to the destination directory.
@@ -21,12 +22,14 @@ def copy_folder(src: Path, dest: Path):
             else:
                 copy2(item, dest_item)
 
+
 def remove_folder(dir: Path):
     """
     Removes the specified directory and all its contents.
     """
     if dir.exists() and dir.is_dir():
         rmtree(dir)
+
 
 def output_folder(output_dir: Path, model: str, model_format: str, voice: str) -> Path:
     """
@@ -48,7 +51,9 @@ def output_folder(output_dir: Path, model: str, model_format: str, voice: str) -
     if language_info and "family" in language_info:
         language_family = language_info["family"]
 
-        if "output" in str(output_dir) and f"piper-{language_family}" not in str(output_dir):
+        if "output" in str(output_dir) and f"piper-{language_family}" not in str(
+            output_dir
+        ):
             parent_dir = output_dir.parent
             output_dir = parent_dir / f"piper-{language_family}"
             print(f"Updated output directory to: {output_dir}")

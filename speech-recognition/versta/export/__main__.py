@@ -29,7 +29,7 @@ def parse_args():
         type=str,
         default="base-q8_0",
         help="Whisper model variant, used to build the filename 'ggml-<model-type>.bin' "
-             "(e.g. 'base-q8_0', 'small.en', 'large-v3-turbo-q5_0'). Defaults to 'base-q8_0'.",
+        "(e.g. 'base-q8_0', 'small.en', 'large-v3-turbo-q5_0'). Defaults to 'base-q8_0'.",
     )
 
     parser.add_argument(
@@ -38,7 +38,7 @@ def parse_args():
         nargs="+",
         default=None,
         help="Supported language codes written to the metadata. Defaults to the full Whisper "
-             "set, or ['en'] for English-only ('.en') model variants.",
+        "set, or ['en'] for English-only ('.en') model variants.",
     )
 
     parser.add_argument(
@@ -52,10 +52,10 @@ def parse_args():
 
 
 def main(
-        model: str,
-        model_type: str,
-        languages: list,
-        output_dir: Path,
+    model: str,
+    model_type: str,
+    languages: list,
+    output_dir: Path,
 ) -> Path:
     """
     Downloads a single whisper.cpp model (and its VAD model) and writes it to `output_dir`.

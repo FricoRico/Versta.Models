@@ -2,6 +2,7 @@ from shutil import rmtree, copy2
 from pathlib import Path
 from typing import List
 
+
 def copy_folder(src: Path, dest: Path):
     """
     Copies the contents of the source directory to the destination directory.
@@ -20,6 +21,7 @@ def copy_folder(src: Path, dest: Path):
             else:
                 copy2(item, dest_item)
 
+
 def copy_folders(src_dirs: List[Path], dest: Path):
     """
     Copies the contents of multiple source directories to the destination directory.
@@ -31,6 +33,7 @@ def copy_folders(src_dirs: List[Path], dest: Path):
     for src in src_dirs:
         copy_folder(src, dest)
 
+
 def remove_folder(dir: Path):
     """
     Removes the specified directory and all its contents.
@@ -40,4 +43,3 @@ def remove_folder(dir: Path):
     """
     if dir.exists() and dir.is_dir():
         rmtree(dir)
-

@@ -18,11 +18,7 @@ def load_metadata(model_dir: Path) -> OCRBundleMetadata:
     """
     metadata_file = model_dir / "metadata.json"
 
-    metadata = OCRBundleMetadata(
-        directory=None,
-        languages=None,
-        module=None
-    )
+    metadata = OCRBundleMetadata(directory=None, languages=None, module=None)
 
     if metadata_file.exists():
         with open(metadata_file, "r", encoding="utf-8") as file:
@@ -35,7 +31,9 @@ def load_metadata(model_dir: Path) -> OCRBundleMetadata:
         missing_entries = [key for key, value in metadata.items() if value is None]
 
         if missing_entries:
-            raise ValueError(f"Missing required metadata entries: {', '.join(missing_entries)}")
+            raise ValueError(
+                f"Missing required metadata entries: {', '.join(missing_entries)}"
+            )
 
         return metadata
     else:
@@ -60,7 +58,14 @@ def load_metadata_for_input_dirs(input_dirs: List[Path]) -> List[OCRBundleMetada
     return metadata
 
 
-def generate_metadata(unique_id: str, version: str, output_dir: Path, languages: List[str], modules: List[str], model_metadata: List[OCRBundleMetadata]) -> Path:
+def generate_metadata(
+    unique_id: str,
+    version: str,
+    output_dir: Path,
+    languages: List[str],
+    modules: List[str],
+    model_metadata: List[OCRBundleMetadata],
+) -> Path:
     """
     Generates a metadata file for the OCR bundle process.
 
@@ -80,7 +85,7 @@ def generate_metadata(unique_id: str, version: str, output_dir: Path, languages:
         "version": version,
         "languages": languages or [],
         "modules": modules or [],
-        "metadata": model_metadata or []
+        "metadata": model_metadata or [],
     }
 
     # Define the path for the metadata.json file
@@ -98,4 +103,3 @@ def serialize_metadata(obj: OCRBundleMetadata) -> dict:
     if isinstance(obj, Path):
         return str(obj)
     raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
-

@@ -9,13 +9,14 @@ from .bundle_tar import bundle_files, create_checksum
 from .metadata import generate_bundle_metadata
 from .utils import copy_contents, remove_folder
 
+
 class Output(TypedDict):
     bundle: Path
     checksum: Path
 
 
 def bundle_id(model_id: str) -> str:
-    return f"whisper.{model_id.split("-")[0]}"
+    return f"whisper.{model_id.split('-')[0]}"
 
 
 def parse_args():
@@ -31,7 +32,7 @@ def parse_args():
         "--input_dir",
         type=Path,
         help="Directory containing the downloaded model, VAD model and metadata.json. "
-             "The model id is read from metadata.json.",
+        "The model id is read from metadata.json.",
         required=True,
     )
 
@@ -55,7 +56,7 @@ def parse_args():
         action="store_true",
         default=False,
         help="Whether to remove the input directory after bundling."
-             "This will default to False if not specified.",
+        "This will default to False if not specified.",
     )
 
     parsed_args = parser.parse_args()
@@ -90,7 +91,9 @@ def main(
 
     # Step 3: Generate the bundle-level metadata (SpeechRecognitionBundleMetadata schema).
     # Languages are taken automatically from the bundled model metadata.
-    generate_bundle_metadata(name, model_metadata, intermediates_dir, directory=model_id)
+    generate_bundle_metadata(
+        name, model_metadata, intermediates_dir, directory=model_id
+    )
 
     # Step 4: Bundle the folders into a single .tar.gz file
     output_archive = output_dir / f"{name}-bundle.tar.gz"

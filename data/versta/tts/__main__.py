@@ -27,14 +27,14 @@ def parse_args():
         default=Path("output"),
         help="Provide an output directory for the converted model's and configuration file. "
         "If unspecified, the converted ORT format model's will be in the '/output' directory.",
-   )
+    )
 
     parser.add_argument(
         "--temp_dir",
         type=Path,
         default=Path("tmp"),
         help="Provide an temporary directory used to download and extract raw models."
-             "If unspecified, the downloaded models will go into '/tmp' directory.",
+        "If unspecified, the downloaded models will go into '/tmp' directory.",
     )
 
     parser.add_argument(
@@ -55,6 +55,7 @@ def parse_args():
 
     parsed_args = parser.parse_args()
     return parsed_args
+
 
 def main(
     output_dir: Path,
@@ -86,9 +87,18 @@ def main(
     build_dir.mkdir(parents=True, exist_ok=True)
 
     # Step 1: Download the data folders
-    espeak_path = download_folder_from_git(export_path=build_dir, download_path=download_dir, repo_url="git@github.com:espeak-ng/espeak-ng.git")
+    espeak_path = download_folder_from_git(
+        export_path=build_dir,
+        download_path=download_dir,
+        repo_url="git@github.com:espeak-ng/espeak-ng.git",
+    )
     espeak_data_path = build_data(espeak_path, build_dir, export_dir / "espeak-ng-data")
-    open_jtalk_data_path = download_folder_from_tarball(export_path=export_dir, download_path=download_dir, tarball_url="http://downloads.sourceforge.net/open-jtalk/open_jtalk_dic_utf_8-1.11.tar.gz", folder_path="open-jtalk-data")
+    open_jtalk_data_path = download_folder_from_tarball(
+        export_path=export_dir,
+        download_path=download_dir,
+        tarball_url="http://downloads.sourceforge.net/open-jtalk/open_jtalk_dic_utf_8-1.11.tar.gz",
+        folder_path="open-jtalk-data",
+    )
 
     # Step 3: Generate metadata for the model conversion process
     generate_metadata(name, version, export_dir, espeak_data_path, open_jtalk_data_path)
@@ -102,6 +112,7 @@ def main(
     if not keep_downloads:
         remove_folder(download_dir)
         print("Downloads files cleaned.")
+
 
 if __name__ == "__main__":
     args = parse_args()

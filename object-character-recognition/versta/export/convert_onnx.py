@@ -3,6 +3,7 @@ from pathlib import Path
 from paddlex.inference.utils.model_paths import get_model_paths
 from paddle2onnx import export
 
+
 def convert_model_to_onnx(model_path: Path, converted_dir: Path):
     """
     Exports the specified pre-trained model to ONNX format and saves it in the converted directory.

@@ -9,6 +9,7 @@ from .download import (
     load_registry,
 )
 
+
 def parse_args():
     parser = ArgumentParser(
         os.path.basename(__file__),
@@ -58,11 +59,11 @@ def parse_args():
 
 
 def main(
-        source: str,
-        target: str,
-        architecture: str,
-        registry_url: str,
-        output_dir: Path,
+    source: str,
+    target: str,
+    architecture: str,
+    registry_url: str,
+    output_dir: Path,
 ) -> Path:
     """
     Downloads a single Firefox translation model direction and writes it to `output_dir`.

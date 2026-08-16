@@ -3,9 +3,10 @@ import onnxsim
 from onnx import load_model, save_model
 
 input_shapes = {
-    "detector": [1, 3, 640, 640],    # [batch, channels, height, width]
-    "recognizer": [1, 3, 48, 640],   # [batch, channels, height, width]
+    "detector": [1, 3, 640, 640],  # [batch, channels, height, width]
+    "recognizer": [1, 3, 48, 640],  # [batch, channels, height, width]
 }
+
 
 def simplify_model(input_path: Path, output_path: Path, module: str = "recognizer"):
     """
@@ -18,7 +19,9 @@ def simplify_model(input_path: Path, output_path: Path, module: str = "recognize
                      Used to determine input shape for onnxsim.
     """
     if module not in input_shapes:
-        raise ValueError(f"Unknown module type: {module}. Must be one of: {list(input_shapes.keys())}")
+        raise ValueError(
+            f"Unknown module type: {module}. Must be one of: {list(input_shapes.keys())}"
+        )
 
     input_shape = input_shapes[module]
 
@@ -27,8 +30,7 @@ def simplify_model(input_path: Path, output_path: Path, module: str = "recognize
 
     print(f"Simplifying model with onnxsim (input shape: {input_shape})...")
     model_simplified, check = onnxsim.simplify(
-        model,
-        test_input_shapes={model.graph.input[0].name: input_shape}
+        model, test_input_shapes={model.graph.input[0].name: input_shape}
     )
     if not check:
         raise RuntimeError("onnxsim failed to simplify the model")

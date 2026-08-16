@@ -1,6 +1,6 @@
 from onnxruntime.tools.convert_onnx_models_to_ort import (
     OptimizationStyle,
-    convert_onnx_models_to_ort
+    convert_onnx_models_to_ort,
 )
 from pathlib import Path
 
@@ -29,6 +29,7 @@ def convert_model_to_ort(input_dir: Path, output_dir: Path) -> ORTFiles:
     # Get the file paths for the encoder and decoder ORT files
     return _get_files_from_output(output_dir)
 
+
 def _get_files_from_output(output_dir: Path) -> ORTFiles:
     """
     Looks in the specified output directory for files to find the output encoder and decoder files.
@@ -47,7 +48,7 @@ def _get_files_from_output(output_dir: Path) -> ORTFiles:
     ort_files = ORTFiles(model=None)
 
     # Iterate over all files in the directory
-    for path in output_dir.glob('*'):
+    for path in output_dir.glob("*"):
         file = Path(path).name
 
         if "model" in file:
@@ -57,6 +58,8 @@ def _get_files_from_output(output_dir: Path) -> ORTFiles:
     missing_files = [key for key, value in ort_files.items() if value is None]
 
     if missing_files:
-        raise FileNotFoundError(f"Missing required ORT output files: {', '.join(missing_files)}")
+        raise FileNotFoundError(
+            f"Missing required ORT output files: {', '.join(missing_files)}"
+        )
 
     return ort_files

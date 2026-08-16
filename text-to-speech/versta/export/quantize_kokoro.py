@@ -11,6 +11,7 @@ from pathlib import Path
 BLOCKED_NODES = []
 BLOCKED_OPS = []
 
+
 def quantize_kokoro(export_dir: Path, model_filename: str, quantization_dir: Path):
     """
     Quantizes a specific ONNX model file and saves the quantized model to the given directory.
@@ -20,7 +21,9 @@ def quantize_kokoro(export_dir: Path, model_filename: str, quantization_dir: Pat
         model_filename (str): Name of the ONNX model file to quantize (e.g., "encoder_model.onnx").
         quantization_dir (Path): Path to the directory where the quantized model will be saved.
     """
-    print("Skipping quantization for kokoro model as it is not supported. Downloading the quantized model instead.")
+    print(
+        "Skipping quantization for kokoro model as it is not supported. Downloading the quantized model instead."
+    )
     model_file = hf_hub_download(
         repo_id="onnx-community/Kokoro-82M-v1.0-ONNX-timestamped",
         filename="model_uint8.onnx",
@@ -40,7 +43,7 @@ def quantize_kokoro(export_dir: Path, model_filename: str, quantization_dir: Pat
     config = AutoQuantizationConfig.arm64(
         is_static=False,
         nodes_to_exclude=nodes_to_exclude,
-        operators_to_quantize=operators_to_quantize
+        operators_to_quantize=operators_to_quantize,
     )
 
     quantizer = ORTQuantizer.from_pretrained(export_dir, model_filename)
@@ -55,6 +58,7 @@ def _clear_descriptions(model_path: Path, output_path: Path):
 
     save(model, output_path)
 
+
 def _get_excluded_nodes(model_path: Path, blocked_nodes: list[str]) -> list[str]:
     model = load(model_path)
 
@@ -65,10 +69,12 @@ def _get_excluded_nodes(model_path: Path, blocked_nodes: list[str]) -> list[str]
 
     return excluded_nodes
 
+
 def _get_operators(model_path: Path, blocked_ops: list[str]) -> list[str]:
     model = load(model_path)
 
     operators = list()
+
     def traverse_graph(graph):
         for node in graph.node:
             if node.op_type not in QLinearOpsRegistry:

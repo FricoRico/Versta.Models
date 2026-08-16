@@ -18,8 +18,6 @@ def load_metadata(model_dir: Path) -> BundleMetadata:
     """
     metadata_file = model_dir / "metadata.json"
 
-
-
     if metadata_file.exists():
         with open(metadata_file, "r", encoding="utf-8") as file:
             data = json.load(file)
@@ -38,11 +36,14 @@ def load_metadata(model_dir: Path) -> BundleMetadata:
         missing_entries = [key for key, value in metadata.items() if value is None]
 
         if missing_entries:
-            raise ValueError(f"Missing required metadata entries: {', '.join(missing_entries)}")
+            raise ValueError(
+                f"Missing required metadata entries: {', '.join(missing_entries)}"
+            )
 
         return metadata
     else:
         raise FileNotFoundError(f"BundleMetadata file not found in {model_dir}")
+
 
 def load_metadata_for_input_dirs(input_dirs: List[Path]) -> List[BundleMetadata]:
     """
@@ -61,7 +62,14 @@ def load_metadata_for_input_dirs(input_dirs: List[Path]) -> List[BundleMetadata]
 
     return metadata
 
-def generate_metadata(version: str, output_dir: Path, languages: List[str], language_metadata: List[BundleMetadata], bidirectional: bool) -> Path:
+
+def generate_metadata(
+    version: str,
+    output_dir: Path,
+    languages: List[str],
+    language_metadata: List[BundleMetadata],
+    bidirectional: bool,
+) -> Path:
     """
     Generates a metadata file for the model conversion process.
 
@@ -76,7 +84,7 @@ def generate_metadata(version: str, output_dir: Path, languages: List[str], lang
         "version": version,
         "languages": languages or [],
         "bidirectional": bidirectional,
-        "metadata": language_metadata or []
+        "metadata": language_metadata or [],
     }
 
     # Define the path for the metadata.json file
@@ -87,6 +95,7 @@ def generate_metadata(version: str, output_dir: Path, languages: List[str], lang
         json.dump(metadata, f, default=serialize_metadata, indent=4)
 
     return metadata_file
+
 
 # Custom serialization function to handle non-serializable objects (like Path)
 def serialize_metadata(obj: BundleMetadata) -> str:

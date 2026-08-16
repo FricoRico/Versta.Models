@@ -48,12 +48,18 @@ def normalize_language(code: str) -> str:
     base = parts[0]
 
     if base == "zh":
-        return "zh_hant" if any(part in ("hant", "tw", "hk", "mo") for part in parts[1:]) else "zh"
+        return (
+            "zh_hant"
+            if any(part in ("hant", "tw", "hk", "mo") for part in parts[1:])
+            else "zh"
+        )
 
     return base
 
 
-def get_pair_entries(registry: dict, source_language: str, target_language: str) -> List[dict]:
+def get_pair_entries(
+    registry: dict, source_language: str, target_language: str
+) -> List[dict]:
     """
     Returns all registry entries for the given language pair, regardless of architecture.
 
@@ -109,10 +115,10 @@ def get_best_entry(registry: dict, source: str, target: str) -> dict:
 
 
 def get_entry(
-        registry: dict,
-        source: str,
-        target: str,
-        architecture: str = None,
+    registry: dict,
+    source: str,
+    target: str,
+    architecture: str = None,
 ) -> dict:
     """
     Returns the registry entry for a specific language pair and architecture.
@@ -144,9 +150,9 @@ def get_entry(
 
 
 def download_model(
-        base_url: str,
-        entry: dict,
-        output_dir: Path,
+    base_url: str,
+    entry: dict,
+    output_dir: Path,
 ) -> Path:
     """
     Downloads the three Bergamot model files (model, lexical shortlist and vocabulary) for a single
@@ -206,7 +212,6 @@ def download_model(
         "vocabulary": downloaded.get("srcVocab", downloaded.get("vocab")),
         "target_vocabulary": downloaded.get("trgVocab"),
         "shortlist": downloaded["lexicalShortlist"],
-
     }
 
     config_metadata = {
@@ -282,9 +287,7 @@ def _extract_config(model_metadata: dict) -> dict:
 
     missing = [src for src, key in required.items() if key not in cfg]
     if missing:
-        raise ValueError(
-            f"modelConfig is missing required keys: {', '.join(missing)}."
-        )
+        raise ValueError(f"modelConfig is missing required keys: {', '.join(missing)}.")
 
     return {
         "encoder_layers": int(cfg["enc-depth"]),

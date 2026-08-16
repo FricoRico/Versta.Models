@@ -3,6 +3,7 @@ from shutil import copyfile
 
 from .typing import TokenizerFiles
 
+
 def save_tokenizer(input_dir: Path, output_dir: Path) -> TokenizerFiles:
     """
     Saves the tokenizer files from the source directory to the export directory.

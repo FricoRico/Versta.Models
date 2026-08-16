@@ -7,15 +7,15 @@ from .typing import TokenizerFiles
 
 def save_tokenizer(input_dir: Path, output_dir: Path) -> TokenizerFiles | None:
     """
-     Extracts the vocabulary from the Piper model config.json and saves it in the export directory.
+    Extracts the vocabulary from the Piper model config.json and saves it in the export directory.
 
-     Args:
-        input_dir (Path): Path to the directory containing the tokenizer files.
-        output_dir (Path): Path to the directory where tokenizer files will be saved.
+    Args:
+       input_dir (Path): Path to the directory containing the tokenizer files.
+       output_dir (Path): Path to the directory where tokenizer files will be saved.
 
-     Returns:
-         TokenizerFiles: Dictionary containing the file paths for the tokenizer vocabulary files.
-     """
+    Returns:
+        TokenizerFiles: Dictionary containing the file paths for the tokenizer vocabulary files.
+    """
     vocabulary_file = _save_vocabulary(input_dir, output_dir)
 
     if vocabulary_file is None:
@@ -24,6 +24,7 @@ def save_tokenizer(input_dir: Path, output_dir: Path) -> TokenizerFiles | None:
     tokenizer_files = TokenizerFiles(vocabulary="vocab.bin")
 
     return tokenizer_files
+
 
 def _save_vocabulary(input_dir: Path, output_dir: Path) -> Path | None:
     """
@@ -52,11 +53,12 @@ def _save_vocabulary(input_dir: Path, output_dir: Path) -> Path | None:
     with open(optimized_vocabulary, "wb") as f:
         for index, character in enumerate(source_vocabulary):
             # Write the word as a null-terminated byte string
-            f.write(character.encode('utf-8') + b'\0')
+            f.write(character.encode("utf-8") + b"\0")
             # Write the index as a 4-byte little-endian integer
-            f.write(pack('<I', index))
+            f.write(pack("<I", index))
 
     return optimized_vocabulary
+
 
 def _load_vocabulary(config_file: Path) -> list:
     """

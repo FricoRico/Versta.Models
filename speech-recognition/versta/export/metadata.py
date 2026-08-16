@@ -10,12 +10,12 @@ DEFAULT_VAD_FILENAME = "ggml-silero-v6.2.0.bin"
 
 
 def generate_metadata(
-        output_dir: Path,
-        model_type: str,
-        repo_id: str,
-        model_filename: str,
-        vad_filename: str,
-        languages: List[str] = None,
+    output_dir: Path,
+    model_type: str,
+    repo_id: str,
+    model_filename: str,
+    vad_filename: str,
+    languages: List[str] = None,
 ) -> Path:
     """
     Generates the per-model metadata.json describing a whisper.cpp (ggml) model, in the

@@ -6,6 +6,7 @@ from json import load
 
 from .typing import ExportedBundle, ModelFile
 
+
 def load_model_file(file_path: Path) -> List[List[ModelFile]]:
     """
     Load a model file from the specified path and return its models as a dictionary.
@@ -29,14 +30,19 @@ def load_model_file(file_path: Path) -> List[List[ModelFile]]:
 
             for model in pairs:
                 model_pairs.append(
-                    ModelFile(base_model=model["base_model"], score=float(model["score"]))
+                    ModelFile(
+                        base_model=model["base_model"], score=float(model["score"])
+                    )
                 )
 
             model_files.append(model_pairs)
 
     return model_files
 
-def save_model_file(bundles: List[List[ExportedBundle]], link_prefix: str, output_dir: Path) -> Path:
+
+def save_model_file(
+    bundles: List[List[ExportedBundle]], link_prefix: str, output_dir: Path
+) -> Path:
     """
     Save the model file to the specified path.
 
@@ -72,7 +78,6 @@ def save_model_file(bundles: List[List[ExportedBundle]], link_prefix: str, outpu
             )
 
         model_output.append(model_pairs)
-
 
     with open(file_path, "w") as f:
         json.dump(model_output, f, indent=4)

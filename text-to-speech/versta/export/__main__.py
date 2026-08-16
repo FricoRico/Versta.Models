@@ -14,6 +14,7 @@ from .utils import remove_folder, output_folder
 with open(Path(__file__).parent / ".." / "version.txt", "r") as version_file:
     version = version_file.read().strip()
 
+
 def parse_args():
     parser = ArgumentParser(
         os.path.basename(__file__),
@@ -28,8 +29,8 @@ def parse_args():
         "--model",
         type=str,
         help="Provide the name of the pre-trained model to convert. "
-             "For Kokoro models, use the HuggingFace model name. "
-             "For Piper models, use the repository name 'rhasspy/piper-voices'.",
+        "For Kokoro models, use the HuggingFace model name. "
+        "For Piper models, use the repository name 'rhasspy/piper-voices'.",
         required=True,
     )
 
@@ -38,7 +39,7 @@ def parse_args():
         type=Path,
         default=Path("output/kokoro"),
         help="Provide an output directory for the converted model's and configuration file."
-             "If unspecified, the converted ORT format model's will be in the '/output' directory, in the provided language.",
+        "If unspecified, the converted ORT format model's will be in the '/output' directory, in the provided language.",
     )
 
     parser.add_argument(
@@ -46,7 +47,7 @@ def parse_args():
         type=str,
         default="kokoro",
         help="Specify the format of the model to convert."
-             "This could be either 'kokoro' or 'piper' at the moment, defaulting to 'kokoro'."
+        "This could be either 'kokoro' or 'piper' at the moment, defaulting to 'kokoro'.",
     )
 
     parser.add_argument(
@@ -54,7 +55,7 @@ def parse_args():
         type=str,
         default=None,
         help="Specify the voice path for Piper models (e.g., 'nl/nl_NL/mls/medium', 'de/de_DE/mls_6892/low'). "
-             "This parameter specifies the directory path within the Piper repository to the desired voice model."
+        "This parameter specifies the directory path within the Piper repository to the desired voice model.",
     )
 
     parser.add_argument(
@@ -62,7 +63,7 @@ def parse_args():
         action="store_true",
         default=False,
         help="Whether to remove intermediate files created during the conversion process."
-             "This will default to False if not specified.",
+        "This will default to False if not specified.",
     )
 
     parser.add_argument(
@@ -70,22 +71,22 @@ def parse_args():
         action="store_true",
         default=False,
         help="Whether to remove the downloaded files from HuggingFace cache."
-             "This will default to False if not specified.",
+        "This will default to False if not specified.",
     )
 
     parsed_args = parser.parse_args()
     return parsed_args
 
-def main(
-        model: str,
-        output_dir: Path,
-        keep_intermediates: bool = False,
-        clear_cache: bool = False,
-        model_format: str = "kokoro",
-        voice: str = None,
-):
-    print("Exporting the model...")\
 
+def main(
+    model: str,
+    output_dir: Path,
+    keep_intermediates: bool = False,
+    clear_cache: bool = False,
+    model_format: str = "kokoro",
+    voice: str = None,
+):
+    print("Exporting the model...")
     output_dir.mkdir(parents=True, exist_ok=True)
     output_dir = output_folder(output_dir, model, model_format, voice)
 
@@ -113,7 +114,9 @@ def main(
     voices = get_voices(converted_dir / "voices", output_dir, model_format)
 
     # Step 6: Create metadata file for the model
-    generate_metadata(version, output_dir, model, model_format, ort_files, tokenizer_files, voices)
+    generate_metadata(
+        version, output_dir, model, model_format, ort_files, tokenizer_files, voices
+    )
 
     # Step 7: Remove intermediate files if specified
     if not keep_intermediates:
@@ -124,6 +127,7 @@ def main(
     if clear_cache:
         remove_folder(Path(default_cache_path) / f"models/{model}".replace("/", "--"))
         print("HuggingFace cache cleaned.")
+
 
 if __name__ == "__main__":
     args = parse_args()

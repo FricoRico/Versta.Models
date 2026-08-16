@@ -7,7 +7,10 @@ from requests import get
 
 from .utils import copy_folder
 
-def download_folder_from_git(export_path: Path, download_path: Path, repo_url: str, folder_path: str = None) -> Path:
+
+def download_folder_from_git(
+    export_path: Path, download_path: Path, repo_url: str, folder_path: str = None
+) -> Path:
     """
     Clones a Git repository using SSH and extracts a specific folder to an output directory.
 
@@ -22,7 +25,7 @@ def download_folder_from_git(export_path: Path, download_path: Path, repo_url: s
     """
     print("Downloading folder from Git repository...")
 
-    repo_name = repo_url.split('/')[-1].replace('.git', '')
+    repo_name = repo_url.split("/")[-1].replace(".git", "")
 
     clone_path = download_path / repo_name
     if clone_path.exists():
@@ -31,14 +34,16 @@ def download_folder_from_git(export_path: Path, download_path: Path, repo_url: s
     clone_path.mkdir(parents=True)
 
     env = environ.copy()
-    run(['git', 'clone', repo_url, clone_path], check=True, env=env)
+    run(["git", "clone", repo_url, clone_path], check=True, env=env)
 
     if folder_path is None:
         source_path = clone_path
     else:
         source_path = clone_path / folder_path
     if not path.exists(source_path):
-        raise FileNotFoundError(f"The folder '{folder_path}' does not exist in the repository.")
+        raise FileNotFoundError(
+            f"The folder '{folder_path}' does not exist in the repository."
+        )
 
     if folder_path is None:
         target_path = export_path
@@ -54,7 +59,10 @@ def download_folder_from_git(export_path: Path, download_path: Path, repo_url: s
 
     return target_path
 
-def download_folder_from_tarball(export_path: Path, download_path: Path, tarball_url: str, folder_path: str) -> Path:
+
+def download_folder_from_tarball(
+    export_path: Path, download_path: Path, tarball_url: str, folder_path: str
+) -> Path:
     """
     Downloads a tarball from a URL and extracts a specific folder to an output directory.
 
@@ -69,7 +77,7 @@ def download_folder_from_tarball(export_path: Path, download_path: Path, tarball
     """
     print("Downloading tarball from URL...")
 
-    tarball_name = tarball_url.split('/')[-1]
+    tarball_name = tarball_url.split("/")[-1]
     tarball_path = download_path / tarball_name
 
     print(f"Downloading {tarball_url} to {tarball_path}...")
@@ -78,17 +86,19 @@ def download_folder_from_tarball(export_path: Path, download_path: Path, tarball
     response.raise_for_status()  # Ensure we got a successful response
 
     print("Saving tarball to disk...")
-    with open(tarball_path, 'wb') as f:
+    with open(tarball_path, "wb") as f:
         for chunk in response.iter_content(chunk_size=8192):
             f.write(chunk)
 
     print("Extracting tarball...")
-    with taropen(tarball_path, 'r:*') as tar:
+    with taropen(tarball_path, "r:*") as tar:
         tar.extractall(path=download_path)
 
     source_path = Path(tarball_path.as_posix().replace(".tar.gz", ""))
     if not source_path.exists():
-        raise FileNotFoundError(f"The folder '{tarball_name.split('.')[0]}' does not exist in the tarball.")
+        raise FileNotFoundError(
+            f"The folder '{tarball_name.split('.')[0]}' does not exist in the tarball."
+        )
 
     target_path = export_path / folder_path
     if target_path.exists():
@@ -98,7 +108,7 @@ def download_folder_from_tarball(export_path: Path, download_path: Path, tarball
 
     for item in listdir(source_path):
         source_file = path.join(source_path, item)
-        target_file  = path.join(target_path, item)
+        target_file = path.join(target_path, item)
         move(source_file, target_file)
 
     return target_path

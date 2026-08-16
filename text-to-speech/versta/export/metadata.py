@@ -8,8 +8,15 @@ from .utils import copy_folder
 from .typing import ORTFiles, TokenizerFiles
 
 
-def generate_metadata(version: str, output_dir: Path, model: str, model_format: str, ort_files: ORTFiles,
-                      tokenizer_files: TokenizerFiles, voices: List[str]) -> Path:
+def generate_metadata(
+    version: str,
+    output_dir: Path,
+    model: str,
+    model_format: str,
+    ort_files: ORTFiles,
+    tokenizer_files: TokenizerFiles,
+    voices: List[str],
+) -> Path:
     """
     Generates a metadata file for the model conversion process.
 
@@ -31,8 +38,8 @@ def generate_metadata(version: str, output_dir: Path, model: str, model_format: 
         "files": {
             "inference": ort_files or {},
             "tokenizer": tokenizer_files or {},
-            "voices": voices or []
-        }
+            "voices": voices or [],
+        },
     }
 
     # Define the path for the metadata.json file
@@ -45,7 +52,9 @@ def generate_metadata(version: str, output_dir: Path, model: str, model_format: 
     return metadata_file
 
 
-def get_voices(input_path: Path, export_path: Path, model_format: str = "kokoro") -> List[str]:
+def get_voices(
+    input_path: Path, export_path: Path, model_format: str = "kokoro"
+) -> List[str]:
     """
     Get all voices from voices directory
 
@@ -59,7 +68,9 @@ def get_voices(input_path: Path, export_path: Path, model_format: str = "kokoro"
         copy_folder(input_path, export_path)
 
         files = listdir(export_path / folder_name)
-        voices = [f for f in files if path.isfile(path.join(export_path / folder_name, f))]
+        voices = [
+            f for f in files if path.isfile(path.join(export_path / folder_name, f))
+        ]
         return [path.join("voices", f) for f in voices]
     elif model_format == "piper":
         return []

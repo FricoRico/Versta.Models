@@ -1,6 +1,7 @@
 from typing import TypedDict, List, Optional, Any
 from pathlib import Path
 
+
 class EvaluationResult(TypedDict):
     image_path: str
     ground_truth: str
@@ -18,6 +19,7 @@ class EvaluationResult(TypedDict):
 
 class EvaluationMetrics(TypedDict):
     """Aggregate evaluation metrics."""
+
     total_samples: int
     avg_character_accuracy_original: float
     avg_character_accuracy_quantized: float
@@ -37,6 +39,7 @@ class CacheEntry(TypedDict):
 
 class OCRSample(TypedDict):
     """Single OCR sample result."""
+
     image_path: str
     predicted_text: str
     ground_truth: str

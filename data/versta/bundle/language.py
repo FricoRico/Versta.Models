@@ -5,19 +5,23 @@ from typing import List, Tuple, TypedDict
 
 from .metadata import BundleMetadata
 
+
 class LanguageTokenizerFiles(TypedDict):
     config: Path
     vocabulary: Path
     source: Path
     target: Path
 
+
 class LanguageORTFiles(TypedDict):
     encoder: Path
     decoder: Path
 
+
 class LanguageFiles(TypedDict):
     tokenizer: LanguageTokenizerFiles
     inference: LanguageORTFiles
+
 
 class LanguageMetadata(TypedDict):
     source_language: str
@@ -25,7 +29,10 @@ class LanguageMetadata(TypedDict):
     architectures: List[str]
     files: LanguageFiles
 
-def validate_translation_pairs(metadata_list: List[BundleMetadata]) -> List[Tuple[str, str]]:
+
+def validate_translation_pairs(
+    metadata_list: List[BundleMetadata],
+) -> List[Tuple[str, str]]:
     """
     Validates that for each language pair (source -> target), there is a corresponding reverse pair (target -> source).
     If any reverse pair is missing, it returns them as a list of missing translation pairs.
@@ -41,20 +48,23 @@ def validate_translation_pairs(metadata_list: List[BundleMetadata]) -> List[Tupl
 
     # Populate the existing pairs set
     for metadata in metadata_list:
-        existing_pairs.add((metadata['source_language'], metadata['target_language']))
+        existing_pairs.add((metadata["source_language"], metadata["target_language"]))
 
     # List to store the missing translation pairs
     missing_pairs = []
 
     # Check for missing reverse translation pairs
     for metadata in metadata_list:
-        reverse_pair = (metadata['target_language'], metadata['source_language'])
+        reverse_pair = (metadata["target_language"], metadata["source_language"])
         if reverse_pair not in existing_pairs:
             missing_pairs.append(reverse_pair)
 
     if missing_pairs:
-        missing_pairs_formatted = [f"{source}-{target}" for source, target in missing_pairs]
+        missing_pairs_formatted = [
+            f"{source}-{target}" for source, target in missing_pairs
+        ]
         raise ValueError(f"Missing translation pairs: {missing_pairs_formatted}")
+
 
 def extract_unique_languages(metadata: List[BundleMetadata]) -> List[str]:
     """
@@ -70,10 +80,11 @@ def extract_unique_languages(metadata: List[BundleMetadata]) -> List[str]:
 
     # Split each pair and add the languages to the set
     for data in metadata:
-        unique_languages.update([data['source_language'], data['target_language']])
+        unique_languages.update([data["source_language"], data["target_language"]])
 
     # Return the unique languages as a sorted list
     return sorted(unique_languages)
+
 
 def update_metadata_file(file: Path, path: Path) -> None:
     """
@@ -92,13 +103,16 @@ def update_metadata_file(file: Path, path: Path) -> None:
         metadata = json.load(f)
 
     # Update the paths in the 'files' section with the folder prefix
-    metadata['files'] = update_metadata_file_paths(metadata['files'], path)
+    metadata["files"] = update_metadata_file_paths(metadata["files"], path)
 
     # Save the updated metadata back to the original file
     with open(file, "w") as f:
         json.dump(metadata, f, indent=4)
 
-def update_metadata_file_paths(metadata: LanguageMetadata, path: Path) -> LanguageMetadata:
+
+def update_metadata_file_paths(
+    metadata: LanguageMetadata, path: Path
+) -> LanguageMetadata:
     """
     Recursively update file paths in the metadata dictionary by adding a folder prefix.
 

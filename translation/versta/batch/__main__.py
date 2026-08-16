@@ -9,6 +9,7 @@ from .export import export_models
 with open(Path(__file__).parent.parent / "version.txt", "r") as _version_file:
     BUNDLE_VERSION = _version_file.read().strip()
 
+
 def parse_args():
     parser = ArgumentParser(
         os.path.basename(__file__),
@@ -22,7 +23,7 @@ def parse_args():
         "--input_file",
         type=Path,
         help="Provide the file containing the Firefox language pairs to download. "
-             "This JSON file will be used to download the models from Mozilla's storage bucket.",
+        "This JSON file will be used to download the models from Mozilla's storage bucket.",
         required=True,
     )
 
@@ -31,7 +32,7 @@ def parse_args():
         type=Path,
         default=Path("output/export"),
         help="Provide an output directory for the downloaded models and configuration file. "
-             "If unspecified, the models will be saved in the './output' directory.",
+        "If unspecified, the models will be saved in the './output' directory.",
     )
 
     parser.add_argument(
@@ -39,7 +40,7 @@ def parse_args():
         type=str,
         default="https://models.versta.app/translation/",
         help="Provide the prefix for the links to the models. "
-             "This will be used to generate the links to the models in the output definition file.",
+        "This will be used to generate the links to the models in the output definition file.",
     )
 
     parser.add_argument(
@@ -54,18 +55,19 @@ def parse_args():
         action="store_true",
         default=False,
         help="Whether to remove intermediate files created during the bundling process."
-             "This will default to False if not specified.",
+        "This will default to False if not specified.",
     )
 
     parsed_args = parser.parse_args()
     return parsed_args
 
+
 def main(
-        input_file: Path,
-        output_dir: Path,
-        link_prefix: str,
-        registry_url: str,
-        keep_intermediates: bool = False,
+    input_file: Path,
+    output_dir: Path,
+    link_prefix: str,
+    registry_url: str,
+    keep_intermediates: bool = False,
 ):
     # Step 1: Load the model file
     models = load_model_file(input_file)
@@ -78,6 +80,7 @@ def main(
 
     # Step 4: Sync the freshly computed fields back into the input catalog (backed up to .bak)
     update_models_json(input_file, output_dir / "models.json", BUNDLE_VERSION)
+
 
 if __name__ == "__main__":
     args = parse_args()

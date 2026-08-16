@@ -5,7 +5,11 @@ from pathlib import Path
 from typing import List, TypedDict
 
 from .metadata import load_metadata_for_input_dirs, generate_metadata
-from .language import validate_translation_pairs, extract_unique_languages, update_metadata_file
+from .language import (
+    validate_translation_pairs,
+    extract_unique_languages,
+    update_metadata_file,
+)
 from .bundle_tar import bundle_files, create_checksum
 from .utils import copy_folders, remove_folder
 
@@ -49,7 +53,7 @@ def parse_args():
         default=Path("output"),
         help="Provide an output directory for the converted model's and configuration file. "
         "If unspecified, the converted ORT format model's will be in the '/output' directory.",
-   )
+    )
 
     parser.add_argument(
         "--keep_intermediates",
@@ -64,11 +68,12 @@ def parse_args():
         action="store_true",
         default=False,
         help="Whether to remove input file directories after bundeling."
-             "This will default to False if not specified.",
+        "This will default to False if not specified.",
     )
 
     parsed_args = parser.parse_args()
     return parsed_args
+
 
 def main(
     unique_id: str,
@@ -123,6 +128,7 @@ def main(
         bundle=bundle_file,
         checksum=checksum_file,
     )
+
 
 if __name__ == "__main__":
     args = parse_args()

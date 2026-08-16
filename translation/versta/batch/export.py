@@ -13,9 +13,9 @@ from .typing import ModelFile, ExportedBundle, ExportedModel
 
 
 def export_models(
-        models: List[List[ModelFile]],
-        output_dir: Path,
-        registry_url: str,
+    models: List[List[ModelFile]],
+    output_dir: Path,
+    registry_url: str,
 ) -> List[List[ExportedBundle]]:
     """
     Download the Firefox (Bergamot) translation models and bundle them together.
@@ -45,7 +45,9 @@ def export_models(
                 architecture,
             )
 
-            direction_dir = output_dir / f"{entry['source_language']}-{entry['target_language']}"
+            direction_dir = (
+                output_dir / f"{entry['source_language']}-{entry['target_language']}"
+            )
             downloaded = download_model(base_url, registry_entry, direction_dir)
 
             with open(downloaded / "metadata.json", "r") as f:
@@ -66,7 +68,10 @@ def export_models(
 
     return exported_bundles
 
-def _export_bundle(model: List[ExportedModel], output_dir: Path) -> List[ExportedBundle]:
+
+def _export_bundle(
+    model: List[ExportedModel], output_dir: Path
+) -> List[ExportedBundle]:
     """
     Bundle the downloaded models into a single tarball.
 

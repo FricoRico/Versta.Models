@@ -13,17 +13,19 @@ def convert_piper_to_onnx(repo_name: str, export_path: Path, voice: str = None) 
         repo_name (str): Name of the Piper repository (e.g., "rhasspy/piper-voices")
         export_path (Path): Path to the directory where the ONNX model will be saved.
         voice (str): Voice path specification (e.g., "nl/nl_NL/mls/medium", "de/de_DE/mls_6892/low")
-    
+
     Returns:
         Path: The path to the exported ONNX model.
     """
     if not voice:
-        raise ValueError("Voice path must be specified for Piper models. Use --sub_voice parameter.")
-    
+        raise ValueError(
+            "Voice path must be specified for Piper models. Use --sub_voice parameter."
+        )
+
     print(f"Downloading Piper model from {repo_name} with voice path {voice}...")
-    
+
     model_name = _get_model_name(voice)
-    
+
     model_file_path = hf_hub_download(
         repo_id=repo_name,
         filename=f"{voice}/{model_name}.onnx",
@@ -33,10 +35,10 @@ def convert_piper_to_onnx(repo_name: str, export_path: Path, voice: str = None) 
         repo_id=repo_name,
         filename=f"{voice}/{model_name}.onnx.json",
     )
-        
+
     model_output = export_path / "model.onnx"
     config_output = export_path / "config.json"
-    
+
     copyfile(model_file_path, model_output)
     copyfile(config_file_path, config_output)
 
@@ -45,6 +47,7 @@ def convert_piper_to_onnx(repo_name: str, export_path: Path, voice: str = None) 
     _set_model_type(config_output, "piper")
 
     return model_output
+
 
 def _get_model_name(voice: str) -> str:
     """
@@ -56,9 +59,11 @@ def _get_model_name(voice: str) -> str:
     Returns:
         str: The model name derived from the voice path.
     """
-    path_parts = voice.strip('/').split('/')
+    path_parts = voice.strip("/").split("/")
     if len(path_parts) < 3:
-        raise ValueError(f"Invalid voice path '{voice}'. Expected format: 'language/locale/voice_type/quality'")
+        raise ValueError(
+            f"Invalid voice path '{voice}'. Expected format: 'language/locale/voice_type/quality'"
+        )
 
     locale = path_parts[1]  # e.g., "nl_NL", "de_DE"
     voice_type = path_parts[2]  # e.g., "mls", "mls_6892"
@@ -66,14 +71,15 @@ def _get_model_name(voice: str) -> str:
 
     return f"{locale}-{voice_type}-{quality}"
 
+
 def _extract_vocab(export_dir: Path, config_file: Path) -> Path:
     """
     Extracts the vocabulary from the Piper model config.json and saves it in the export directory.
-    
+
     Args:
         export_dir (Path): Path to the directory where the vocabulary will be saved.
         config_file (Path): Path to the configuration file of the Piper model.
-    
+
     Returns:
         Path: Path to the created vocab.bin file.
     """
@@ -86,9 +92,9 @@ def _extract_vocab(export_dir: Path, config_file: Path) -> Path:
     with open(optimized_vocabulary, "wb") as f:
         for word, index in source_vocabulary.items():
             # Write the word as a null-terminated byte string
-            f.write(word.encode('utf-8') + b'\0')
+            f.write(word.encode("utf-8") + b"\0")
             # Write the index as a 4-byte little-endian integer
-            f.write(pack('<I', index))
+            f.write(pack("<I", index))
 
     return optimized_vocabulary
 
@@ -138,7 +144,9 @@ def get_language_from_config(model: str, voice: str = None) -> dict:
         dict: Language information including code, family, region, etc.
     """
     if not voice:
-        raise ValueError("Voice path must be specified for Piper models. Use --sub_voice parameter.")
+        raise ValueError(
+            "Voice path must be specified for Piper models. Use --sub_voice parameter."
+        )
 
     model_name = _get_model_name(voice)
 

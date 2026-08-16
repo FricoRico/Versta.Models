@@ -75,9 +75,9 @@ def get_file_size(repo_id: str, filename: str) -> int:
 
 
 def download_file(
-        repo_id: str,
-        filename: str,
-        output_dir: Path,
+    repo_id: str,
+    filename: str,
+    output_dir: Path,
 ) -> Path:
     """
     Downloads a single file from a Hugging Face repository into ``output_dir``.
@@ -94,20 +94,22 @@ def download_file(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"Downloading {repo_id}/{filename}")
-    return Path(hf_hub_download(
-        repo_id=repo_id,
-        filename=filename,
-        local_dir=str(output_dir),
-    ))
+    return Path(
+        hf_hub_download(
+            repo_id=repo_id,
+            filename=filename,
+            local_dir=str(output_dir),
+        )
+    )
 
 
 def download_model(
-        repo_id: str,
-        model_type: str,
-        output_dir: Path,
-        languages: list = None,
-        vad_repo: str = DEFAULT_VAD_REPO,
-        vad_filename: str = DEFAULT_VAD_FILENAME,
+    repo_id: str,
+    model_type: str,
+    output_dir: Path,
+    languages: list = None,
+    vad_repo: str = DEFAULT_VAD_REPO,
+    vad_filename: str = DEFAULT_VAD_FILENAME,
 ) -> Path:
     """
     Downloads a whisper.cpp ggml model (and its required Silero-VAD model) from Hugging Face
@@ -145,7 +147,9 @@ def download_model(
     model_size = get_file_size(repo_id, model_filename) or os.path.getsize(model_path)
     vad_size = get_file_size(vad_repo, vad_filename) or os.path.getsize(vad_path)
 
-    metadata_file = generate_metadata(model_dir, model_type, repo_id, model_filename, vad_filename, languages)
+    metadata_file = generate_metadata(
+        model_dir, model_type, repo_id, model_filename, vad_filename, languages
+    )
 
     with open(metadata_file, "r", encoding="utf-8") as handle:
         language_count = len(json.load(handle).get("languages", []))

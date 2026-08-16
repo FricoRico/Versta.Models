@@ -54,12 +54,7 @@ languages: Dict[str, List[str]] = {
         "Catalan",
         "Quechua",
     ],
-    "eslav": [
-        "Russian",
-        "Belarusian",
-        "Ukrainian",
-        "English"
-    ],
+    "eslav": ["Russian", "Belarusian", "Ukrainian", "English"],
     "th": [
         "Thai",
         "English",
@@ -105,7 +100,7 @@ languages: Dict[str, List[str]] = {
         "Tuvan",
         "Sakha",
         "Karakalpak",
-        "English"
+        "English",
     ],
     "arabic": [
         "Arabic",
@@ -116,7 +111,7 @@ languages: Dict[str, List[str]] = {
         "Kurdish",
         "Sindhi",
         "Balochi",
-        "English"
+        "English",
     ],
     "devanagari": [
         "Hindi",
@@ -132,7 +127,7 @@ languages: Dict[str, List[str]] = {
         "Konkani",
         "Sanskrit",
         "Haryanvi",
-        "English"
+        "English",
     ],
     "ta": [
         "Tamil",
