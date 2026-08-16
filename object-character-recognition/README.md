@@ -1,6 +1,24 @@
 # OCR Models (PP-OCRv6, MNN int8)
 The Versta app runs on-device OCR with PaddleOCR PP-OCRv6 models in MNN int8 format. This module downloads the official upstream inference models, converts them to ONNX via `paddle2onnx`, converts them to MNN with int8 weight quantization via `MNNConvert`, and produces a pack in `output/paddle-ocr-v6/` with a `manifest.json` ready for upload to `models.versta.app`.
 
+### Glyph matte (`versta.train.glyphmatte`)
+
+Trains and exports `glyphmatte_int8.mnn` (~2 MB, four named outputs:
+`matte`, `weight`, `foreground`, `background`), bundled into the pack.
+Synthesizes labelled 48-px text strips from pinned fonts and per-script word
+lists (see `assets/`, downloaded via `versta.train.glyphmatte.assets`), trains
+a mini U-Net on GPU (`uv sync --extra rocm` for AMD or `--extra cu130` for
+NVIDIA; ROCm training needs a C++ toolchain — run inside a toolbox on
+immutable distros), then exports ONNX → int8 MNN with the module's vendored
+`MNNConvert`. Pipeline:
+
+    uv run python -m versta.train.glyphmatte.assets
+    uv run python -m versta.train.glyphmatte.gen_data --out output/gen --n 16
+    uv run python -m versta.train.glyphmatte --steps 20000 --batch 32 --workers 10 --wrapper-width 512 --compile
+    uv run python -m versta.train.glyphmatte.export_onnx ckpt/glyphmatte-latest.pt output/glyphmatte.onnx
+    uv run python -m versta.train.glyphmatte.convert_mnn output/glyphmatte.onnx
+    uv run python -m versta.train.glyphmatte.eval --onnx output/glyphmatte.onnx --mnn output/paddle-ocr-v6/glyphmatte_int8.mnn --n 64
+
 ## Provenance
 - Upstream models (all Apache-2.0): PP-OCRv6 tiny detector, PP-OCRv6 tiny recognizer (latin script slot), PP-OCRv6 small recognizer (CJ script slot) and the PP-LCNet textline orientation model from the [PaddleX/PaddleOCR model zoo](https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/); the PULC language classifier from [PaddleClas](https://paddleclas.bj.bcebos.com/models/PULC/); the DocAligner `lcnet050` document-corner model from [DocsaidLab/DocAligner](https://github.com/DocsaidLab/DocAligner) (downloaded as ready ONNX from the [offline-translator mirror](https://offline-translator.davidv.dev/support/1/docaligner_lcnet050.onnx), a byte-stable copy of the Google Drive original).
 - The conversion pipeline is a port of the MIT-licensed scripts by David Ventura from [translator-rs](https://github.com/DavidVentura/translator-rs) (`scripts/convert_ppocr_v6_mnn.py`, `scripts/convert_det_lowres_mnn.py`, `scripts/convert_pulc_language_mnn.sh`).
@@ -12,7 +30,7 @@ Pinned toolchain versions: `paddlepaddle 3.0`, `paddle2onnx 2.1` (required for P
 Besides [uv](https://docs.astral.sh/uv/), building `MNNConvert` from source needs a C++ toolchain: **GCC (g++) and CMake**. These must be available on PATH (e.g. inside a `toolbox` container on immutable distros). The MNN source is a git submodule pinned to the `3.6.1` release tag — after cloning, run:
 
 ```bash
-git submodule update --init object-character-recognition/vendor/MNN
+git submodule update --init object-character-recognition/vendor/mnn
 ```
 
 `MNNConvert` is built automatically on first run (takes ~15 minutes) if no binary is found; pass `--mnnconvert` to use a prebuilt binary instead.

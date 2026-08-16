@@ -6,7 +6,7 @@ from shutil import which
 from typing import Dict, Optional
 
 MODULE_ROOT = Path(__file__).resolve().parents[2]
-MNN_SOURCE_DIR = MODULE_ROOT / "vendor" / "MNN"
+MNN_SOURCE_DIR = MODULE_ROOT / "vendor" / "mnn"
 MNNCONVERT_BINARY = MNN_SOURCE_DIR / "build-convert" / "MNNConvert"
 
 
@@ -28,7 +28,7 @@ def build_mnnconvert(jobs: int = 8) -> Path:
     if not (MNN_SOURCE_DIR / "CMakeLists.txt").exists():
         raise FileNotFoundError(
             "MNN submodule not checked out; run "
-            "`git submodule update --init object-character-recognition/vendor/MNN`"
+            "`git submodule update --init object-character-recognition/vendor/mnn`"
         )
     build_dir = MNN_SOURCE_DIR / "build-convert"
     subprocess.run(
@@ -75,7 +75,7 @@ def resolve_mnnconvert(override: Optional[Path]) -> Path:
     on_path = which("MNNConvert")
     if on_path is not None:
         return Path(on_path)
-    print("MNNConvert not found; building from vendor/MNN (first run takes a while)")
+    print("MNNConvert not found; building from vendor/mnn (first run takes a while)")
     return build_mnnconvert()
 
 

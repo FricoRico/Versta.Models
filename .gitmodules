@@ -1,3 +1,3 @@
-[submodule "object-character-recognition/vendor/MNN"]
-	path = object-character-recognition/vendor/MNN
+[submodule "object-character-recognition/vendor/mnn"]
+	path = object-character-recognition/vendor/mnn
 	url = https://github.com/alibaba/MNN

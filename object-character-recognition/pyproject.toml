@@ -17,19 +17,52 @@ dependencies = [
     "onnx>=1.17,<2",
     "pyyaml>=6,<7",
     "tqdm>=4.66,<5",
+    "pillow>=10,<12",
+    "scipy>=1.12,<2",
+    "fonttools>=4.50,<5",
+    "onnxruntime>=1.20,<2",
+    "onnxscript>=0.7.1,<0.9",
+    "mnn>=3.6,<3.7; sys_platform == 'linux'",
 ]
 
 [dependency-groups]
 dev = [
-    "onnxruntime>=1.20,<2",
-    "pillow>=10,<12",
     "ruff>=0.12,<1",
-    "mnn; sys_platform == 'linux'",
 ]
+
+# Glyphmatte GPU backends for `versta.train.glyphmatte.*`: pick one with
+# `uv sync --extra rocm` (AMD) or `--extra cu130` (NVIDIA).
+[project.optional-dependencies]
+rocm = ["torch==2.13.0+rocm7.2", "triton-rocm>=3,<4"]
+cu130 = ["torch==2.13.0+cu130", "triton>=3,<4"]
 
 # MNN only publishes Linux wheels; keep resolution limited to platforms it exists on.
 [tool.uv]
 environments = ["sys_platform == 'linux'"]
+conflicts = [
+    [
+        { extra = "rocm" },
+        { extra = "cu130" },
+    ],
+]
+
+[tool.uv.sources]
+torch = [
+    { index = "pytorch-rocm", extra = "rocm" },
+    { index = "pytorch-cu130", extra = "cu130" },
+]
+triton-rocm = [{ index = "pytorch-rocm", extra = "rocm" }]
+triton = [{ index = "pytorch-cu130", extra = "cu130" }]
+
+[[tool.uv.index]]
+name = "pytorch-rocm"
+url = "https://download.pytorch.org/whl/rocm7.2"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
 
 [tool.hatch.version]
 path = "versta/version.txt"
