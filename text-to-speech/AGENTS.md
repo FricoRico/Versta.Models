@@ -16,7 +16,7 @@ onnxruntime), and bundles them for side-loading.
 
 ## Tools
 
-Run from within this directory with `requirements.txt` installed.
+Run from within this directory after `uv sync` (dependencies are declared in `pyproject.toml`).
 
 ### `versta.export`
 
@@ -24,8 +24,8 @@ Converts one model end-to-end: ONNX export → quantization → ORT conversion �
 tokenizer/voice extraction → metadata generation:
 
 ```bash
-python -m versta.export --model hexgrad/Kokoro-82M --model_format kokoro --output_dir ./output
-python -m versta.export --model rhasspy/piper-voices --model_format piper --voice nl/nl_NL/mls/medium
+uv run python -m versta.export --model hexgrad/Kokoro-82M --model_format kokoro --output_dir ./output
+uv run python -m versta.export --model rhasspy/piper-voices --model_format piper --voice nl/nl_NL/mls/medium
 ```
 
 - `--model` (required): Hugging Face model name (Kokoro) or `rhasspy/piper-voices` (Piper).
@@ -43,7 +43,7 @@ Bundles one or more converted model directories into a tarball plus `.sha256`
 checksum:
 
 ```bash
-python -m versta.bundle --input_dir ./output/kokoro --unique_id kokoro --output_dir ./output
+uv run python -m versta.bundle --input_dir ./output/kokoro --unique_id kokoro --output_dir ./output
 ```
 
 - `--unique_id`: model id written into the bundle metadata.
@@ -71,6 +71,6 @@ No test suite. Smoke-check a change with a Piper voice (smallest download) or
 Kokoro, and confirm the ORT files, tokenizer files and `metadata.json`:
 
 ```bash
-python -m versta.export --model rhasspy/piper-voices --model_format piper --voice nl/nl_NL/mls/medium --keep_intermediates
-python -m versta.bundle --input_dir <exported dir> --unique_id piper-nl-nl_NL-mls-medium
+uv run python -m versta.export --model rhasspy/piper-voices --model_format piper --voice nl/nl_NL/mls/medium --keep_intermediates
+uv run python -m versta.bundle --input_dir <exported dir> --unique_id piper-nl-nl_NL-mls-medium
 ```

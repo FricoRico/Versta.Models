@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "versta-translation"
+dynamic = ["version"]
+description = "Download and bundle Firefox (Bergamot) translation models for the Versta app"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "requests>=2.31,<3",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12,<1",
+]
+
+[tool.hatch.version]
+path = "versta/version.txt"
+pattern = "^v(?P<version>.+)$"
+
+[tool.hatch.build.targets.wheel]
+packages = ["versta"]

@@ -1,0 +1,4 @@
+# The PaddlePaddle stack pins this module to Python 3.11.
+extend = "../ruff.toml"
+
+target-version = "py311"

@@ -1,0 +1,24 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "versta-speech-recognition"
+dynamic = ["version"]
+description = "Export and bundle whisper.cpp (ggml) speech recognition models for the Versta app"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "huggingface_hub>=0.20",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12,<1",
+]
+
+[tool.hatch.version]
+path = "version.txt"
+pattern = "^v(?P<version>.+)$"
+
+[tool.hatch.build.targets.wheel]
+packages = ["versta"]

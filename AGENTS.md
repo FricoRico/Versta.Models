@@ -20,12 +20,12 @@ produces tarball bundles deployable to the cloud object storage
 - The produced bundles must work fully offline in the Versta app: everything the model needs at runtime (weights, tokenizers, vocabularies, voices, metadata) must ship inside the bundle.
 - Privacy-first: tooling fetches models only from their official upstream sources (Mozilla's translations bucket, Hugging Face). Never introduce third-party download redirects or telemetry.
 - Source-available under the Source First License 1.1 (see `LICENSE.md`). Attribution and license notices must be preserved; never remove or alter licensing headers or notices.
-- Python is the only primary language here. There is no build system (no pyproject/setup.py): every module is a plain source package invoked directly.
+- Python is the only primary language here. Every module is an independent [uv](https://docs.astral.sh/uv/) project: a PEP 621 `pyproject.toml` (hatchling backend) declares metadata and dependencies, and `uv sync` manages the module's virtual environment. There is no shared workspace — each module resolves and pins independently.
 
 ## Repo map
 
-Each module directory is fully self-contained with its own `requirements.txt`,
-its own `versta/` Python package and its own virtual environment:
+Each module directory is fully self-contained with its own `pyproject.toml`,
+its own `versta/` Python package and its own uv-managed virtual environment:
 
 - `translation/` — download and bundle Firefox (Bergamot) translation models. See `/translation/AGENTS.md`.
 - `speech-recognition/` — export whisper.cpp ggml models (+ Silero-VAD) and bundle them. See `/speech-recognition/AGENTS.md`.
@@ -36,11 +36,12 @@ its own `versta/` Python package and its own virtual environment:
 
 Per-module layout (repeated in every module):
 
-- `versta/<tool>/__main__.py` — CLI entrypoint, invoked as `python -m versta.<tool>` from the module directory.
-- `versta/version.txt` (or `version.txt` at module root) — semantic version (`vX.Y.Z`) read at runtime and stamped into generated metadata.
+- `versta/<tool>/__main__.py` — CLI entrypoint, invoked as `uv run python -m versta.<tool>` from the module directory.
+- `versta/version.txt` (or `version.txt` at module root) — semantic version (`vX.Y.Z`) read at runtime and stamped into generated metadata. Also the source of the package version via hatchling's `[tool.hatch.version]` regex pattern (the `v` prefix is stripped for the PEP 440 distribution version).
 - `versta/<tool>/metadata.py` — generates the `metadata.json` that ships inside each bundle and that the app parses at runtime.
 - `models.json` (or `data.json` in `data/`) — the catalog definition consumed by the app for model downloads. Contains absolute URLs to `models.versta.app`.
-- `requirements.txt` — the module's dependency set.
+- `pyproject.toml` — PEP 621 project definition: dependencies, `requires-python` and the dynamic package version read from `version.txt`.
+- `.python-version` — the module's Python version (3.12 everywhere except `object-character-recognition/`, which needs 3.11 for the Paddle stack). uv selects the interpreter from this file.
 
 Generated artifacts never live in git: `*/output`, `*/export`, `*/results`,
 `*/tmp` and virtual environments are gitignored. Never commit model weights,
@@ -51,23 +52,24 @@ tarballs, checkpoints, caches or evaluation predictions.
 Apply these in every module; module-specific rules sit in the nested
 AGENTS.md files.
 
-- Python 3.11+/3.12. Match the version of the module's existing virtual environment when one exists.
+- Python 3.11+/3.12, pinned per module by its `.python-version` file (uv selects the interpreter). `object-character-recognition/` requires 3.11 for the PaddlePaddle stack; the other modules use 3.12.
 - **Strict typing, always.** Every function signature must be fully annotated — every parameter and every return type. No implicit `Any`, no untyped dicts for structured data: use `TypedDict` for dictionary-shaped values that cross module boundaries (see the existing `Output(TypedDict)` and `versta/*/typing.py` files). No bare `dict`/`list` annotations without type arguments — write `Dict[str, str]`, `List[dict]`, etc. Types must be correct and semantically meaningful: never paper over a mismatch with casts or `# type: ignore` just to silence a checker.
 - Use `pathlib.Path` for all filesystem paths — never raw strings, never `os.path`. Accept `Path` parameters and return `Path` values.
 - Google-style docstrings on all public functions: `Args:`, `Returns:`, `Raises:` sections with the type in parentheses after the parameter, matching the existing code.
-- Black is the configured formatter (project IDE setting). Format accordingly: double quotes are fine, keep the existing style of surrounding files.
-- Dependencies are declared per module in `requirements.txt`, pinned as lower-bound/upper-bound ranges (`package>=x.y,<x.z`). Add new dependencies only to the module that needs them and with the same range style.
+- Ruff is the configured linter and formatter, shared via the root `ruff.toml` (Black-compatible defaults: 88-column, double quotes). `object-character-recognition/ruff.toml` extends it with a py311 target. Ruff runs inside each module's uv environment; check with `uv run ruff check` and `uv run ruff format`.
+- Dependencies are declared per module in `pyproject.toml` (`[project] dependencies`), pinned as lower-bound/upper-bound ranges (`package>=x.y,<x.z`). Add new dependencies only to the module that needs them and with the same range style (`uv add` edits `pyproject.toml` directly). `uv.lock` files are gitignored by policy, so the ranges in `pyproject.toml` are the contract.
 - Modules share code pattern, not code: each `versta/` package is self-contained. Do not import across module directories; copy small helpers into a module instead (the `bundle` packages already duplicate `bundle_tar.py`/`utils.py` per module — keep it that way).
 
 ## CLI pattern
 
 Every tool is an argparse CLI in a `__main__.py`, run as a module from within
-the module directory (the `versta` package must be importable from cwd):
+the module directory (`uv sync` installs the `versta` package editable, so
+`uv run python -m versta.<tool>` works regardless of cwd):
 
 ```bash
 cd <module>
-pip install -r requirements.txt
-python -m versta.<tool> --help
+uv sync
+uv run python -m versta.<tool> --help
 ```
 
 Conventions shared by all CLIs:

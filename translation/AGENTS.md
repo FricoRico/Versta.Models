@@ -17,7 +17,7 @@ tarballs the Versta app side-loads at runtime.
 
 ## Tools
 
-All tools run from within this directory with `requirements.txt` installed.
+All tools run from within this directory after `uv sync` (dependencies are declared in `pyproject.toml`).
 
 ### `versta.download`
 
@@ -25,7 +25,7 @@ Downloads one language direction from the Mozilla registry and writes it with
 a `metadata.json` into `output/<src>-<tgt>/`:
 
 ```bash
-python -m versta.download --source en --target es --architecture tiny --output_dir ./output
+uv run python -m versta.download --source en --target es --architecture tiny --output_dir ./output
 ```
 
 - `--source`/`--target` (required): language codes. Inputs are normalized before registry lookup (`normalize_language`): region subtags are stripped (`en-US` → `en`) and Chinese script tags map to `zh` (simplified) / `zh_hant` (traditional). Never normalize `no`/`nb`/`nn`/`hbs`.
@@ -40,7 +40,7 @@ Bundles one or more downloaded directions into a single tarball plus a
 `.sha256` checksum:
 
 ```bash
-python -m versta.bundle --input_dir ./output/en-es ./output/es-en --output_dir ./output
+uv run python -m versta.bundle --input_dir ./output/en-es ./output/es-en --output_dir ./output
 ```
 
 - `--input_dir` (one or more): directories produced by `versta.download`.
@@ -53,7 +53,7 @@ python -m versta.bundle --input_dir ./output/en-es ./output/es-en --output_dir .
 Batch download + bundle for many pairs at once from a JSON input file:
 
 ```bash
-python -m versta.batch --input_file models.json --output_dir ./output/export
+uv run python -m versta.batch --input_file models.json --output_dir ./output/export
 ```
 
 - `--input_file`: JSON list of pairs, each pair a list of `{"source_language", "target_language", "architecture"}` entries.
@@ -75,7 +75,7 @@ No test suite. Smoke-check a change by downloading and bundling a small pair
 content:
 
 ```bash
-python -m versta.download --source en --target es --architecture tiny
-python -m versta.download --source es --target en --architecture tiny
-python -m versta.bundle --input_dir output/en-es output/es-en --keep_intermediates --keep_input
+uv run python -m versta.download --source en --target es --architecture tiny
+uv run python -m versta.download --source es --target en --architecture tiny
+uv run python -m versta.bundle --input_dir output/en-es output/es-en --keep_intermediates --keep_input
 ```

@@ -1,0 +1,33 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "versta-text-to-speech"
+dynamic = ["version"]
+description = "Convert Kokoro/Piper TTS models to ONNX/ORT and bundle them for the Versta app"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "setuptools",
+    "requests",
+    "wheel",
+    "onnxruntime>=1.20,<1.21",
+    "onnxruntime-tools>=1.7,<1.8",
+    "optimum[exporters]>=1.24,<1.25",
+    "transformers>=4.47,<4.48",
+    "pycountry>=24.6,<24.7",
+    "huggingface_hub>=0.20,<1.0",
+    "kokoro==0.8.4",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.12,<1",
+]
+
+[tool.hatch.version]
+path = "versta/version.txt"
+pattern = "^v(?P<version>.+)$"
+
+[tool.hatch.build.targets.wheel]
+packages = ["versta"]

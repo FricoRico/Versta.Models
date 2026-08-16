@@ -16,7 +16,7 @@ side-loads for on-device speech recognition.
 
 ## Tools
 
-Run from within this directory with `requirements.txt` installed.
+Run from within this directory after `uv sync` (dependencies are declared in `pyproject.toml`).
 
 ### `versta.export`
 
@@ -25,7 +25,7 @@ Downloads one whisper model variant plus the VAD model and writes
 `metadata.json`:
 
 ```bash
-python -m versta.export --model ggerganov/whisper.cpp --model-type base-q8_0 --output_dir ./output
+uv run python -m versta.export --model ggerganov/whisper.cpp --model-type base-q8_0 --output_dir ./output
 ```
 
 - `--model`: Hugging Face repository id (default `ggerganov/whisper.cpp`).
@@ -38,7 +38,7 @@ python -m versta.export --model ggerganov/whisper.cpp --model-type base-q8_0 --o
 Bundles a previously exported model directory into a tarball plus checksum:
 
 ```bash
-python -m versta.bundle --input_dir ./output/base-q8_0 --output_dir ./output
+uv run python -m versta.bundle --input_dir ./output/base-q8_0 --output_dir ./output
 ```
 
 - `--input_dir` (single): the directory produced by `versta.export` containing the model, VAD model and `metadata.json`. The bundle id is derived from the metadata (`whisper.<variant stem>`), so no id flag is needed.
@@ -56,6 +56,6 @@ python -m versta.bundle --input_dir ./output/base-q8_0 --output_dir ./output
 No test suite. Smoke-check a change with the smallest variant and bundle it:
 
 ```bash
-python -m versta.export --model-type base-q8_0
-python -m versta.bundle --input_dir output/base-q8_0 --keep_intermediates --keep_input
+uv run python -m versta.export --model-type base-q8_0
+uv run python -m versta.bundle --input_dir output/base-q8_0 --keep_intermediates --keep_input
 ```

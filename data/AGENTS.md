@@ -17,7 +17,7 @@ the host. Dependencies otherwise stay minimal: `setuptools`, `requests`.
 
 ## Tools
 
-Run from within this directory with `requirements.txt` installed.
+Run from within this directory after `uv sync` (dependencies are declared in `pyproject.toml`).
 
 ### `versta.tts`
 
@@ -25,7 +25,7 @@ Downloads espeak-ng, builds its data via CMake, downloads the open-jtalk
 dictionary and generates bundle metadata:
 
 ```bash
-python -m versta.tts --output_dir ./output --temp_dir ./tmp
+uv run python -m versta.tts --output_dir ./output --temp_dir ./tmp
 ```
 
 - `--output_dir`: defaults to `output/`; the bundle staging root is `output/versta-tts-data`.
@@ -55,5 +55,5 @@ No test suite. Smoke-check by running the full pipeline into the gitignored
 trees and confirming `espeak-ng-data`, `open-jtalk-data` and the tarball:
 
 ```bash
-python -m versta.tts --output_dir output --temp_dir tmp
+uv run python -m versta.tts --output_dir output --temp_dir tmp
 ```

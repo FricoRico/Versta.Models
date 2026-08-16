@@ -16,14 +16,14 @@ the evaluation harness used to compare OCR engines against OCR benchmarks.
 
 ## Tools
 
-Run from within this directory with `requirements.txt` installed.
+Run from within this directory after `uv sync` (dependencies are declared in `pyproject.toml`).
 
 ### `versta.export`
 
 Converts a downloaded PaddleOCR checkpoint to ORT:
 
 ```bash
-python -m versta.export --model PaddlePaddle/PP-OCRv5_mobile_rec --module recognizer --export_dir ./export
+uv run python -m versta.export --model PaddlePaddle/PP-OCRv5_mobile_rec --module recognizer --export_dir ./export
 ```
 
 - `--model` (required): Hugging Face repository id. The repo is validated via an HTTP HEAD before `snapshot_download`.
@@ -37,7 +37,7 @@ python -m versta.export --model PaddlePaddle/PP-OCRv5_mobile_rec --module recogn
 Bundles converted detector/recognizer directories into one tarball + `.sha256`:
 
 ```bash
-python -m versta.bundle --input_dir ./export/pp-ocrv5_mobile_rec --unique_id paddle-ocr
+uv run python -m versta.bundle --input_dir ./export/pp-ocrv5_mobile_rec --unique_id paddle-ocr
 ```
 
 - Accepts multiple, mixed module types in one bundle (`language.py:extract_unique_modules`).
@@ -50,14 +50,14 @@ ORT pipeline:
 
 ```bash
 # Reference PaddleOCR run
-python -m versta.evaluate --output-dir ./output --model-type paddleocr
+uv run python -m versta.evaluate --output-dir ./output --model-type paddleocr
 
 # Exported ONNX/ORT engines
-python -m versta.evaluate --output-dir ./output --model-type onnx \
+uv run python -m versta.evaluate --output-dir ./output --model-type onnx \
   --detector path/detector.ort --recognizer path/recognizer.ort
 
 # Score previously generated predictions only
-python -m versta.evaluate --output-dir ./output --eval-only
+uv run python -m versta.evaluate --output-dir ./output --eval-only
 ```
 
 - Note: this CLI uses dashed flags (`--output-dir`, `--model-type`, `--eval-only`) unlike the snake_case flags elsewhere in the repo — follow the local precedent of this file when editing it; do not restyle wholesale.
