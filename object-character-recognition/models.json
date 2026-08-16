@@ -6,7 +6,7 @@
     "architectures": [
       "PaddleOCR"
     ],
-    "size": 9541009,
+    "size": 10932766,
     "version": "v2.0.0",
     "bundle": "https://models.versta.app/object-character-recognition/v2.0.0/paddle-ocr-bundle.tar.gz",
     "checksum": "https://models.versta.app/object-character-recognition/v2.0.0/paddle-ocr-bundle.tar.sha256",

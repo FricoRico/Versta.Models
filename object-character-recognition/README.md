@@ -2,7 +2,7 @@
 The Versta app runs on-device OCR with PaddleOCR PP-OCRv6 models in MNN int8 format. This module downloads the official upstream inference models, converts them to ONNX via `paddle2onnx`, converts them to MNN with int8 weight quantization via `MNNConvert`, and produces a pack in `output/paddle-ocr-v6/` with a `manifest.json` ready for upload to `models.versta.app`.
 
 ## Provenance
-- Upstream models (all Apache-2.0): PP-OCRv6 tiny detector, PP-OCRv6 tiny recognizer (latin script slot), PP-OCRv6 small recognizer (CJ script slot) and the PP-LCNet textline orientation model from the [PaddleX/PaddleOCR model zoo](https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/); the PULC language classifier from [PaddleClas](https://paddleclas.bj.bcebos.com/models/PULC/).
+- Upstream models (all Apache-2.0): PP-OCRv6 tiny detector, PP-OCRv6 tiny recognizer (latin script slot), PP-OCRv6 small recognizer (CJ script slot) and the PP-LCNet textline orientation model from the [PaddleX/PaddleOCR model zoo](https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/); the PULC language classifier from [PaddleClas](https://paddleclas.bj.bcebos.com/models/PULC/); the DocAligner `lcnet050` document-corner model from [DocsaidLab/DocAligner](https://github.com/DocsaidLab/DocAligner) (downloaded as ready ONNX from the [offline-translator mirror](https://offline-translator.davidv.dev/support/1/docaligner_lcnet050.onnx), a byte-stable copy of the Google Drive original).
 - The conversion pipeline is a port of the MIT-licensed scripts by David Ventura from [translator-rs](https://github.com/DavidVentura/translator-rs) (`scripts/convert_ppocr_v6_mnn.py`, `scripts/convert_det_lowres_mnn.py`, `scripts/convert_pulc_language_mnn.sh`).
 - The produced files match, byte-for-byte or within int8 rounding, the reference pack published at [offline-translator.davidv.dev/ocr/1/PP-OCRv6](https://offline-translator.davidv.dev/ocr/1/PP-OCRv6/) (MIT), which serves as a golden reference during development.
 
@@ -29,6 +29,7 @@ The pack consists of (roles refer to `manifest.json`):
 | `PP-OCRv6_small_rec_int8.mnn` + `PP-OCRv6_small_keys.txt` | recognizer + keys | CJ script (different charset than tiny — it drops Japanese kana) |
 | `PULC_int8.mnn` | scriptClassifier | PaddleClas language/script classifier |
 | `textline_ori_x0_25_wq8.mnn` | textlineOrientation | PP-LCNet x0.25 |
+| `docaligner_lcnet050_int8.mnn` | aligner | DocAligner lcnet050 point-regression model: finds the 4 document corners in a photo; the app dewarps before OCR. Input RGB 256x256; outputs `points` (normalized 4x (x,y)) and `has_obj` |
 
 The `half`/`quarter` detector variants are ONNX graph edits: the DBNet head's 2x2 stride-2 deconvs are folded into 1x1 convolutions with spatially averaged weights, producing the probability map at 1/2 (resp. 1/4) input resolution.
 
@@ -46,3 +47,12 @@ uv run python -m versta.bundle
 ```
 
 Produces `output/paddle-ocr-bundle.tar.gz` (rename before publishing if hosting multiple packs) and `output/paddle-ocr-bundle.tar.sha256`.
+
+## Validating the DocAligner export
+`uv sync --group dev` installs onnxruntime + PyMNN, then:
+
+```bash
+uv run python -m versta.export.check_docaligner
+```
+
+generates synthetic document photos, runs the reference ONNX (CPU ORT) and the exported int8 MNN on them, and asserts the corner points agree (mean < 3 px and max < 8 px on the 256x256 input grid). Note: the PyMNN wheel ships `_mnncengine*.so` with an executable-stack flag that hardened kernels reject (`ImportError: cannot enable executable stack`) — clear the X bit of the ELF `PT_GNU_STACK` header to fix it.

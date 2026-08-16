@@ -1,9 +1,16 @@
 from typing import Dict, List, Literal, TypedDict
 
-ModelKind = Literal["detector", "recognizer", "scriptClassifier", "textlineOrientation"]
+ModelKind = Literal[
+    "detector", "recognizer", "scriptClassifier", "textlineOrientation", "aligner"
+]
 
 ManifestRole = Literal[
-    "detector", "recognizer", "scriptClassifier", "textlineOrientation", "keys"
+    "detector",
+    "recognizer",
+    "scriptClassifier",
+    "textlineOrientation",
+    "keys",
+    "aligner",
 ]
 
 

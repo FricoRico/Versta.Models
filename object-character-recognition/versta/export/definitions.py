@@ -64,6 +64,19 @@ MODELS: List[ModelSpec] = [
         "tier": "",
         "script": "",
     },
+    {
+        # DocAligner (DocsaidLab, Apache-2.0): lcnet050 heatmap-regression model that
+        # finds the 4 document corners in a photo; the app dewarps before OCR. Not a
+        # Paddle model — the URL points at the ready ONNX, so no download tar or
+        # paddle2onnx step (opset/pir are unused for aligners).
+        "stem": "docaligner_lcnet050",
+        "url": "https://offline-translator.davidv.dev/support/1/docaligner_lcnet050.onnx",
+        "kind": "aligner",
+        "opset": 0,
+        "pir": False,
+        "tier": "",
+        "script": "",
+    },
 ]
 
 
@@ -92,6 +105,8 @@ def mnn_filename(spec: ModelSpec, variant: str = "") -> str:
         return "PULC_int8.mnn"
     if kind == "textlineOrientation":
         return "textline_ori_x0_25_wq8.mnn"
+    if kind == "aligner":
+        return f"{spec['stem']}_int8.mnn"
     raise ValueError(f"Unknown model kind: {kind}")
 
 

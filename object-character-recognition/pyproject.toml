@@ -21,8 +21,15 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "onnxruntime>=1.20,<2",
+    "pillow>=10,<12",
     "ruff>=0.12,<1",
+    "mnn; sys_platform == 'linux'",
 ]
+
+# MNN only publishes Linux wheels; keep resolution limited to platforms it exists on.
+[tool.uv]
+environments = ["sys_platform == 'linux'"]
 
 [tool.hatch.version]
 path = "versta/version.txt"

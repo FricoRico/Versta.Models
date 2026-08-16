@@ -9,7 +9,7 @@ from .definitions import (
     keys_filename,
     mnn_filename,
 )
-from .download import download_tar, extract_tar
+from .download import download_file, extract_tar
 from .fold_deconv import fold_variant_graph
 from .keys import write_keys
 from .manifest import file_entry
@@ -39,9 +39,18 @@ def convert_model(
         order.
     """
     downloads = work_dir / "downloads"
+
+    if spec["kind"] == "aligner":
+        # Non-Paddle models ship as ready ONNX: no tar extraction or
+        # paddle2onnx step.
+        onnx_path = download_file(spec["url"], downloads / f"{spec['stem']}.onnx")
+        mnn_path = convert_to_mnn(mnnconvert, onnx_path, pack_dir / mnn_filename(spec))
+        print(mnn_path)
+        return [file_entry(mnn_path, spec["kind"], 1)]
+
     extracted = work_dir / "extracted"
 
-    tar_path = download_tar(spec["url"], downloads / f"{spec['stem']}.tar")
+    tar_path = download_file(spec["url"], downloads / f"{spec['stem']}.tar")
     extract_tar(tar_path, extracted)
     model_dir = extracted / spec["stem"]
     onnx_path = work_dir / "onnx" / f"{spec['stem']}.onnx"

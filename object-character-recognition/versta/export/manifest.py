@@ -2,7 +2,7 @@ import json
 
 from hashlib import sha256
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, cast
 
 from .definitions import PACK_NAME
 from .typing import Manifest, ManifestFile, ManifestRole
@@ -65,16 +65,27 @@ def write_manifest(version: str, pack_dir: Path, files: List[ManifestFile]) -> P
     Writes the pack manifest (`manifest.json`) listing every file the app
     downloads, with sizes, checksums, roles and priorities.
 
+    Entries produced by this run replace same-named entries already in the
+    manifest, so partial re-runs (`--models`) keep the rest of the pack
+    intact.
+
     Args:
         version (str): Pack version stamp (from versta/version.txt).
         pack_dir (Path): The pack output directory.
-        files (List[ManifestFile]): Manifest entries for the pack files.
+        files (List[ManifestFile]): Manifest entries for the produced files.
 
     Returns:
         Path: The written manifest path.
     """
-    manifest = Manifest(version=version, pack=PACK_NAME, files=files)
     manifest_path = pack_dir / "manifest.json"
+    merged: List[ManifestFile] = []
+    if manifest_path.exists():
+        with open(manifest_path, "r") as f:
+            merged = cast(Manifest, json.load(f))["files"]
+    for entry in files:
+        merged = [e for e in merged if e["name"] != entry["name"]] + [entry]
+
+    manifest = Manifest(version=version, pack=PACK_NAME, files=merged)
     with open(manifest_path, "w") as f:
         json.dump(manifest, f, indent=4)
     return manifest_path

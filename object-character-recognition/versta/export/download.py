@@ -6,17 +6,17 @@ from urllib.request import Request, urlopen
 from tqdm import tqdm
 
 
-def download_tar(url: str, dest: Path) -> Path:
+def download_file(url: str, dest: Path) -> Path:
     """
-    Downloads a model tar archive, streaming to disk with a progress bar when
-    the server reports a content length.
+    Downloads a single file, streaming to disk with a progress bar when the
+    server reports a content length.
 
     Args:
-        url (str): The upstream tar URL.
+        url (str): The upstream file URL.
         dest (Path): Destination file path.
 
     Returns:
-        Path: The downloaded tar path.
+        Path: The downloaded file path.
     """
     dest.parent.mkdir(parents=True, exist_ok=True)
     with urlopen(Request(url, method="GET"), timeout=600) as response:
