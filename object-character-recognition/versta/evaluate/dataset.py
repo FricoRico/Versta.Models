@@ -1,8 +1,6 @@
 from huggingface_hub import hf_hub_download, snapshot_download
 from pathlib import Path
-from typing import Tuple, Optional
-import json
-import shutil
+from typing import Tuple
 
 
 def download_omnidocbench_json() -> Path:

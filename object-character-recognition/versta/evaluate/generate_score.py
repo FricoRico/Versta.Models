@@ -7,7 +7,7 @@ per-category scores and an overall score from the metric_result.json files.
 
 import json
 from pathlib import Path
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 
 def generate_result_tables(

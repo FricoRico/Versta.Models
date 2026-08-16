@@ -1,5 +1,4 @@
 from pathlib import Path
-from onnxruntime import SessionOptions, GraphOptimizationLevel
 from optimum.onnxruntime import ORTQuantizer, AutoQuantizationConfig
 from onnxruntime.quantization.registry import QLinearOpsRegistry
 from onnx import load, save, AttributeProto

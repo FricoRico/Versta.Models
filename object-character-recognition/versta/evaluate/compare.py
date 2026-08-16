@@ -1,12 +1,10 @@
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any
 from difflib import SequenceMatcher
 import json
 from pathlib import Path
-from collections import Counter
-import math
 
 # Import canonical OmniDocBench metrics (the original formula)
-from versta._vendor.omnidocbench_metrics import calculate_edit_dist, calculate_ned
+from versta._vendor.omnidocbench_metrics import calculate_ned
 
 # Try to import NLTK for BLEU and METEOR
 try:

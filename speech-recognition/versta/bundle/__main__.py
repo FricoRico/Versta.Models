@@ -110,7 +110,7 @@ def main(
     # Step 6: Remove input directories if specified
     if not keep_input:
         remove_folder(input_dir)
-        print(f"Input directories removed.")
+        print("Input directories removed.")
 
     return Output(
         bundle=bundle_file,

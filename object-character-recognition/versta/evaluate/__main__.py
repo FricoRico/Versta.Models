@@ -13,7 +13,6 @@ Usage:
 """
 
 import os
-import sys
 import traceback
 from argparse import ArgumentParser
 from pathlib import Path
@@ -140,7 +139,7 @@ def run_inference_and_eval(args):
             print(f"Error downloading annotations: {e}")
             return
     else:
-        print(f"Downloading OmniDocBench dataset (this may take a while)...")
+        print("Downloading OmniDocBench dataset (this may take a while)...")
         try:
             images_dir, gt_json_path = get_omnidocbench_images()
         except Exception as e:
@@ -160,13 +159,13 @@ def run_inference_and_eval(args):
         pred_dir.mkdir(parents=True, exist_ok=True)
 
         if not args.eval_only:
-            print(f"\nRunning inference...")
+            print("\nRunning inference...")
 
             inference_success = False
 
             if model_type == "onnx":
                 if not args.detector or not args.recognizer:
-                    print(f"Error: --detector and --recognizer required for ONNX mode")
+                    print("Error: --detector and --recognizer required for ONNX mode")
                     continue
 
                 try:
@@ -182,7 +181,7 @@ def run_inference_and_eval(args):
                     inference_success = True
                 except Exception as e:
                     print(f"Error running ONNX inference: {e}")
-                    print(f"  -> You may need to re-export your ONNX models")
+                    print("  -> You may need to re-export your ONNX models")
                     traceback.print_exc()
             else:
                 try:
@@ -205,7 +204,7 @@ def run_inference_and_eval(args):
                 continue
 
         if not args.inference_only:
-            print(f"\nRunning evaluation...")
+            print("\nRunning evaluation...")
 
             try:
                 result = run_evaluation(

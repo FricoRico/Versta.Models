@@ -1,9 +1,8 @@
 import os
-import json
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional, Tuple, Dict, Any
+from typing import List, Optional, Tuple
 from tqdm import tqdm
 
 import cv2

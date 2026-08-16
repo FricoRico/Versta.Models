@@ -4,7 +4,6 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 from .download import download_model
-from .definitions import languages as SUPPORTED_LANGUAGES
 
 
 def parse_args():

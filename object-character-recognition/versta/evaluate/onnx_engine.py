@@ -1,12 +1,11 @@
 import json
 import math
 import os
-from typing import List, Tuple, Optional, Union, Dict, Any
+from typing import List, Tuple, Dict, Any
 from pathlib import Path
 import numpy as np
 import cv2
 import onnxruntime as ort
-import struct
 
 try:
     import pyclipper

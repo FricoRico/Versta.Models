@@ -135,7 +135,7 @@ def main(
         for input_dir in input_dirs:
             remove_folder(input_dir)
 
-        print(f"Input directories removed.")
+        print("Input directories removed.")
 
     return Output(
         bundle=bundle_file,

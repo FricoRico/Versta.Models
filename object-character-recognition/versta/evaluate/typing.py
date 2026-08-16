@@ -1,5 +1,4 @@
 from typing import TypedDict, List, Optional, Any
-from pathlib import Path
 
 
 class EvaluationResult(TypedDict):

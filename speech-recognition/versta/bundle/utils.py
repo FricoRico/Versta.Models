@@ -1,6 +1,5 @@
 from shutil import rmtree, copy2
 from pathlib import Path
-from typing import List
 
 
 def copy_folder(src: Path, dest: Path):

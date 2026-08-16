@@ -9,7 +9,6 @@ from huggingface_hub import snapshot_download
 
 from .convert_onnx import convert_model_to_onnx
 from .convert_ort import convert_model_to_ort
-from .quantize import simplify_model
 from .metadata import generate_metadata
 from .tokenizer import save_tokenizer
 from .utils import remove_folder
@@ -102,7 +101,7 @@ def main(
     simplified_dir.mkdir(parents=True, exist_ok=True)
 
     # Step 1: Convert the model to ONNX format (FP16)
-    onnx_model_path = convert_model_to_onnx(model_path, converted_dir)
+    convert_model_to_onnx(model_path, converted_dir)
 
     # Step 2: Simplify the model using onnxsim
     # simplified_model_path = simplified_dir / "model.onnx"

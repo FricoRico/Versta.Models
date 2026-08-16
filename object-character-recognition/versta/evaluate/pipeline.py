@@ -1,18 +1,13 @@
 import json
 import hashlib
+import os
+import tempfile
 import time
 import numpy as np
 import cv2
 from pathlib import Path
-from typing import Tuple, List, Optional, Union, Dict, Any
+from typing import Tuple, List, Optional, Dict, Any
 
-from .dataset import load_omnidocbench, get_image_path
-from .compare import (
-    calculate_character_accuracy,
-    calculate_word_accuracy,
-    compare_results,
-)
-from .typing import EvaluationResult
 
 # Type alias for detection results
 DetectionResult = Dict[str, Any]
@@ -94,7 +89,6 @@ def run_pipeline(
     Returns:
         Tuple of (recognized_text, confidence)
     """
-    import os as _os
 
     cache_dir = Path(cache_dir)
     detector_cache_dir = cache_dir / "detect"

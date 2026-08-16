@@ -1,7 +1,7 @@
 import json
 
 from pathlib import Path
-from typing import List, TypedDict
+from typing import TypedDict
 
 
 class BundleMetadata(TypedDict):
@@ -25,7 +25,7 @@ def load_metadata(model_dir: Path) -> BundleMetadata:
     )
 
     if metadata_file.exists():
-        with open(metadata_file, "r", encoding="utf-8") as file:
+        with open(metadata_file, "r", encoding="utf-8"):
             metadata["directory"] = metadata_file.parent.name
 
         missing_entries = [key for key, value in metadata.items() if value is None]

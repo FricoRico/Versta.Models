@@ -1,15 +1,10 @@
 import os
 
-from argparse import ArgumentParser, ArgumentTypeError
+from argparse import ArgumentParser
 from pathlib import Path
-from typing import List, TypedDict
+from typing import TypedDict
 
 from .metadata import load_metadata_for_input_dirs, generate_metadata
-from .language import (
-    validate_translation_pairs,
-    extract_unique_languages,
-    update_metadata_file,
-)
 from .bundle_tar import bundle_files, create_checksum
 from .utils import copy_folders, remove_folder
 
@@ -122,7 +117,7 @@ def main(
     # Step 9: Remove input directories if specified
     if not keep_input:
         remove_folder(input_dir)
-        print(f"Input directories removed.")
+        print("Input directories removed.")
 
     return Output(
         bundle=bundle_file,
