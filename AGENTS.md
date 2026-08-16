@@ -32,7 +32,7 @@ its own `versta/` Python package and its own uv-managed virtual environment:
 - `text-to-speech/` — convert Kokoro/Piper TTS models to ONNX/ORT and bundle them. See `/text-to-speech/AGENTS.md`.
 - `object-character-recognition/` — export PaddleOCR models to ONNX/ORT, bundle them, and evaluate with OmniDocBench. See `/object-character-recognition/AGENTS.md`.
 - `data/` — bundle shared runtime data (espeak-ng data, open-jtalk dictionary). See `/data/AGENTS.md`.
-- `README.md` — human-facing usage documentation; keep in sync.
+- `README.md` — per-module human-facing usage documentation; keep in sync. The root `README.md` stays a high-level overview and links out to these.
 
 Per-module layout (repeated in every module):
 
@@ -89,7 +89,8 @@ Conventions shared by all CLIs:
 
 ## Documentation
 
-- Keep `README.md` current. Update it in the same commit as any change to module capabilities, CLI arguments, supported models/architectures, or the produced bundle format.
+- The root `README.md` is a high-level overview of the repository (what it is, the module list) — keep it short. Module-specific usage (CLI invocations, pipelines, requirements, provenance) lives in each module's own `README.md`; do not duplicate it in the root file.
+- Keep the relevant module `README.md` current. Update it in the same commit as any change to module capabilities, CLI arguments, supported models/architectures, or the produced bundle format.
 
 ## Git conventions
 

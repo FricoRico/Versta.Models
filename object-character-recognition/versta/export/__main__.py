@@ -1,144 +1,100 @@
-import os
-
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from pathlib import Path
-from requests import head
-from huggingface_hub.constants import default_cache_path
+from typing import List, Optional
 
-from huggingface_hub import snapshot_download
-
-from .convert_onnx import convert_model_to_onnx
-from .convert_ort import convert_model_to_ort
-from .metadata import generate_metadata
-from .tokenizer import save_tokenizer
+from .convert_mnn import resolve_mnnconvert
+from .definitions import MODELS, PACK_NAME
+from .manifest import write_manifest
+from .pipeline import convert_model
+from .typing import ManifestFile
 from .utils import remove_folder
 
 with open(Path(__file__).parent / ".." / "version.txt", "r") as version_file:
     version = version_file.read().strip()
 
 
-def parse_args():
+def parse_args() -> Namespace:
     parser = ArgumentParser(
-        os.path.basename(__file__),
-        description="""Convert an OCR model from disk to ONNX format and then to ORT format.
-        The converter is intended to be used with PaddleOCR models, but might work with other models in the future as well.
-        This function manages the overall workflow from exporting the model to ONNX, simplifying the model, and converting to ORT format.
-        The model is exported in FP16 format and optimized for deployment on mobile and web devices.
+        description="""Download the official PaddleOCR/PaddleClas inference models and convert them
+        to MNN int8, producing the PP-OCRv6 OCR pack consumed by the Versta app.
+
+        Pipeline per model: download tar -> extract the Paddle inference model (PIR or legacy
+        pdmodel format) -> paddle2onnx (opset 14 for PP-OCRv6, opset 11 for PULC) -> MNNConvert
+        with int8 weight quantization. Detector variants with the DBNet head deconvs folded to
+        1/2 and 1/4 output resolution are produced as well; recognizer tiers ship their own
+        character dictionaries (the tiny tier drops Japanese kana).
         """,
     )
 
     parser.add_argument(
-        "--model",
-        type=str,
-        help="Provide the HuggingFace model for the pre-trained model to convert."
-        "For the moment, only a PaddleOCR model is supported.",
-        required=True,
-    )
-
-    parser.add_argument(
-        "--module",
-        type=str,
-        default="recognizer",
-        help="Specify the format of the model to convert."
-        "This could be either 'detector' or 'recognizer', defaulting to 'detector'.",
-    )
-
-    parser.add_argument(
-        "--export_dir",
+        "--output_dir",
         type=Path,
-        default=Path("export"),
-        help="Provide an output directory for the converted model's and configuration file."
-        "If unspecified, the converted ORT format model's will be in the '/output' directory, in the provided language.",
+        default=Path("output"),
+        help="Output directory; the pack lands in <output_dir>/paddle-ocr-v6/.",
+    )
+
+    parser.add_argument(
+        "--models",
+        type=str,
+        nargs="*",
+        default=None,
+        choices=[m["stem"] for m in MODELS],
+        help="Convert only these models (by tar stem). Defaults to all.",
+    )
+
+    parser.add_argument(
+        "--mnnconvert",
+        type=Path,
+        default=None,
+        help="Path to a prebuilt MNNConvert binary. If omitted, the vendored MNN submodule"
+        " is built on first use.",
     )
 
     parser.add_argument(
         "--keep_intermediates",
         action="store_true",
         default=False,
-        help="Whether to remove intermediate files created during the conversion process."
-        "This will default to False if not specified.",
+        help="Keep downloaded tars, extracted models and ONNX intermediates.",
     )
 
-    parser.add_argument(
-        "--clear_cache",
-        action="store_true",
-        default=False,
-        help="Whether to remove the downloaded files from HuggingFace cache."
-        "This will default to False if not specified.",
-    )
-
-    parsed_args = parser.parse_args()
-    return parsed_args
-
-
-def repository_exists(repo_name):
-    url = f"https://huggingface.co/{repo_name}"
-    response = head(url)
-    return response.status_code == 200
+    return parser.parse_args()
 
 
 def main(
-    model: str,
-    export_dir: Path,
-    module: str = "detector",
+    output_dir: Path,
+    models: Optional[List[str]] = None,
+    mnnconvert: Optional[Path] = None,
     keep_intermediates: bool = False,
-    clear_cache: bool = False,
-):
-    if repository_exists(model):
-        output = snapshot_download(repo_id=model)
-        model_path = Path(output)
-    else:
-        raise "The provided model path does not exist."
+) -> Path:
+    selected = [m for m in MODELS if models is None or m["stem"] in models]
 
-    output_dir = export_dir / model.split("/")[-1].lower()
-    intermediates_dir = output_dir / "intermediates"
-    converted_dir = intermediates_dir / "converted"
-    simplified_dir = intermediates_dir / "simplified"
-
+    output_dir = output_dir / PACK_NAME
     output_dir.mkdir(parents=True, exist_ok=True)
+    intermediates_dir = output_dir / "intermediates"
     intermediates_dir.mkdir(parents=True, exist_ok=True)
-    converted_dir.mkdir(parents=True, exist_ok=True)
-    simplified_dir.mkdir(parents=True, exist_ok=True)
 
-    # Step 1: Convert the model to ONNX format (FP16)
-    convert_model_to_onnx(model_path, converted_dir)
+    converter = resolve_mnnconvert(mnnconvert)
 
-    # Step 2: Simplify the model using onnxsim
-    # simplified_model_path = simplified_dir / "model.onnx"
-    # simplify_model(onnx_model_path, simplified_model_path, module=module)
+    print("Downloading required source files...")
+    entries: List[ManifestFile] = []
+    for spec in selected:
+        entries.extend(convert_model(spec, intermediates_dir, output_dir, converter))
 
-    # Step 3: Convert the simplified ONNX model to ORT format
-    ort_files = convert_model_to_ort(converted_dir, output_dir)
-    tokenizer_files = save_tokenizer(model_path, output_dir)
+    manifest_path = write_manifest(version, output_dir, entries)
+    print(manifest_path)
 
-    # Step 4: Validate the presence of vocabulary file based on model format
-    if tokenizer_files is None:
-        if module == "recognizer":
-            raise ValueError("Missing vocabulary file for recognizer model.")
-    else:
-        if module == "detector":
-            raise ValueError("Unexpected vocabulary file for detector model.")
-
-    # Step 5: Create metadata file for the exported model
-    generate_metadata(version, output_dir, model, module, ort_files, tokenizer_files)
-
-    # Step 6: Clean up intermediate files if specified
     if not keep_intermediates:
         remove_folder(intermediates_dir)
-        print("Intermediates files cleaned.")
+        print("Intermediate files cleaned.")
 
-    # Step 7: Clear the cache if specified
-    if clear_cache:
-        remove_folder(Path(default_cache_path) / f"models/{model}".replace("/", "--"))
-        print("HuggingFace cache cleaned.")
+    return output_dir
 
 
 if __name__ == "__main__":
     args = parse_args()
     main(
-        model=args.model,
-        export_dir=args.export_dir,
-        module=args.module,
+        output_dir=args.output_dir,
+        models=args.models,
+        mnnconvert=args.mnnconvert,
         keep_intermediates=args.keep_intermediates,
-        clear_cache=args.clear_cache,
     )
