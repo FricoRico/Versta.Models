@@ -32,14 +32,16 @@ uv run python -m versta.export --output_dir ./output
 
 ### `versta.bundle`
 
-Bundles converted detector/recognizer directories into one tarball + `.sha256`:
+Bundles a converted OCR pack into one tarball + `.sha256` and refreshes the
+checked-in `models.json` catalog entry:
 
 ```bash
-uv run python -m versta.bundle --input_dir ./export/pp-ocrv5_mobile_rec --unique_id paddle-ocr
+uv run python -m versta.bundle
 ```
 
-- Accepts multiple, mixed module types in one bundle (`language.py:extract_unique_modules`).
-- The checked-in `models.json` (id `paddle-ocr`, architecture `PaddleOCR`) describes the legacy PP-OCRv5 ORT pack and is superseded by the MNN pack's `manifest.json`; it stays until the app consumes MNN packs.
+- `--input_dir` defaults to `output/<PACK_NAME>` (the export pack); every manifest entry is verified (exists, size, sha256) before bundling. Files are stored flat at the archive root, including `manifest.json`.
+- Produces `<output_dir>/<unique_id>-bundle.tar.gz` + `.tar.sha256` and updates `models.json` in place: version (from `versta/version.txt`), tarball size, and `models.versta.app` bundle/checksum URLs. `id`, `name`, `architectures` and `languages` are preserved.
+- Stdlib only; the legacy multi-input-dir metadata extraction (`metadata.py`/`language.py`) was removed with the ORT export.
 
 ## Conventions specific to this module
 

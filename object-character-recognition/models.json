@@ -2,14 +2,14 @@
   {
     "id": "paddle-ocr",
     "name": "Paddle OCR",
-    "base_model": "PaddlePaddle/PP-OCRv5_mobile_rec",
+    "base_model": "PaddlePaddle/PP-OCRv6",
     "architectures": [
       "PaddleOCR"
     ],
-    "size": 50530780,
-    "version": "v1.0.0",
-    "bundle": "https://models.versta.app/object-character-recognition/v1.0.0/paddle-ocr-bundle.tar.gz",
-    "checksum": "https://models.versta.app/object-character-recognition/v1.0.0/paddle-ocr-bundle.tar.sha256",
+    "size": 9541009,
+    "version": "v2.0.0",
+    "bundle": "https://models.versta.app/object-character-recognition/v2.0.0/paddle-ocr-bundle.tar.gz",
+    "checksum": "https://models.versta.app/object-character-recognition/v2.0.0/paddle-ocr-bundle.tar.sha256",
     "languages": [
       "ab",
       "af",

@@ -37,3 +37,12 @@ The `half`/`quarter` detector variants are ONNX graph edits: the DBNet head's 2x
 uv sync
 uv run python -m versta.export --output_dir ./output
 ```
+
+## Bundling the pack
+Packs the export output into a deployable tarball (files flat at the archive root, `manifest.json` included) after verifying every file against the manifest, and refreshes the checked-in `models.json` catalog entry (version, size, `models.versta.app` URLs):
+
+```bash
+uv run python -m versta.bundle
+```
+
+Produces `output/paddle-ocr-bundle.tar.gz` (rename before publishing if hosting multiple packs) and `output/paddle-ocr-bundle.tar.sha256`.

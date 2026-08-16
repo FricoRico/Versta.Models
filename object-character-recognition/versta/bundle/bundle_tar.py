@@ -1,22 +1,42 @@
 import tarfile
 from hashlib import sha256
-
 from pathlib import Path
 from typing import List
 
 
-def bundle_files(files: List[Path], output_file: Path) -> Path:
+def sha256_file(path: Path) -> str:
     """
-    Bundles the specified folders into a single .tar.gz file.
+    Computes the hex SHA256 of a file, streaming in 1 MiB chunks.
 
     Args:
-        files (list[Path]): List of folder paths to be bundled.
+        path (Path): File to hash.
+
+    Returns:
+        str: The lowercase hex digest.
+    """
+    digest = sha256()
+    with open(path, "rb") as f:
+        while chunk := f.read(1 << 20):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def bundle_files(files: List[Path], output_file: Path) -> Path:
+    """
+    Bundles the specified files into a single .tar.gz file, flat at the
+    archive root.
+
+    Args:
+        files (List[Path]): File paths to be bundled.
         output_file (Path): Path for the output .tar.gz file.
+
+    Returns:
+        Path: The written archive path.
     """
     print(f"Bundling files into {output_file}")
 
     with tarfile.open(output_file, "w:gz") as tar:
-        for file in files:
+        for file in sorted(files, key=lambda f: f.name):
             tar.add(file, arcname=file.name)
 
     return output_file
@@ -24,26 +44,17 @@ def bundle_files(files: List[Path], output_file: Path) -> Path:
 
 def create_checksum(file_path: Path) -> Path:
     """
-    Compute the SHA-256 checksum of a file and save it to a file.
+    Computes the SHA-256 checksum of a file and writes it next to it.
 
     Args:
-        file_path (str): The path to the file for which the checksum is to be computed.
+        file_path (Path): Path to the file for which the checksum is computed.
 
     Returns:
-        str: The computed SHA-256 checksum as a hexadecimal string.
+        Path: The written checksum file path.
     """
-    print(f"Creating checksum for {file_path}")
-
-    hash = sha256()
-
-    with open(file_path, "rb") as f:
-        for byte_block in iter(lambda: f.read(4096), b""):
-            hash.update(byte_block)
-
-    checksum = hash.hexdigest()
     checksum_filename = file_path.with_suffix(".sha256")
 
     with open(checksum_filename, "w") as f:
-        f.write(checksum)
+        f.write(sha256_file(file_path))
 
     return checksum_filename
