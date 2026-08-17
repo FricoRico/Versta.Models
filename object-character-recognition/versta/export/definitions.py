@@ -68,7 +68,8 @@ MODELS: List[ModelSpec] = [
         # DocAligner (DocsaidLab, Apache-2.0): lcnet050 heatmap-regression model that
         # finds the 4 document corners in a photo; the app dewarps before OCR. Not a
         # Paddle model — the URL points at the ready ONNX, so no download tar or
-        # paddle2onnx step (opset/pir are unused for aligners).
+        # paddle2onnx step (opset/pir are unused for the ready-ONNX kinds:
+        # aligner and glyphmatte).
         "stem": "docaligner_lcnet050",
         "url": "https://offline-translator.davidv.dev/support/1/docaligner_lcnet050.onnx",
         "kind": "aligner",
@@ -76,6 +77,24 @@ MODELS: List[ModelSpec] = [
         "pir": False,
         "tier": "",
         "script": "",
+    },
+    {
+        # Glyph-matte U-Net trained by versta.train.glyphmatte (synthetic
+        # strips + word lists, MIT-ported from translator-rs). The fp32 ONNX
+        # is uploaded to HF by hand after each pipeline run; MNN int8
+        # conversion happens here like every other model. Fetched through
+        # huggingface_hub, never a huggingface.com resolve URL.
+        "stem": "glyphmatte",
+        "hf": {
+            "repo_id": "Neurora/versta-glyphmatte",
+            "filename": "onnx/glyphmatte.onnx",
+        },
+        "kind": "glyphmatte",
+        "opset": 0,
+        "pir": False,
+        "tier": "",
+        "script": "",
+        "note": "per-line glyph matte: outputs matte(1), weight(1), foreground(3), background(3)",
     },
 ]
 
@@ -105,7 +124,7 @@ def mnn_filename(spec: ModelSpec, variant: str = "") -> str:
         return "PULC_int8.mnn"
     if kind == "textlineOrientation":
         return "textline_ori_x0_25_wq8.mnn"
-    if kind == "aligner":
+    if kind in ("aligner", "glyphmatte"):
         return f"{spec['stem']}_int8.mnn"
     raise ValueError(f"Unknown model kind: {kind}")
 

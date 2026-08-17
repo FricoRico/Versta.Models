@@ -23,10 +23,9 @@ import onnx
 import onnxruntime as ort
 import torch
 
-from .gen_data import HEIGHT
+from ...dataset.glyphmatte.config import STRIP
+from .config import OUTPUT_NAMES
 from .model import CompatUNet, GlyphMatteUNet
-
-OUTPUT_NAMES = ["matte", "weight", "foreground", "background"]
 
 
 def load_model(
@@ -77,7 +76,7 @@ def export(model: GlyphMatteUNet, out: Path) -> None:
         RuntimeError: Graph invalid, wrong shapes or torch/ORT divergence.
     """
     out.parent.mkdir(parents=True, exist_ok=True)
-    dummy = torch.zeros(1, 3, HEIGHT, 320)
+    dummy = torch.zeros(1, 3, STRIP.height, 320)
 
     class _TupleOut(torch.nn.Module):
         """Dynamo exporter needs an nn.Module; forward returns the 4 tensors."""
@@ -104,13 +103,20 @@ def export(model: GlyphMatteUNet, out: Path) -> None:
     )
     g = onnx.load(out)
     onnx.checker.check_model(g)
+    # Dynamo export emits an external .onnx.data sidecar; inline it so the
+    # published artifact is a single self-contained file.
+    sidecar = out.parent / f"{out.name}.data"
+    if sidecar.exists():
+        onnx.save_model(g, out, save_as_external_data=False)
+        sidecar.unlink()
+        print(f"external data inlined: {out} (sidecar removed)")
 
     sess = ort.InferenceSession(str(out), providers=["CPUExecutionProvider"])
-    for w in (160, 320, 504):
-        x = torch.randn(1, 3, HEIGHT, w)
+    for w in (160, 320, 496, 512):
+        x = torch.randn(1, 3, STRIP.height, w)
         with torch.no_grad():
             ref = model(x)
-        got = sess.run(OUTPUT_NAMES, {"strip": x.numpy()})
+        got = sess.run(list(OUTPUT_NAMES), {"strip": x.numpy()})
         for name, ref_t, got_t in zip(OUTPUT_NAMES, ref.as_tuple(), got):
             delta = float(np.abs(ref_t.numpy() - got_t).max())
             if got_t.shape[-1] != w or got_t.shape[1] != ref_t.shape[1]:

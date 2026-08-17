@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import List
 
+from huggingface_hub import hf_hub_download
+
 from .convert_mnn import convert_to_mnn
 from .convert_paddle import convert_to_onnx
 from .definitions import (
@@ -13,9 +15,28 @@ from .download import download_file, extract_tar
 from .fold_deconv import fold_variant_graph
 from .keys import write_keys
 from .manifest import file_entry
-from .typing import ManifestFile, ModelSpec
+from .typing import HfSource, ManifestFile, ModelSpec
 
 DET_PRIORITIES = {"": 2, "half": 1, "quarter": 3}
+
+
+def fetch_hf_onnx(source: HfSource, dest_dir: Path) -> Path:
+    """Fetches a ready ONNX from the HF hub (etag-cached downloads).
+
+    Args:
+        source (HfSource): The HF repo + filename pair.
+        dest_dir (Path): Local dir mirroring the repo layout.
+
+    Returns:
+        Path: The downloaded ONNX path.
+    """
+    return Path(
+        hf_hub_download(
+            repo_id=source["repo_id"],
+            filename=source["filename"],
+            local_dir=dest_dir / "hf" / source["repo_id"].replace("/", "--"),
+        )
+    )
 
 
 def convert_model(
@@ -40,13 +61,19 @@ def convert_model(
     """
     downloads = work_dir / "downloads"
 
-    if spec["kind"] == "aligner":
+    if spec["kind"] in ("aligner", "glyphmatte"):
         # Non-Paddle models ship as ready ONNX: no tar extraction or
-        # paddle2onnx step.
-        onnx_path = download_file(spec["url"], downloads / f"{spec['stem']}.onnx")
+        # paddle2onnx step. Glyphmatte is fetched via huggingface_hub from the
+        # published HF repo; the docaligner comes from a plain HTTP mirror.
+        if "hf" in spec:
+            onnx_path = fetch_hf_onnx(spec["hf"], downloads)
+        elif "url" in spec:
+            onnx_path = download_file(spec["url"], downloads / f"{spec['stem']}.onnx")
+        else:  # pragma: no cover - catalogue invariant
+            raise ValueError(f"{spec['stem']}: spec needs a url or hf source")
         mnn_path = convert_to_mnn(mnnconvert, onnx_path, pack_dir / mnn_filename(spec))
         print(mnn_path)
-        return [file_entry(mnn_path, spec["kind"], 1)]
+        return [file_entry(mnn_path, spec["kind"], 1, note=spec.get("note"))]
 
     extracted = work_dir / "extracted"
 

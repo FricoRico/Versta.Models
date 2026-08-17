@@ -17,7 +17,6 @@ CLI: uv run python -m versta.train.glyphmatte.eval --mnn output/glyphmatte/glyph
 
 import argparse
 import json
-import random
 import sysconfig
 import time
 
@@ -27,9 +26,8 @@ from typing import Dict, List, Optional, Tuple
 import numpy as np
 import torch
 
-from .gen_data import WIDTHS, sample_strip
-
-OUTPUT_NAMES = ("matte", "weight", "foreground", "background")
+from ...dataset.glyphmatte.parquet import read_shards
+from .config import LAYOUT, OUTPUT_NAMES, TRAIN
 
 ValRow = Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]
 Pred = Dict[str, np.ndarray]
@@ -49,12 +47,9 @@ def _mnn():
     return MNN
 
 
-def _gen_val_set(n: int, seed: int) -> List[ValRow]:
-    """(rgb CHW, matte HW, weight HW, fg HWx3, bg HWx3); degrade ON."""
-    rng = random.Random(seed)
+def _val_from_shards(shards, n: int) -> List[ValRow]:
     out: List[ValRow] = []
-    for _ in range(n):
-        strip = sample_strip(rng, width=rng.choice(WIDTHS), keep_degrade=True)
+    for strip in read_shards(shards):
         out.append(
             (
                 strip.rgb.transpose(2, 0, 1).astype(np.float32),
@@ -64,7 +59,23 @@ def _gen_val_set(n: int, seed: int) -> List[ValRow]:
                 strip.bcol,
             )
         )
+        if len(out) >= n:
+            break
     return out
+
+
+def pad_to_multiple(img: np.ndarray, m: int = 16) -> np.ndarray:
+    """Zero-pads width up to a multiple of `m` (2**levels of the U-Net);
+    outputs must be cropped back by the caller (callers do so via crop_to)."""
+    w = img.shape[2]
+    pad = (-w) % m
+    if not pad:
+        return img
+    return np.pad(img, ((0, 0), (0, 0), (0, pad)))
+
+
+def crop_w(arr: np.ndarray, w: int) -> np.ndarray:
+    return arr[..., :w]
 
 
 def _predict_mnn(model_path: Path, imgs: List[np.ndarray]) -> List[Pred]:
@@ -76,6 +87,8 @@ def _predict_mnn(model_path: Path, imgs: List[np.ndarray]) -> List[Pred]:
     input_tensor = interpreter.getSessionInput(session)
     outs: List[Pred] = []
     for img in imgs:
+        w_orig = img.shape[2]
+        img = pad_to_multiple(img)
         h, w = img.shape[1], img.shape[2]
         interpreter.resizeTensor(input_tensor, (1, 3, h, w))
         interpreter.resizeSession(session)
@@ -95,9 +108,8 @@ def _predict_mnn(model_path: Path, imgs: List[np.ndarray]) -> List[Pred]:
                 MNN.Tensor_DimensionType_Caffe,
             )
             t.copyToHostTensor(host)
-            pred[name] = np.array(host.getData(), dtype=np.float32).reshape(
-                host.getShape()
-            )[0]
+            arr = np.array(host.getData(), dtype=np.float32).reshape(host.getShape())[0]
+            pred[name] = crop_w(arr, w_orig)
         outs.append(pred)
     return outs
 
@@ -108,8 +120,11 @@ def _predict_onnx(onnx_path: Path, imgs: List[np.ndarray]) -> List[Pred]:
     sess = ort.InferenceSession(str(onnx_path), providers=["CPUExecutionProvider"])
     outs: List[Pred] = []
     for img in imgs:
-        res = sess.run(list(OUTPUT_NAMES), {"strip": img[None]})
-        outs.append({name: res[i][0] for i, name in enumerate(OUTPUT_NAMES)})
+        w_orig = img.shape[2]
+        res = sess.run(list(OUTPUT_NAMES), {"strip": pad_to_multiple(img)[None]})
+        outs.append(
+            {name: crop_w(res[i][0], w_orig) for i, name in enumerate(OUTPUT_NAMES)}
+        )
     return outs
 
 
@@ -117,9 +132,14 @@ def _predict_torch(model: torch.nn.Module, imgs: List[np.ndarray]) -> List[Pred]
     outs: List[Pred] = []
     with torch.no_grad():
         for img in imgs:
+            w_orig = img.shape[2]
+            img = pad_to_multiple(img)
             o = model(torch.from_numpy(img[None]))
             outs.append(
-                {k: v.numpy()[0] for k, v in zip(o._fields, o.as_tuple(), strict=True)}
+                {
+                    k: crop_w(v.numpy()[0], w_orig)
+                    for k, v in zip(o._fields, o.as_tuple(), strict=True)
+                }
             )
     return outs
 
@@ -237,6 +257,7 @@ def touch_speed(mnn_path: Path, imgs: List[np.ndarray], reps: int = 3) -> float:
     n = 0
     for _ in range(reps):
         for img in imgs:
+            img = pad_to_multiple(img)
             h, w = img.shape[1], img.shape[2]
             interpreter.resizeTensor(ip, (1, 3, h, w))
             interpreter.resizeSession(session)
@@ -250,44 +271,70 @@ def touch_speed(mnn_path: Path, imgs: List[np.ndarray], reps: int = 3) -> float:
     return (time.perf_counter() - t0) * 1000 / n
 
 
-def main() -> None:
-    p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument("--ckpt", type=Path, default=None)
-    p.add_argument("--onnx", type=Path, default=None)
-    p.add_argument("--mnn", type=Path, default=None)
-    p.add_argument("--n", type=int, default=64)
-    p.add_argument("--seed", type=int, default=777)
-    p.add_argument("--json", type=Path, default=None)
-    args = p.parse_args()
+def evaluate(
+    ckpt: Optional[Path] = None,
+    onnx: Optional[Path] = None,
+    mnn: Optional[Path] = None,
+    n: int = TRAIN.eval_n,
+    dataset_dir: Optional[Path] = None,
+) -> Dict[str, Dict[str, float]]:
+    """Val metrics; returns the results dict.
 
-    print(f"generating {args.n} val strips (seed={args.seed})...", flush=True)
-    val = _gen_val_set(args.n, args.seed)
+    Validation source: the materialized `validation-*.parquet` shards under
+    ``dataset_dir``.
+    """
+    shards = sorted(dataset_dir.glob("validation-*.parquet")) if dataset_dir else []
+    if not shards:
+        raise RuntimeError(f"no validation shards found in {dataset_dir}")
+    print(f"val from {shards[0].parent}")
+    val = _val_from_shards(shards, n)
     imgs = [v[0] for v in val]
     results: Dict[str, Dict[str, float]] = {}
 
-    if args.ckpt:
+    if ckpt:
         from .export_onnx import load_model
 
         results["torch_fp32"] = summarize(
-            "torch", _predict_torch(load_model(args.ckpt), imgs), val
+            "torch", _predict_torch(load_model(ckpt), imgs), val
         )
 
     onnx_preds: Optional[List[Pred]] = None
-    if args.onnx and args.onnx.exists():
-        onnx_preds = _predict_onnx(args.onnx, imgs)
+    if onnx and onnx.exists():
+        onnx_preds = _predict_onnx(onnx, imgs)
         results["onnx"] = summarize("onnx ", onnx_preds, val)
 
-    if args.mnn and args.mnn.exists():
-        mnn_preds = _predict_mnn(args.mnn, imgs)
+    if mnn and mnn.exists():
+        mnn_preds = _predict_mnn(mnn, imgs)
         results["mnn_int8"] = summarize("mnn  ", mnn_preds, val)
         if onnx_preds:
             results["onnx_vs_mnn"] = model_parity(onnx_preds, mnn_preds)
-        ms = touch_speed(args.mnn, imgs[:8])
-        size_mb = args.mnn.stat().st_size / 1e6
+        ms = touch_speed(mnn, imgs[:8])
+        size_mb = mnn.stat().st_size / 1e6
         print(f"mnn size={size_mb:.2f} MB  speed={ms:.1f} ms/strip (cpu x4)")
         results["mnn_int8"]["size_mb"] = size_mb
         results["mnn_int8"]["ms_per_strip"] = ms
 
+    return results
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--ckpt",
+        type=Path,
+        default=None,
+        help="pytorch checkpoint to score (default: intermediates latest).",
+    )
+    parser.add_argument("--onnx", type=Path, default=None, help="fp32 ONNX to score.")
+    parser.add_argument("--mnn", type=Path, default=None, help="int8 MNN to score.")
+    parser.add_argument(
+        "--json", type=Path, default=None, help="Write the results JSON here."
+    )
+    args = parser.parse_args()
+    out_dir = Path("output")
+    ckpt = args.ckpt or out_dir / LAYOUT.ckpt_latest
+    onnx = args.onnx or out_dir / LAYOUT.onnx
+    results = evaluate(ckpt, onnx, args.mnn, dataset_dir=out_dir / LAYOUT.dataset)
     if args.json:
         args.json.parent.mkdir(parents=True, exist_ok=True)
         args.json.write_text(json.dumps(results, indent=2))

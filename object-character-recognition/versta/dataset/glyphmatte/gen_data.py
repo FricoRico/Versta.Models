@@ -12,16 +12,13 @@ David Ventura: translator-rs/scripts/ink_model/gen_data.py.
   https://github.com/DavidVentura/translator-rs/blob/master/scripts/ink_model/gen_data.py
 
 Labels stay clean; only the composited RGB is degraded (see `synth.degrade`).
-CLI: `uv run python -m versta.train.glyphmatte.gen_data --out output/gen --n 8`
-dumps annotated inspection sheets + params.txt.
+Annotated inspection sheets: `uv run python -m versta.dataset.glyphmatte.dump`.
 """
 
-import os
 import random
 import string
 import unicodedata
 
-from argparse import ArgumentParser, Namespace
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
@@ -31,72 +28,28 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 from scipy.ndimage import distance_transform_edt
 
-from .assets import FONTS_DIR, WORDS_DIR, WORDS_EN
+from .assets import assets_dir
+from .config import (
+    DISPLAY_HEAVY_FRAC,
+    LATIN_DIGITS,
+    SCRIPT_BLOCKS,
+    SCRIPT_WEIGHTS,
+    STRIP,
+    WEIGHT,
+    WORDS_BY_SCRIPT,
+)
 from .synth import coord_grid, degrade, legible, random_color
-
-# Strip geometry: the app dewarps lines to 48 px tall; the width list the
-# strips are bucketed into (the runtime pads each bucket).
-HEIGHT = 48
-WIDTHS = list(range(96, 512 + 1, 16))
-SUPERSAMPLE = 3
-
-# Fraction of latin samples forced through the display pool (heavy condensed
-# faces for header-style text the regular pool never reaches).
-DISPLAY_HEAVY_FRAC = float(os.environ.get("GLYPHMATTE_DISPLAY_HEAVY", "0.02"))
-
-# Logistic weight target over the measured stroke-width ratio (stroke width as
-# fraction of the glyph bbox height, measured on the rendered mask). Calibrated
-# against the vendored Noto set at 48px: regular ≈0.06 → ~0.1, bold ≈0.09 →
-# ~0.9, heavy display faces 0.10–0.25 → ~1.
-WEIGHT_LOGISTIC_MID = 0.075
-WEIGHT_LOGISTIC_K = 0.008
-
-LATIN_DIGITS = "0123456789"
-
-# Script -> (unicode block start, end) pairs accepted in word lists. keeps
-# transliterated latin / mojibake (broken UTF-8 sequences decode as long runs
-# of one block too — those entries mix in latin or invalid chars and get
-# dropped by the all-chars-in-block filter).
-ARABIC_BLOCKS = ((0x0600, 0x06FF),)
-DEVANAGARI_BLOCKS = ((0x0900, 0x097F),)
-TAMIL_BLOCKS = ((0x0B80, 0x0BFF),)
-THAI_BLOCKS = ((0x0E00, 0x0E7F),)
-HANGUL_BLOCKS = ((0xAC00, 0xD7A3),)
-KANA_BLOCKS = ((0x3040, 0x30FF),)
-HAN_BLOCKS = ((0x4E00, 0x9FFF),)
-
-WORDS_BY_SCRIPT: Dict[str, Tuple[str, ...]] = {
-    "arabic": ("ar",),
-    "devanagari": ("hi",),
-    "tamil": ("ta",),
-    "thai": ("th",),
-    # zh_CN is all Han; ja is Han+kana; ko is Hangul.
-    "cjk": ("zh_cn", "ja", "ko"),
-}
-
-SCRIPT_BLOCKS: Dict[str, Tuple[Tuple[int, int], ...]] = {
-    "ar": ARABIC_BLOCKS,
-    "hi": DEVANAGARI_BLOCKS,
-    "ta": TAMIL_BLOCKS,
-    "th": THAI_BLOCKS,
-    "zh_cn": HAN_BLOCKS,
-    "ja": HAN_BLOCKS + KANA_BLOCKS,
-    "ko": HANGUL_BLOCKS + HAN_BLOCKS,
-}
-
-SCRIPT_WEIGHTS: Dict[str, int] = {
-    "latin": 50,
-    "cjk": 20,
-    "arabic": 10,
-    "devanagari": 8,
-    "tamil": 6,
-    "thai": 6,
-}
 
 
 def _fonts(subdir: str, suffix: str) -> List[str]:
-    d = FONTS_DIR / subdir
-    return sorted(str(p) for p in d.glob(f"*.{suffix}"))
+    d = assets_dir() / "fonts" / subdir
+    files = sorted(str(p) for p in d.glob(f"*.{suffix}"))
+    if not files:
+        raise RuntimeError(
+            f"no .{suffix} fonts under {d}; sync the pinned assets first with "
+            "`uv run python -m versta.dataset.glyphmatte.assets`"
+        )
+    return files
 
 
 @lru_cache(maxsize=1)
@@ -126,7 +79,8 @@ def _in_blocks(token: str, blocks: Tuple[Tuple[int, int], ...]) -> bool:
 @lru_cache(maxsize=1)
 def english_words() -> Tuple[str, ...]:
     """English word source: vendored assets/words/en.txt; /usr/share/dict fallback."""
-    src = WORDS_EN if WORDS_EN.exists() else Path("/usr/share/dict/words")
+    src_ = assets_dir() / "words" / "en.txt"
+    src = src_ if src_.exists() else Path("/usr/share/dict/words")
     words = [
         w.strip() for w in src.read_text().splitlines() if 2 <= len(w.strip()) <= 12
     ]
@@ -140,7 +94,7 @@ def script_words(code: str) -> Tuple[str, ...]:
     Subtitle-quality lists contain transliterations and mojibake; the block
     filter drops everything that isn't a real word of the target script.
     """
-    path = WORDS_DIR / f"{code}.txt"
+    path = assets_dir() / "words" / f"{code}.txt"
     if not path.exists():
         return ()
     out: List[str] = []
@@ -255,14 +209,14 @@ def render_mask(
 
     Returns the coverage mask (HxW at 3x) in 0..1. Canvas width fits the text.
     """
-    ss = SUPERSAMPLE
+    ss = STRIP.supersample
     font = ImageFont.truetype(font_path, native_h * ss)
     probe = Image.new("L", (8, 8))
     d = ImageDraw.Draw(probe)
     bbox = d.textbbox((0, 0), text, font=font, stroke_width=stroke_width * ss)
     tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
     w = max(tw + 24 * ss, 8)
-    h = HEIGHT * ss
+    h = STRIP.height * ss
     canvas = Image.new("L", (w, h), 0)
     d = ImageDraw.Draw(canvas)
     # Baseline placement: centre the glyph bbox vertically with jitter.
@@ -291,7 +245,7 @@ def stroke_ratio(mask3x: np.ndarray, native_h: int) -> float:
 
 def weight_target(ratio: float) -> float:
     """Continuous weight score 0..1 from the stroke-width ratio (logistic)."""
-    t = (ratio - WEIGHT_LOGISTIC_MID) / WEIGHT_LOGISTIC_K
+    t = (ratio - WEIGHT.mid) / WEIGHT.k
     t = max(min(t, 30.0), -30.0)
     return 1.0 / (1.0 + np.exp(-t))
 
@@ -373,7 +327,7 @@ def sample_strip(
         stroke_w = rng.choices([0, 1, 2], weights=[86, 10, 4])[0]
 
         mask3x = render_mask(text, font_path, native_h, stroke_w)
-        ss = SUPERSAMPLE
+        ss = STRIP.supersample
         if rng.random() < 0.4:
             img_m = Image.fromarray((mask3x * 255).astype(np.uint8))
             img_m = img_m.rotate(
@@ -382,7 +336,7 @@ def sample_strip(
             mask3x = np.asarray(img_m, dtype=np.float32) / 255.0
 
         m = Image.fromarray((mask3x * 255).astype(np.uint8)).resize(
-            (max(mask3x.shape[1] // ss, 8), HEIGHT), Image.LANCZOS
+            (max(mask3x.shape[1] // ss, 8), STRIP.height), Image.LANCZOS
         )
         cov = np.asarray(m, dtype=np.float32) / 255.0
         if cov.shape[1] >= width:
@@ -397,15 +351,19 @@ def sample_strip(
         matte = cov
         weight = (cov * w_t).astype(np.float32)
 
-        bg_rgb, b_field = make_background(rng, HEIGHT, width)
+        bg_rgb, b_field = make_background(rng, STRIP.height, width)
         f = ink_color(rng, bg_rgb.mean(axis=(0, 1)))
+        f_end: List[float] | None = None
         if rng.random() < 0.25:
             f2 = np.clip(f + np.array([rng.uniform(-0.3, 0.3) for _ in range(3)]), 0, 1)
+            f_end = [round(float(c), 4) for c in f2]
             t = np.linspace(0, 1, width, dtype=np.float32)[None, :, None]
-            f_map = np.broadcast_to(f, (HEIGHT, width, 3)).copy()
+            f_map = np.broadcast_to(f, (STRIP.height, width, 3)).copy()
             f_map = (f_map * (1 - t) + f2 * t).astype(np.float32)
         else:
-            f_map = np.broadcast_to(f, (HEIGHT, width, 3)).astype(np.float32).copy()
+            f_map = (
+                np.broadcast_to(f, (STRIP.height, width, 3)).astype(np.float32).copy()
+            )
 
         a = cov[..., None]
         rgb = np.clip(a * f_map + (1 - a) * bg_rgb, 1e-3, 1).astype(np.float32)
@@ -428,51 +386,12 @@ def sample_strip(
                 "stroke_w": stroke_w,
                 "stroke_ratio": round(ratio, 4),
                 "weight_target": round(w_t, 3),
+                "foreground_rgb": [round(float(c), 4) for c in f],
+                "foreground_rgb_end": f_end,
+                "background_rgb": [
+                    round(float(c), 4) for c in bg_rgb.mean(axis=(0, 1))
+                ],
                 "text": text,
             },
         )
     raise RuntimeError("could not synthesise a legible strip in max_tries")
-
-
-def dump_sheet(strip: Strip, out: Path, index: int) -> None:
-    """Annotated visual sheet: rows rgb / matte / weight / fg-composited / bg."""
-    rows = [
-        strip.rgb,
-        np.repeat(strip.matte[..., None], 3, axis=2),
-        np.repeat(strip.weight[..., None], 3, axis=2),
-        strip.fcol,
-        strip.bcol,
-    ]
-    sheet = (np.clip(np.concatenate(rows, axis=0), 0, 1) * 255).astype(np.uint8)
-    Image.fromarray(sheet).save(out / f"{index:04d}.png")
-    (out / f"{index:04d}.txt").write_text(
-        "\n".join(f"{k}: {v}" for k, v in strip.params.items())
-    )
-
-
-def parse_args() -> Namespace:
-    p = ArgumentParser(description=__doc__)
-    p.add_argument("--out", type=Path, default=Path("output/gen"))
-    p.add_argument("--n", type=int, default=8)
-    p.add_argument("--seed", type=int, default=1234)
-    return p.parse_args()
-
-
-def main() -> None:
-    args = parse_args()
-    args.out.mkdir(parents=True, exist_ok=True)
-    rng = random.Random(args.seed)
-    for i in range(args.n):
-        strip = sample_strip(rng, width=rng.choice(WIDTHS), keep_degrade=False)
-        strip.rgb = degrade(
-            strip.rgb,
-            rng,
-            int(strip.params["native_h"]),
-            photometric_aux=[strip.fcol, strip.bcol],
-        )
-        dump_sheet(strip, args.out, i)
-        print(i, strip.params)
-
-
-if __name__ == "__main__":
-    main()

@@ -1,23 +1,31 @@
 # OCR Models (PP-OCRv6, MNN int8)
 The Versta app runs on-device OCR with PaddleOCR PP-OCRv6 models in MNN int8 format. This module downloads the official upstream inference models, converts them to ONNX via `paddle2onnx`, converts them to MNN with int8 weight quantization via `MNNConvert`, and produces a pack in `output/paddle-ocr-v6/` with a `manifest.json` ready for upload to `models.versta.app`.
 
-### Glyph matte (`versta.train.glyphmatte`)
+### Glyph matte (`versta.train.glyphmatte` + `versta.dataset.glyphmatte`)
 
-Trains and exports `glyphmatte_int8.mnn` (~2 MB, four named outputs:
+Trains and publishes the glyph-matte U-Net (~2 MB int8, four named outputs:
 `matte`, `weight`, `foreground`, `background`), bundled into the pack.
-Synthesizes labelled 48-px text strips from pinned fonts and per-script word
-lists (see `assets/`, downloaded via `versta.train.glyphmatte.assets`), trains
-a mini U-Net on GPU (`uv sync --extra rocm` for AMD or `--extra cu130` for
-NVIDIA; ROCm training needs a C++ toolchain — run inside a toolbox on
-immutable distros), then exports ONNX → int8 MNN with the module's vendored
-`MNNConvert`. Pipeline:
 
-    uv run python -m versta.train.glyphmatte.assets
-    uv run python -m versta.train.glyphmatte.gen_data --out output/gen --n 16
-    uv run python -m versta.train.glyphmatte --steps 20000 --batch 32 --workers 10 --wrapper-width 512 --compile
-    uv run python -m versta.train.glyphmatte.export_onnx ckpt/glyphmatte-latest.pt output/glyphmatte.onnx
-    uv run python -m versta.train.glyphmatte.convert_mnn output/glyphmatte.onnx
-    uv run python -m versta.train.glyphmatte.eval --onnx output/glyphmatte.onnx --mnn output/paddle-ocr-v6/glyphmatte_int8.mnn --n 64
+One command runs the whole pipeline (downloads the published dataset snapshot
+from `huggingface.co/datasets/Neurora/versta-glyphmatte`, trains, exports,
+evaluates and cleans intermediates):
+
+    uv run python -m versta.train.glyphmatte
+
+- `uv sync --extra rocm` for AMD (needs a C++ toolchain at train time — on
+  immutable distros, prefix with `toolbox run -c glyphmatte`) or
+  `--extra cu130` for NVIDIA (no toolbox needed).
+- `--keep_intermediates` keeps `output/intermediates/` (dataset snapshot,
+  checkpoints, fp32 ONNX); eval defaults to the materialized validation shard.
+- Publishing: after the run, the output root mirrors the HF model repo —
+  upload `onnx/glyphmatte{,_fp16}.onnx`, `glyphmatte.safetensors` and
+  `config.json` to `Neurora/versta-glyphmatte`. Then
+  `uv run python -m versta.export --models glyphmatte` converts the fp32 ONNX
+  (fetched via `huggingface_hub`) into the pack
+  (`--glyphmatte_onnx <path>` works offline before upload).
+- The dataset can also be regenerated locally:
+  `uv run python -m versta.dataset.glyphmatte` (auto-syncs the pinned
+  fonts/word lists on first use) and re-uploaded to the dataset repo.
 
 ## Provenance
 - Upstream models (all Apache-2.0): PP-OCRv6 tiny detector, PP-OCRv6 tiny recognizer (latin script slot), PP-OCRv6 small recognizer (CJ script slot) and the PP-LCNet textline orientation model from the [PaddleX/PaddleOCR model zoo](https://paddle-model-ecology.bj.bcebos.com/paddlex/official_inference_model/paddle3.0.0/); the PULC language classifier from [PaddleClas](https://paddleclas.bj.bcebos.com/models/PULC/); the DocAligner `lcnet050` document-corner model from [DocsaidLab/DocAligner](https://github.com/DocsaidLab/DocAligner) (downloaded as ready ONNX from the [offline-translator mirror](https://offline-translator.davidv.dev/support/1/docaligner_lcnet050.onnx), a byte-stable copy of the Google Drive original).

@@ -74,6 +74,10 @@ uv run python -m versta.<tool> --help
 
 Conventions shared by all CLIs:
 
+- `__main__.py` stays a thin shell: module docstring, imports, `parse_args()` and a `main()` that parses and calls into package modules. It contains no logic — no loops, no filesystem, no math. Any function that grows a docstring, a loop or a `Path()` computation belongs in a regular module (e.g. `materialize.py`, `pipeline.py`) and is imported by `main()`.
+- Every argument in `parse_args()` declares a `help=` text, and the parser variable is always spelled `parser` (never `p`).
+- Keep the flag surface small: one CLIs should expose a handful of per-run overrides (output dir, resume, steps, device, seed — the pipeline in `object-character-recognition` caps at six); steady-state tunables (batch sizes, LRs, dataset counts, loss weights, model shapes) are config constants, not flags.
+- Package tunables and constants live in a per-package `config.py` — typed frozen dataclasses or dicts grouped by theme, with the calibration rationale in docstrings — never scattered module-level `UPPER_CASE` globals across several files. Other modules import from `config.py`, and argparse `default=` values reference it too.
 - Flag names use snake_case with dashes avoided (`--output_dir`, `--keep_intermediates`; note: `--model-type` in some newer modules — follow the local precedent).
 - Boolean flags are `action="store_true"` with `default=False` unless the local precedent differs (translation's `bundle` uses `str2bool` for `--bidirectional`).
 - `--output_dir` defaults to `Path("output")` and lands in the gitignored `*/output` tree.

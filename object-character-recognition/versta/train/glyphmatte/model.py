@@ -101,6 +101,8 @@ class GlyphMatteUNet(nn.Module):
         self.color_head = nn.Conv2d(base, 6, 1)
 
     def forward(self, x: torch.Tensor) -> Outputs:
+        # Input width must be a multiple of 2**levels (pooling truncates odd
+        # sizes); callers pad, training wrappers pad to wrapper-width.
         e1 = self.enc1(x)
         e2 = self.enc2(self.pool(e1))
         e3 = self.enc3(self.pool(e2))

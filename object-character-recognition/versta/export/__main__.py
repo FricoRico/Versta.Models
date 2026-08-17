@@ -57,6 +57,14 @@ def parse_args() -> Namespace:
         help="Keep downloaded tars, extracted models and ONNX intermediates.",
     )
 
+    parser.add_argument(
+        "--glyphmatte_onnx",
+        type=Path,
+        default=None,
+        help="Local glyphmatte ONNX override: skips the HF download (use before the "
+        "model is published or to exercise a fresh training pipeline output).",
+    )
+
     return parser.parse_args()
 
 
@@ -65,8 +73,14 @@ def main(
     models: Optional[List[str]] = None,
     mnnconvert: Optional[Path] = None,
     keep_intermediates: bool = False,
+    glyphmatte_onnx: Optional[Path] = None,
 ) -> Path:
     selected = [m for m in MODELS if models is None or m["stem"] in models]
+    if glyphmatte_onnx is not None:
+        for spec in selected:
+            if spec["stem"] == "glyphmatte":
+                spec.pop("hf", None)
+                spec["url"] = glyphmatte_onnx.resolve().as_uri()
 
     output_dir = output_dir / PACK_NAME
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -97,4 +111,5 @@ if __name__ == "__main__":
         models=args.models,
         mnnconvert=args.mnnconvert,
         keep_intermediates=args.keep_intermediates,
+        glyphmatte_onnx=args.glyphmatte_onnx,
     )

@@ -1,49 +1,93 @@
+"""One-shot glyphmatte pipeline: dataset (HF snapshot) -> train -> export -> eval -> publish.
+
+All stage logic lives in `pipeline.py` (each stage is a function). Tuning
+defaults — batch size, LR, dataset sizes, loss weights, the model shape — live
+in `config.py`; the CLI only takes per-run overrides.
+
+Every run keeps its work under `--output_dir`: intermediates in
+`intermediates/` (removed at the end unless `--keep_intermediates`), the HF
+model-repo upload set at the output root (`onnx/glyphmatte{,_fp16}.onnx`,
+`glyphmatte.safetensors`, `config.json`), and the eval report as a JSON at the
+root.
+
+The training dataset is the published snapshot from the HF dataset repo
+`Neurora/versta-glyphmatte`, downloaded via `huggingface_hub.snapshot_download`
+into `intermediates/dataset/` on first use.
+
+    uv sync --extra rocm            # or --extra cu130 on NVIDIA
+    uv run python -m versta.train.glyphmatte
+
+After the run: upload the output root (onnx/ + safetensors + config.json) to
+the HF model repo `Neurora/versta-glyphmatte` via the HF web UI, then
+`uv run python -m versta.export --models glyphmatte` converts the fp32 ONNX
+into the pack's int8 MNN.
+
+On ROCm hosts without a C++ toolchain (immutable distros), run inside a
+toolbox container: prefix the command with `toolbox run -c glyphmatte`.
+"""
+
+import argparse
 import os
 
-from argparse import Namespace, ArgumentParser
+from argparse import Namespace
 from pathlib import Path
 
-from .train import train_model
+# ROCm: silence librocprofiler-register's probing noise ("(null): No such
+# file or directory", one per torch-importing process, incl. spawn workers).
+os.environ.setdefault("ROCPROFILER_REGISTER_ENABLED", "0")
+
+from . import pipeline
+from .config import TRAIN
 
 
 def parse_args() -> Namespace:
-    parser = ArgumentParser(
-        os.path.basename(__file__).replace(".py", ""),
-        description="""Train the glyph-matte U-Net on synthetic labelled strips.""",
-    )
-    parser.add_argument("--size", default="16x4", help="base x levels, e.g. 16x4")
-    parser.add_argument("--batch", type=int, default=32)
-    parser.add_argument("--steps", type=int, default=20000)
-    parser.add_argument("--lr", type=float, default=1e-3)
-    parser.add_argument("--resume", type=Path, default=None)
-    parser.add_argument("--val", type=int, default=200, help="batches per val round")
-    parser.add_argument("--workers", type=int, default=8)
+    parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--reuse",
-        type=int,
-        default=16,
-        help="steps each burst batch is reused on GPU",
+        "--output_dir",
+        type=Path,
+        default=Path("output/train/glyphmatte"),
+        help="Root for intermediates/, the HF upload set and the eval report.",
     )
-    parser.add_argument("--seed", type=int, default=0)
-    parser.add_argument("--device", default="auto")
-    parser.add_argument("--degrade-ramp", type=int, default=500)
     parser.add_argument(
-        "--compile",
+        "--keep_intermediates",
         action="store_true",
-        help="torch.compile (needs a C compiler for triton)",
+        default=False,
+        help="Keep intermediates/ (dataset snapshot, ckpt, onnx) after the run.",
     )
-    parser.add_argument("--weight-head", default="1x1", choices=["1x1", "3x3"])
     parser.add_argument(
-        "--wrapper-width",
+        "--steps",
         type=int,
-        default=384,
-        help="all batches padded to this width for dynamic-shape friendliness",
+        default=TRAIN.steps,
+        help="Total optimizer steps.",
+    )
+    parser.add_argument(
+        "--resume",
+        type=Path,
+        default=None,
+        help="Resume from a checkpoint path (needs --keep_intermediates from a prior run).",
+    )
+    parser.add_argument(
+        "--device",
+        default=TRAIN.device,
+        help="Torch device: auto/cpu/cuda:N. Default auto prefers cuda.",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=TRAIN.seed,
+        help="Training seed (the dataset seed stays fixed at the config value).",
     )
     return parser.parse_args()
 
 
 def main() -> None:
-    train_model(parse_args())
+    args = parse_args()
+    pipeline.stage_dataset(args)
+    pipeline.stage_train(args)
+    pipeline.stage_export(args)
+    pipeline.stage_eval(args)
+    pipeline.stage_publish(args)
+    pipeline.cleanup_intermediates(args)
 
 
 if __name__ == "__main__":

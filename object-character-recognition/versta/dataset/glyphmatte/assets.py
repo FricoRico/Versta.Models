@@ -15,6 +15,7 @@ CLI: uv run python -m versta.train.glyphmatte.assets
 """
 
 import hashlib
+import os
 
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
@@ -24,16 +25,31 @@ from urllib.request import Request, urlopen
 from tqdm import tqdm
 
 MODULE_ROOT = Path(__file__).parents[3]
-ASSETS_DIR = MODULE_ROOT / "assets"
-FONTS_DIR = ASSETS_DIR / "fonts"
-WORDS_DIR = ASSETS_DIR / "words"
-WORDS_EN = WORDS_DIR / "en.txt"
+
+# Assets live under <output_dir>/intermediates/assets by default (intermediates
+# are deleted unless --keep_intermediates). Spawn workers inherit the env var,
+# which is why the directory travels through the environment rather than args.
+_DEFAULT_ASSETS = "cache/dataset/glyphmatte"
+ASSETS_ENV = "GLYPHMATTE_ASSETS"
+
+
+def assets_dir() -> Path:
+    return Path(os.environ.get(ASSETS_ENV, _DEFAULT_ASSETS))
+
+
+def set_assets_dir(path: Path) -> None:
+    os.environ[ASSETS_ENV] = str(path)
+
+
+# The directory may change at runtime via set_assets_dir (the pipeline points
+# it at <output_dir>/intermediates/assets), so every call resolves it fresh
+# through assets_dir(); nothing is captured at import time.
 
 
 class Asset(NamedTuple):
     """A pinned downloadable file.
 
-    url: upstream URL; dest: path relative to ASSETS_DIR; sha256: hex digest or
+    url: upstream URL; dest: path relative to assets_dir(); sha256: hex digest or
     None to compute+report without failing (bootstrapping).
     """
 
@@ -202,7 +218,7 @@ def _sha256(path: Path) -> str:
 
 
 def _download(asset: Asset) -> Tuple[Path, str]:
-    dest = ASSETS_DIR / asset.dest
+    dest = assets_dir() / asset.dest
     dest.parent.mkdir(parents=True, exist_ok=True)
     with urlopen(Request(asset.url, method="GET"), timeout=600) as response:
         total = int(response.headers.get("Content-Length") or 0)
@@ -220,6 +236,11 @@ def _download(asset: Asset) -> Tuple[Path, str]:
     return dest, _sha256(dest)
 
 
+def missing_assets() -> List[Asset]:
+    """Pinned assets not yet present under the current assets dir."""
+    return [a for a in FONTS + WORDS if not (assets_dir() / a.dest).exists()]
+
+
 def sync_assets() -> Dict[str, str]:
     """Downloads every pinned asset; prints the sha256 of each so pins can be
     filled in. Skips files that already exist.
@@ -229,7 +250,7 @@ def sync_assets() -> Dict[str, str]:
     """
     out: Dict[str, str] = {}
     for asset in FONTS + WORDS:
-        dest = ASSETS_DIR / asset.dest
+        dest = assets_dir() / asset.dest
         if dest.exists():
             out[asset.dest] = _sha256(dest)
             continue

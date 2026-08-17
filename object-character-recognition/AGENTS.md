@@ -30,17 +30,35 @@ uv run python -m versta.export --output_dir ./output
 - Pipeline per model: download tar → extract → `paddle2onnx` (opset 14 for PIR, opset 11 for PULC) → `MNNConvert -f ONNX --bizCode biz --weightQuantBits 8`. Detector variants fold the DBNet head deconvs into 1x1 convolutions (`export/fold_deconv.py`, ported from translator-rs, MIT).
 - `--models` restricts the run to specific tar stems; `--mnnconvert` points at a prebuilt converter binary (otherwise the vendored submodule is built on first use); `--keep_intermediates` keeps tars/extracted models/ONNX.
 
-### `versta.train.glyphmatte`
+### `versta.train.glyphmatte` + `versta.dataset.glyphmatte`
 
-Trains the glyph-matte U-Net and exports `glyphmatte_int8.mnn` into the pack
-(manifest role `glyphmatte`). Sub-CLIs: `assets` (pinned fonts/word lists into
-`assets/`), `gen_data` (inspection sheets), `train` (GPU; needs the `rocm` or
-`cu130` extra — `uv sync --extra rocm`; ROCm training additionally needs a C++
-toolchain at runtime for MIOpen/HIPRTC: run inside a toolbox container on
-immutable distros), `export_onnx` (four named outputs: matte, weight,
-foreground, background), `convert_mnn` (spawns the bundle's vendored
-MNNConvert and merges into the pack manifest), `eval` (synthetic-val metrics
-+ ONNX↔int8 drift; auto-applies the PyMNN execstack patch on first use).
+Training pipeline for the glyph-matte U-Net (`glyphmatte_int8.mnn`, manifest
+role `glyphmatte`; four named outputs: matte, weight, foreground, background).
+
+- Dataset synthesis lives in `versta/dataset/glyphmatte/` (`config`,
+  `gen_data`, `synth`, `assets`, `materialize`, `parquet`), regenerated only
+  when the published snapshot is updated:
+  `uv run python -m versta.dataset.glyphmatte`.
+- `uv run python -m versta.train.glyphmatte` runs the whole pipeline (HF
+  dataset snapshot → train → export → eval → publish); every stage is a
+  function in `pipeline.py`. The parquet shards come from the dataset repo
+  `Neurora/versta-glyphmatte` via `huggingface_hub.snapshot_download` into
+  `output/intermediates/dataset/` (skipped when already present). Training
+  needs the `rocm` or `cu130` extra (`uv sync --extra rocm`); ROCm
+  additionally needs a C++ toolchain at runtime for MIOpen/HIPRTC — run
+  inside a toolbox container on immutable distros.
+- Training consumes the downloaded shards (validation comes from the fixed
+  `validation-*.parquet` shard); tuning knobs (batch, LR, dataset sizes, loss
+  weights, model shape, `--compile`) live in `config.py` — the CLI surface is
+  six flags: `--output_dir`, `--keep_intermediates`, `--steps`, `--resume`,
+  `--device`, `--seed`. The publishable set lands at the output root
+  (ONNX fp32 + fp16, safetensors, config.json → manual HF upload to the
+  model repo `Neurora/versta-glyphmatte`); the dataset comes from HF, so no
+  dataset re-export step exists.
+- MNN conversion stays with `versta.export` — a read-only `glyphmatte` kind in
+  MODELS fetched through `huggingface_hub.hf_hub_download` (never a raw
+  huggingface.com URL; `--glyphmatte_onnx <path>` overrides it for offline
+  runs).
 
 ### `versta.bundle`
 
@@ -58,6 +76,8 @@ uv run python -m versta.bundle
 ## Conventions specific to this module
 
 - `version.txt` lives at `versta/version.txt` (currently `v1.1.0`), read at import time by each `__main__.py`.
+- Entrypoints stay thin: `__main__.py` files contain only the module docstring, `parse_args()` and a `main()` calling into package modules (see the root AGENTS.md CLI pattern); stage/step logic lives in `pipeline.py`, `materialize.py` and friends.
+- Package tunables live in per-package `config.py` files (`versta/dataset/glyphmatte/config.py`, `versta/train/glyphmatte/config.py`) — frozen dataclasses/dicts grouped by theme with calibration rationale in docstrings; do not reintroduce scattered module-level constants elsewhere.
 - Paddle stack environment quirks (e.g. disabling MKLDNN) belong at process entrypoints (`os.environ` before importing paddle), not scattered through library code.
 - Strict typing holds here as everywhere: `export/typing.py` defines the boundary-crossing TypedDicts; extend them when adding fields instead of passing loosely typed dicts.
 

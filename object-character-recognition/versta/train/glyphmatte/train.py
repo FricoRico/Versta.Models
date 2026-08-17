@@ -1,24 +1,24 @@
-"""Train the glyph-matte U-Net on synthetic strips.
+"""Train the glyph-matte U-Net on glyph strips.
 
 Ported (approach, not files) from the MIT-licensed reference implementation by
 David Ventura: translator-rs/scripts/ink_model/train.py.
 
   https://github.com/DavidVentura/translator-rs/blob/master/scripts/ink_model/train.py
 
-Data flow: spawn-context DataLoader workers generate whole batches of labelled
-strips (`SyntheticStrips` IterableDataset, `collate_fn=identity`) so the burst
-batch B is generated ONCE per worker cycle and reused `reuse` steps on GPU.
-Labels stay clean; only the RGB is degraded.
+Data flow: spawn-context DataLoader workers decode whole batches of labelled
+strips from the materialized parquet shards (`MaterializedStrips`
+IterableDataset, `collate_fn=identity`); each batch is reused `reuse` steps on
+GPU. Labels stay clean; only the RGB is degraded.
 
 CLI entry point is the package `__main__`: `uv run python -m versta.train.glyphmatte`
 """
 
-import argparse
 import random
+import shutil
 import time
 
 from pathlib import Path
-from typing import Dict, Iterator, Tuple
+from typing import Dict, Iterator, List, Optional, Tuple
 
 import numpy as np
 import torch
@@ -26,53 +26,67 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, IterableDataset
 
-from .gen_data import WIDTHS, Strip, sample_strip
+from ...dataset.glyphmatte.gen_data import Strip
+from ...dataset.glyphmatte.parquet import read_shard
+from .config import LOSS_WEIGHTS, TrainDefaults
 from .model import CompatUNet, GlyphMatteUNet, Outputs, param_count
-
-CKPT_DIR = Path("cache/checkpoints")
 
 
 def _identity(x: object) -> object:
     return x
 
 
-class SyntheticStrips(IterableDataset):
-    """Infinite stream of synthetic strip batches; each worker yield IS a
-    whole batch (`collate_fn=identity`). Val mode caps at val_steps batches.
+class MaterializedStrips(IterableDataset):
+    """Batches decoded from the materialized parquet shards.
 
-    Modes: "train" (gradual degrade prob ramp) / "val" (fixed degrade prob 1).
+    Workers partition shards by modulo, decode PNG payloads (1-2 ms/strip) and
+    bucket strips by width so each yielded batch has a single width. Optionally
+    capped for validation; infinite for training (multi-epoch by design).
     """
 
     def __init__(
         self,
+        shards: List[Path],
         batch: int,
-        mode: str,
-        val_steps: int,
-        degrade_prob: float = 1.0,
         seed: int = 0,
+        max_batches: int = 0,
     ):
         super().__init__()
+        self.shards = shards
         self.batch = batch
-        self.mode = mode
-        self.val_steps = val_steps
-        self.degrade_prob = degrade_prob
         self.seed = seed
+        self.max_batches = max_batches
 
     def __iter__(self) -> Iterator[Tuple[torch.Tensor, torch.Tensor]]:
         info = torch.utils.data.get_worker_info()
-        rng = random.Random(self.seed + (info.id if info else 0))
-        n_yield = self.val_steps if self.mode == "val" else None
-        i = 0
-        while n_yield is None or i < n_yield:
-            width = rng.choice(WIDTHS)
-            imgs, labels = [], []
-            for _ in range(self.batch):
-                deg = rng.random() < self.degrade_prob
-                strip = sample_strip(rng, width=width, keep_degrade=deg)
-                imgs.append(_strip_to_img(strip, width))
-                labels.append(_strip_to_label(strip))
-            yield torch.from_numpy(np.stack(imgs)), torch.from_numpy(np.stack(labels))
-            i += 1
+        wid, nw = (info.id, info.num_workers) if info else (0, 1)
+        mine = [s for i, s in enumerate(self.shards) if i % nw == wid]
+        if not mine:
+            # Fewer shards than workers: idle workers duplicate the full set
+            # instead of spinning without ever filling a batch.
+            mine = list(self.shards)
+        rng = random.Random(self.seed + wid)
+        buckets: Dict[int, List[Strip]] = {}
+        yielded = 0
+        while self.max_batches <= 0 or yielded < self.max_batches:
+            order = mine[:]
+            rng.shuffle(order)
+            for shard in order:
+                for strip in read_shard(shard):
+                    w = strip.rgb.shape[1]
+                    bucket = buckets.setdefault(w, [])
+                    bucket.append(strip)
+                    if len(bucket) >= self.batch:
+                        sel, buckets[w] = bucket[: self.batch], bucket[self.batch :]
+                        yield (
+                            torch.from_numpy(
+                                np.stack([_strip_to_img(s, w) for s in sel])
+                            ),
+                            torch.from_numpy(
+                                np.stack([_strip_to_label(s) for s in sel])
+                            ),
+                        )
+                        yielded += 1
 
 
 def _strip_to_img(strip: Strip, width: int) -> np.ndarray:
@@ -123,14 +137,6 @@ def losses(pred: Outputs, tgt: torch.Tensor) -> Dict[str, torch.Tensor]:
         min=1
     ) + (b_mask * (bg - b_t).abs()).sum() / (b_mask.sum() * 3).clamp(min=1)
     return out
-
-
-LOSS_WEIGHTS: Dict[str, float] = {
-    "dice": 1.0,
-    "matte_bce": 1.0,
-    "weight": 3.0,
-    "color": 1.0,
-}
 
 
 def run_val(
@@ -202,61 +208,64 @@ def load_for_resume(ckpt: Path, model: nn.Module) -> int:
     return int(blob.get("step", 0))
 
 
-def train_model(args: argparse.Namespace) -> None:
-    torch.manual_seed(args.seed)
-    random.seed(args.seed)
-    np.random.seed(args.seed)
+def train_model(cfg: TrainDefaults, output_dir: Path, resume: Optional[Path]) -> None:
+    torch.manual_seed(cfg.seed)
+    random.seed(cfg.seed)
+    np.random.seed(cfg.seed)
     torch.multiprocessing.set_sharing_strategy("file_system")
     device = torch.device(
         "cuda"
-        if (args.device == "auto" and torch.cuda.is_available())
-        else (args.device if args.device != "auto" else "cpu")
+        if (cfg.device == "auto" and torch.cuda.is_available())
+        else (cfg.device if cfg.device != "auto" else "cpu")
     )
-    base, levels = (int(x) for x in args.size.split("x"))
+    base, levels = (int(x) for x in cfg.size.split("x"))
 
-    model = GlyphMatteUNet(base=base, levels=levels, weight_head=args.weight_head)
+    model = GlyphMatteUNet(base=base, levels=levels, weight_head=cfg.weight_head)
     model._base = base
     start_step = 0
-    if args.resume:
-        start_step = load_for_resume(args.resume, model)
-        print(f"resumed {args.resume} @ step {start_step}", flush=True)
+    if resume:
+        start_step = load_for_resume(resume, model)
+        print(f"resumed {resume} @ step {start_step}", flush=True)
     model = model.to(device)
     n_params = param_count(model)
     print(
         f"device={device} params={n_params:,} int8~={n_params / 1e6:.2f}MB", flush=True
     )
 
-    import shutil
-
     have_cc = shutil.which("gcc") or shutil.which("cc") or shutil.which("clang")
-    if args.compile and device.type == "cuda" and have_cc:
+    if cfg.compile and device.type == "cuda" and have_cc:
         model = torch.compile(model)
-    elif args.compile and not have_cc:
-        print("torch.compile requested but no C compiler; running eager", flush=True)
+    elif cfg.compile and not have_cc:
+        print("torch.compile enabled but no C compiler; running eager", flush=True)
 
-    opt = torch.optim.Adam(model.parameters(), lr=args.lr)
+    opt = torch.optim.Adam(model.parameters(), lr=cfg.lr)
     sched = torch.optim.lr_scheduler.OneCycleLR(
-        opt, max_lr=args.lr, total_steps=max(args.steps, 100), pct_start=0.05
+        opt, max_lr=cfg.lr, total_steps=max(cfg.steps, 100), pct_start=0.05
     )
 
-    def degrade_prob(step: int) -> float:
-        return min(1.0, step / max(args.degrade_ramp, 1))
+    ckpt_dir = output_dir / "intermediates" / "ckpt"
+    dataset_dir = output_dir / "intermediates" / "dataset"
 
-    def make_loader(seed_off: int, deg: float) -> DataLoader:
-        ds = SyntheticStrips(args.batch, "train", 0, deg, args.seed + seed_off)
+    def make_loader() -> DataLoader:
+        shards = sorted(dataset_dir.glob("train-*.parquet"))
+        if not shards:
+            raise RuntimeError(
+                f"no train shards in {dataset_dir}; the dataset stage must run first"
+            )
+        ds = MaterializedStrips(shards, cfg.batch, cfg.seed)
         return DataLoader(
             ds,
             batch_size=None,
-            num_workers=args.workers,
+            num_workers=cfg.workers,
             collate_fn=_identity,
             pin_memory=True,
             multiprocessing_context="spawn",
             persistent_workers=True,
         )
 
-    # Val set: fixed seed, always fully degraded; 2 workers, no persistence.
-    val_ds = SyntheticStrips(
-        args.batch, "val", max(args.val // args.batch, 1), 1.0, args.seed + 999
+    val_shards = sorted(dataset_dir.glob("validation-*.parquet"))
+    val_ds = MaterializedStrips(
+        val_shards, cfg.batch, cfg.seed + 999, max(cfg.val // cfg.batch, 1)
     )
     val_loader = DataLoader(
         val_ds,
@@ -274,10 +283,9 @@ def train_model(args: argparse.Namespace) -> None:
     step = start_step
     running: Dict[str, float] = {}
 
-    while step < args.steps:
-        if step % 500 == 0 or train_loader is None:
-            deg = degrade_prob(step)
-            train_loader = make_loader(step // 500, deg)
+    while step < cfg.steps:
+        if train_loader is None:
+            train_loader = make_loader()
             it = iter(train_loader)
 
         img_t, tgt_t = next(it)
@@ -285,14 +293,14 @@ def train_model(args: argparse.Namespace) -> None:
         # Same-width pad wrapper: everything reaches the GPU at wrapper width
         # so torch.compile sees a constant shape.
         w_now = img_t.shape[3]
-        if w_now < args.wrapper_width:
-            img_t = F.pad(img_t, (0, args.wrapper_width - w_now))
-            tgt_t = F.pad(tgt_t, (0, args.wrapper_width - w_now))
+        if w_now < cfg.wrapper_width:
+            img_t = F.pad(img_t, (0, cfg.wrapper_width - w_now))
+            tgt_t = F.pad(tgt_t, (0, cfg.wrapper_width - w_now))
 
         img_t = img_t.to(device, non_blocking=True)
         tgt_t = tgt_t.to(device, non_blocking=True)
 
-        for _ in range(args.reuse):
+        for _ in range(cfg.reuse):
             pred = model(img_t)
             ls = losses(pred, tgt_t)
             loss = sum(LOSS_WEIGHTS[k] * v for k, v in ls.items())
@@ -311,16 +319,16 @@ def train_model(args: argparse.Namespace) -> None:
                 running = {}
             if step % 500 == 0:
                 if step % 4000 == 0 and step > 0:
-                    save_ckpt(model, step, CKPT_DIR / f"glyphmatte-step{step}.pt")
-                save_ckpt(model, step, CKPT_DIR / "glyphmatte-latest.pt")
+                    save_ckpt(model, step, ckpt_dir / f"glyphmatte-step{step}.pt")
+                save_ckpt(model, step, ckpt_dir / "glyphmatte-latest.pt")
                 val = run_val(model, val_loader, device)
                 print(
                     f"step {step} VAL {val} lr={sched.get_last_lr()[0]:.2e}",
                     flush=True,
                 )
-            if step >= args.steps:
+            if step >= cfg.steps:
                 break
 
-    save_ckpt(model, step, CKPT_DIR / f"glyphmatte-step{step}.pt")
-    save_ckpt(model, step, CKPT_DIR / "glyphmatte-latest.pt")
+    save_ckpt(model, step, ckpt_dir / f"glyphmatte-step{step}.pt")
+    save_ckpt(model, step, ckpt_dir / "glyphmatte-latest.pt")
     print("done", flush=True)
