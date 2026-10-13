@@ -1,6 +1,6 @@
 import os
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
 from .download import (
@@ -10,7 +10,7 @@ from .download import (
 )
 
 
-def parse_args():
+def parse_args() -> Namespace:
     parser = ArgumentParser(
         os.path.basename(__file__),
         description="""Download a Firefox (Bergamot) translation model for a single language direction

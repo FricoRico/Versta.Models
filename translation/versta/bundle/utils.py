@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import List
 
 
-def copy_folder(src: Path, dest: Path):
+def copy_folder(src: Path, dest: Path) -> None:
     """
     Copies the contents of the source directory to the destination directory.
 
@@ -14,7 +14,7 @@ def copy_folder(src: Path, dest: Path):
     if src.exists() and src.is_dir():
         dest = dest / src.name
         dest.mkdir(parents=True, exist_ok=True)
-        for item in src.iterdir():
+        for item in sorted(src.iterdir()):
             dest_item = dest / item.name
             if item.is_dir():
                 copy_folder(item, dest)
@@ -22,7 +22,7 @@ def copy_folder(src: Path, dest: Path):
                 copy2(item, dest_item)
 
 
-def copy_folders(src_dirs: List[Path], dest: Path):
+def copy_folders(src_dirs: List[Path], dest: Path) -> None:
     """
     Copies the contents of multiple source directories to the destination directory.
 
@@ -34,7 +34,7 @@ def copy_folders(src_dirs: List[Path], dest: Path):
         copy_folder(src, dest)
 
 
-def remove_folder(dir: Path):
+def remove_folder(dir: Path) -> None:
     """
     Removes the specified directory and all its contents.
 

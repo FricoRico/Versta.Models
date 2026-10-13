@@ -68,3 +68,27 @@ uv run python -m versta.batch --input_file pairs.json --output_dir ./output
 ```
 
 This generates one tarball per language pair and a `models.json` definition that can be deployed to the cloud object storage.
+
+## Verification
+
+Bundles are produced deterministically: identical inputs yield byte-identical
+`.tar.gz` output, so exports can be verified by comparing SHA-256 checksums
+between runs or machines (set `SOURCE_DATE_EPOCH` to pin a non-default
+timestamp; see `PIPELINE.md`).
+
+Produced artifacts are validated fail-fast against the app's loader schema
+(`versta/schema.py`): per-direction `metadata.json`, the bundle-level
+metadata, the archive contents and the generated catalog.
+
+The test suite (including a hermetic smoke export against a mocked registry)
+and the linters run in CI (`.github/workflows/ci.yml`):
+
+```bash
+uv sync
+uv run pytest -v
+uv run ruff check . && uv run ruff format --check .
+uv run mypy
+```
+
+See `PIPELINE.md` for the pipeline architecture, the app contract and the
+reproducibility guarantees.

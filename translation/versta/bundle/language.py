@@ -1,20 +1,20 @@
-from typing import List, Tuple
+from typing import List
 
 from .metadata import BundleMetadata
 
 
 def validate_translation_pairs(
     metadata_list: List[BundleMetadata],
-) -> List[Tuple[str, str]]:
+) -> None:
     """
     Validates that for each language pair (source -> target), there is a corresponding reverse pair (target -> source).
-    If any reverse pair is missing, it returns them as a list of missing translation pairs.
+    Raises on the first set of missing reverse pairs.
 
     Args:
         metadata_list (List[BundleMetadata]): List of BundleMetadata dictionaries containing source and target language pairs.
 
-    Returns:
-        List[Tuple[str, str]]: A list of missing translation pairs as tuples (source_language, target_language).
+    Raises:
+        ValueError: If any reverse translation pair is missing.
     """
     # Set to store the existing language pairs
     existing_pairs = set()

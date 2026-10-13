@@ -1,7 +1,7 @@
 import json
 
 from pathlib import Path
-from typing import List
+from typing import Any, List
 
 from .typing import BundleMetadata
 
@@ -98,7 +98,7 @@ def generate_metadata(
 
 
 # Custom serialization function to handle non-serializable objects (like Path)
-def serialize_metadata(obj: BundleMetadata) -> str:
+def serialize_metadata(obj: Any) -> str:
     if isinstance(obj, Path):
         return str(obj)
     raise TypeError(f"Object of type {type(obj)} is not JSON serializable")

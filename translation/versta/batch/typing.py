@@ -1,8 +1,19 @@
 from pathlib import Path
-from typing import TypedDict
+from typing import Optional, TypedDict
 
 
 class ModelFile(TypedDict):
+    """One requested translation direction in the batch input catalog."""
+
+    source_language: str
+    target_language: str
+    architecture: Optional[str]
+    score: float
+
+
+class CatalogEntry(TypedDict):
+    """One entry in the generated (pre-sync) catalog written by save_model_file."""
+
     source_language: str
     target_language: str
     architecture: str

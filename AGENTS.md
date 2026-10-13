@@ -86,9 +86,9 @@ Conventions shared by all CLIs:
 
 ## Testing & verification
 
-- There is currently no test suite and no CI. Changes are verified by running the CLIs end-to-end.
+- `translation/` has a pytest suite, mypy config and GitHub Actions CI (`.github/workflows/ci.yml`); other modules are verified by running their CLIs end-to-end until they get the same treatment.
 - The minimal smoke check for a module change is a successful run of the affected tool against a small model/language pair, writing into the gitignored `output/` tree.
-- Do not add placeholder or template tests. If a test suite is introduced, tests must exercise live production code and assert behavior, not implementation details.
+- Do not add placeholder or template tests. Tests must exercise live production code and assert behavior, not implementation details.
 - Generated `metadata.json`/`models.json` files are machine-checked by the app; after changing a schema or field, verify against how `Versta.Android` parses them.
 
 ## Documentation

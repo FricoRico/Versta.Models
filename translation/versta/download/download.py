@@ -3,11 +3,13 @@ import re
 from gzip import decompress
 from hashlib import sha256
 from pathlib import Path
-from typing import Dict, List
+from typing import Any, Dict, List, Optional, cast
 from urllib.request import urlopen, Request
 
+from ..schema import validate_direction_metadata
 
-def load_registry(registry_url: str) -> dict:
+
+def load_registry(registry_url: str) -> Dict[str, Any]:
     """
     Loads the Firefox translations model registry from the public Google Cloud Storage bucket.
 
@@ -22,7 +24,7 @@ def load_registry(registry_url: str) -> dict:
         dict: The parsed registry document.
     """
     with urlopen(Request(registry_url, method="GET"), timeout=60) as response:
-        return json.loads(response.read().decode("utf-8"))
+        return cast(Dict[str, Any], json.loads(response.read().decode("utf-8")))
 
 
 def normalize_language(code: str) -> str:
@@ -77,10 +79,54 @@ def get_pair_entries(
     source = normalize_language(source_language)
     target = normalize_language(target_language)
     pair = f"{source}-{target}"
-    return registry.get("models", {}).get(pair, [])
+    return cast(List[dict], registry.get("models", {}).get(pair, []))
 
 
 ARCHITECTURE_PREFERENCE = ("tiny", "base-memory", "base")
+
+# Registry file kinds that must be present before a download starts. The vocabulary
+# is published either as a shared "vocab" or as separate "srcVocab"/"trgVocab" files.
+VOCABULARY_KINDS = ("vocab", "srcVocab")
+
+
+def validate_registry_entry(entry: dict) -> None:
+    """
+    Fail-fast check of a registry entry's shape before any bytes are downloaded.
+
+    Args:
+        entry (dict): A registry entry as returned by `get_entry`.
+
+    Raises:
+        ValueError: If a required file kind or path is missing from the entry.
+    """
+    files = entry.get("files")
+    if not isinstance(files, dict):
+        raise ValueError(
+            f"Registry entry for "
+            f"'{entry.get('sourceLanguage')}-{entry.get('targetLanguage')}' "
+            f"has no 'files' object."
+        )
+
+    missing = [
+        kind for kind in ("model", "lexicalShortlist") if not _file_path(files, kind)
+    ]
+    if not any(_file_path(files, kind) for kind in VOCABULARY_KINDS):
+        missing.append("|".join(VOCABULARY_KINDS))
+
+    if missing:
+        raise ValueError(
+            f"Registry entry for "
+            f"'{entry.get('sourceLanguage')}-{entry.get('targetLanguage')}' "
+            f"is missing required file kinds: {', '.join(missing)}."
+        )
+
+
+def _file_path(files: dict, kind: str) -> str:
+    """Returns the remote path of file `kind`, or an empty string."""
+    descriptor = files.get(kind)
+    if not isinstance(descriptor, dict):
+        return ""
+    return str(descriptor.get("path") or "")
 
 
 def get_best_entry(registry: dict, source: str, target: str) -> dict:
@@ -96,7 +142,7 @@ def get_best_entry(registry: dict, source: str, target: str) -> dict:
         target (str): Target language code (e.g. "nl").
 
     Returns:
-        dict: The selected registry entry.
+        dict: The matching registry entry.
 
     Raises:
         ValueError: If the language pair has no published models at all.
@@ -104,13 +150,16 @@ def get_best_entry(registry: dict, source: str, target: str) -> dict:
     entries = get_pair_entries(registry, source, target)
 
     if not entries:
-        raise ValueError(f"No models available for '{source}-{target}'.")
+        pair = f"{normalize_language(source)}-{normalize_language(target)}"
+        raise ValueError(f"No models available for '{pair}'.")
 
     for architecture in ARCHITECTURE_PREFERENCE:
         for entry in entries:
             if entry.get("architecture") == architecture:
+                validate_registry_entry(entry)
                 return entry
 
+    validate_registry_entry(entries[0])
     return entries[0]
 
 
@@ -118,7 +167,7 @@ def get_entry(
     registry: dict,
     source: str,
     target: str,
-    architecture: str = None,
+    architecture: Optional[str] = None,
 ) -> dict:
     """
     Returns the registry entry for a specific language pair and architecture.
@@ -142,7 +191,7 @@ def get_entry(
         if entry.get("architecture") == architecture:
             return entry
 
-    available = ", ".join(e.get("architecture") for e in entries) or "none"
+    available = ", ".join(str(e.get("architecture")) for e in entries) or "none"
     raise ValueError(
         f"No '{architecture}' model for '{source}-{target}'. "
         f"Available architectures: {available}."
@@ -170,6 +219,8 @@ def download_model(
     """
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+
+    validate_registry_entry(entry)
 
     source_language = entry["sourceLanguage"]
     target_language = entry["targetLanguage"]
@@ -237,6 +288,10 @@ def download_model(
     with open(output_dir / "metadata.json", "w", encoding="utf-8") as handle:
         json.dump(metadata, handle, indent=4)
 
+    # Fail fast if what we just produced violates the app's loader contract or
+    # references files that never landed on disk.
+    validate_direction_metadata(metadata, base_dir=output_dir)
+
     return output_dir
 
 
@@ -265,7 +320,7 @@ def _load_model_metadata(base_url: str, model_descriptor: dict) -> dict:
 
     try:
         with urlopen(Request(url, method="GET"), timeout=60) as response:
-            return json.loads(response.read().decode("utf-8"))
+            return cast(Dict[str, Any], json.loads(response.read().decode("utf-8")))
     except Exception:
         return {}
 

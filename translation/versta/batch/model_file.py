@@ -1,12 +1,12 @@
 import json
 import shutil
 from json import load
-from os.path import getsize
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from ..download.download import normalize_language
-from .typing import ExportedBundle, ModelFile
+from ..schema import validate_catalog, validate_generated_catalog
+from .typing import CatalogEntry, ExportedBundle, ModelFile
 
 
 # Fields copied verbatim from the generated models.json into the catalog.
@@ -70,29 +70,32 @@ def save_model_file(
         None
     """
     file_path = output_dir / "models.json"
-    model_output: dict = {
+    model_output: Dict[str, Any] = {
         "version": version,
         "models": list(),
     }
 
     for pairs in bundles:
-        model_pairs: List[ModelFile] = list()
+        model_pairs: List[CatalogEntry] = list()
 
         for bundle in pairs:
             model_pairs.append(
-                ModelFile(
+                CatalogEntry(
                     source_language=bundle["source_language"],
                     target_language=bundle["target_language"],
                     architecture=bundle["architecture"],
                     score=bundle["score"],
                     version=bundle["version"],
-                    size=getsize(bundle["path"]),
+                    size=Path(bundle["path"]).stat().st_size,
                     bundle=link_prefix + bundle["path"].name,
                     checksum=link_prefix + bundle["checksum"].name,
                 )
             )
 
         model_output["models"].append(model_pairs)
+
+    # Fail fast if the generated catalog does not match the deployable shape.
+    validate_generated_catalog(model_output)
 
     with open(file_path, "w") as f:
         json.dump(model_output, f, indent=4)
@@ -140,7 +143,7 @@ def update_models_json(existing_path: Path, generated_path: Path, version: str) 
     with open(generated_path, "r") as f:
         generated = load(f)
 
-    computed_by_key: Dict[Tuple[str, str], dict] = {}
+    computed_by_key: Dict[Tuple[str, str], Dict[str, Any]] = {}
     for group in generated.get(
         "models", generated if isinstance(generated, list) else []
     ):
@@ -149,7 +152,9 @@ def update_models_json(existing_path: Path, generated_path: Path, version: str) 
                 _entry_key(entry["source_language"], entry["target_language"])
             ] = entry
 
-    def lookup(source_language: str, target_language: str, bidirectional: bool):
+    def lookup(
+        source_language: str, target_language: str, bidirectional: bool
+    ) -> Optional[Dict[str, Any]]:
         key = _entry_key(source_language, target_language)
         if key in computed_by_key:
             return computed_by_key[key]
@@ -180,5 +185,8 @@ def update_models_json(existing_path: Path, generated_path: Path, version: str) 
 
     with open(existing_path, "w") as f:
         json.dump(catalog, f, indent=4)
+
+    # Fail fast if the synced catalog no longer matches the app's loader schema.
+    validate_catalog(catalog)
 
     return existing_path
