@@ -1,6 +1,7 @@
 {
+  "schema": "versta.pack-scorecard/1",
   "scorecard_version": 1,
-  "generated_at": "2026-10-14T20:42:10+00:00",
+  "generated_at": "2026-10-14T21:09:17+00:00",
   "slug": "en-ja",
   "bundle": {
     "file": "en-ja-bundle.tar.gz",
@@ -15,14 +16,19 @@
     "runner": "ubuntu-24.04-arm",
     "leanmt_commit": "f26e42621fc76b485c55fc2c886a123dc515d436",
     "corpus": "traveler-v1",
-    "corpus_entries": 80
+    "corpus_entries": 80,
+    "corpus_sha256": "9c705e497431ab3363eb56b1e632a16ef68959d2e4709cdd6813c1bc9ac431f8"
+  },
+  "metrics": {
+    "sacrebleu_version": "2.6.0",
+    "chrf_signature": "nrefs:1|case:mixed|eff:yes|nc:6|nw:0|space:no|version:2.6.0"
   },
   "directions": [
     {
       "direction": "en-ja",
       "load_ok": true,
-      "model_load_ms": 71.644,
-      "rss_after_load_kib": 61376,
+      "model_load_ms": 70.296,
+      "rss_after_load_kib": 61392,
       "chrf": 53.3,
       "chrf_floor": 15.0,
       "direction_check": "pass",
@@ -33,19 +39,19 @@
       },
       "latency_ms": {
         "n": 40,
-        "min_ms": 3.098,
-        "p50_ms": 5.6,
-        "p95_ms": 20.258,
-        "max_ms": 22.255
+        "min_ms": 2.962,
+        "p50_ms": 5.49,
+        "p95_ms": 19.352,
+        "max_ms": 21.415
       },
-      "rss_peak_kib": 101068,
+      "rss_peak_kib": 101080,
       "sentences": 40,
       "translation_failures": 0
     },
     {
       "direction": "ja-en",
       "load_ok": true,
-      "model_load_ms": 92.75,
+      "model_load_ms": 91.502,
       "rss_after_load_kib": 61252,
       "chrf": 63.25,
       "chrf_floor": 20.0,
@@ -61,10 +67,10 @@
       },
       "latency_ms": {
         "n": 40,
-        "min_ms": 3.11,
-        "p50_ms": 5.167,
-        "p95_ms": 7.331,
-        "max_ms": 9.089
+        "min_ms": 3.077,
+        "p50_ms": 5.032,
+        "p95_ms": 7.207,
+        "max_ms": 8.646
       },
       "rss_peak_kib": 106176,
       "sentences": 40,
