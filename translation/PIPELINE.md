@@ -75,11 +75,22 @@ then syncs computed fields (`size`, `bundle`, `checksum`, `score` ×100,
 `version`) back into the input catalog in place (with a `.bak` backup) and
 validates the updated catalog.
 
+## Evaluation corpora (pinned)
+
+Quality gates score against hash-pinned reference corpora, not live upstream
+downloads. `evals/corpora/flores200-dev.json` pins the FLORES-200 dev snapshot
+covering every shipped direction (artifact SHA-256, per-file hashes and
+sentence counts); `uv run python -m versta.eval.corpora fetch` reproduces it
+byte-identically into `output/corpora/` from recorded mirrors, verifying
+before extraction and after. Provenance, license and the revision-bump
+procedure: `evals/corpora/README.md`.
+
 ### `versta.eval` (quality measurement, NEU-44)
 
 The quality stage: `uv run python -m versta.eval --source X --target Y
 --bundle <bundle.tar.gz>` translates the pinned FLORES-200 dev snapshot
-(`evals/corpora.json` + hash-verified payloads) through the reference
+(checked-in manifest in `evals/corpora/`, hash-verified payloads fetched to
+`output/corpora/` by `versta.eval.corpora fetch`) through the reference
 runtime — upstream `bergamot-translator` as a black-box CLI for v1, the
 LeanMT batch mode (NEU-50) once it lands — and scores sacreBLEU + chrF
 (COMET-22 optionally, release tier only). The emitted result JSON

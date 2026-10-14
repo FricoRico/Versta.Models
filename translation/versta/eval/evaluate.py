@@ -64,12 +64,16 @@ def write_result(result: EvalResult, output_path: Path) -> Path:
     return output_path
 
 
+DEFAULT_CORPUS_ROOT = Path("output") / "corpora"
+
+
 def evaluate_direction(
     *,
     source: str,
     target: str,
     engine: Engine,
     corpus_manifest_path: Path,
+    corpus_root: Path = DEFAULT_CORPUS_ROOT,
     direction_dir: Optional[Path] = None,
     bundle: Optional[Path] = None,
     with_comet: bool = False,
@@ -91,7 +95,10 @@ def evaluate_direction(
         target (str): Target language code (e.g. ``es``).
         engine (Engine): The configured reference runtime.
         corpus_manifest_path (Path): The pinned corpus manifest
-            (``evals/corpora.json``).
+            (``evals/corpora/flores200-dev.json``).
+        corpus_root (Path): The fetch cache root the verified snapshot is
+            read from (``output/corpora`` by default; run
+            ``uv run python -m versta.eval.corpora fetch`` first).
         direction_dir (Path | None): A ``versta.download`` output directory.
         bundle (Path | None): A shipped ``*-bundle.tar.gz`` to evaluate from.
         with_comet (bool): Also score COMET-22 (release tier; needs the
@@ -125,7 +132,7 @@ def evaluate_direction(
     # Verify the pinned corpus before spending any engine time.
     manifest = corpora.load_manifest(corpus_manifest_path)
     corpus = corpora.resolve_slice(
-        manifest, direction, corpus_dir=corpus_manifest_path.parent / "corpora"
+        manifest, direction, corpus_dir=corpora.snapshot_dir(manifest, corpus_root)
     )
 
     work_dir = Path(tempfile.mkdtemp(prefix="versta-eval-", dir=work_root))
