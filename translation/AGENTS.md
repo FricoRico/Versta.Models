@@ -59,6 +59,25 @@ uv run python -m versta.batch --input_file models.json --output_dir ./output/exp
 - `--link_prefix`: URL prefix written into the generated catalog (default `https://models.versta.app/translation/`).
 - Output: one tarball per pair plus a deployable `models.json` catalog; the input file is updated in place (with `.bak` backup) so the checked-in `models.json` stays in sync with what was actually exported.
 
+### `versta.eval`
+
+The quality harness (NEU-44/NEU-51): translates the pinned FLORES-200
+snapshot for one direction through the reference runtime and scores
+sacreBLEU + chrF, writing a versioned result JSON:
+
+```bash
+uv run python -m versta.eval --source en --target es --bundle output/en-es-bundle.tar.gz
+# or, before bundling:
+uv run python -m versta.eval --source en --target es --direction_dir output/en-es
+```
+
+- One command, one direction, one result JSON (schema `versta.eval-result/1`): scores, corpus revision, engine version + fixed decode settings, artifact checksums. The release gate and the `evals/` ledger (NEU-52) consume it; both contracts are documented in `evals/README.md`.
+- The corpus is the pinned snapshot in `evals/` (`corpora.json` + payloads), verified by hash before any engine time is spent.
+- The engine is a black-box CLI — no engine code lands in this repo. v1 runtime is upstream `bergamot-translator` via `--bergamot_bin` or `--bergamot_image` (env: `VERSTA_BERGAMOT_BIN` / `VERSTA_BERGAMOT_IMAGE`), with decode settings fixed to the production Firefox values in `versta/eval/config.py`. `--engine leanmt` is reserved for the LeanMT batch CLI (NEU-50).
+- Output must stay line-aligned with input; misalignment fails the run instead of scoring garbage.
+- `--comet` adds release-tier COMET-22 (optional `unbabel-comet` dependency, cached weights — never required on the PR path).
+- `sacrebleu` is the harness's one runtime dependency; the rest of the module keeps its zero-dependency footprint.
+
 ## Conventions specific to this module
 
 - Language codes are the registry's bare ISO-639 keys; bundle names, metadata fields and directory names all use the `<src>-<tgt>` form.

@@ -7,7 +7,9 @@ name = "versta-translation"
 dynamic = ["version"]
 description = "Download and bundle Firefox (Bergamot) translation models for the Versta app"
 requires-python = ">=3.12,<3.13"
-dependencies = []
+dependencies = [
+    "sacrebleu>=2.5,<3",
+]
 
 [dependency-groups]
 dev = [
@@ -37,3 +39,9 @@ warn_unused_ignores = true
 warn_redundant_casts = true
 strict_equality = true
 extra_checks = true
+
+# Optional release-tier dependency for COMET-22 scoring (versta/eval/comet.py):
+# imported lazily behind --comet, never installed by default.
+[[tool.mypy.overrides]]
+module = ["comet", "comet.*"]
+ignore_missing_imports = true
