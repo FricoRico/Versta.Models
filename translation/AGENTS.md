@@ -104,6 +104,23 @@ uv run python -m versta.eval --source en --target es --direction_dir output/en-e
 - `--comet` adds release-tier COMET-22 (optional `unbabel-comet` dependency, cached weights — never required on the PR path).
 - `sacrebleu` is the harness's one runtime dependency; the rest of the module keeps its zero-dependency footprint.
 
+### `versta.eval.gate`
+
+The release gate (NEU-44/NEU-52): decides whether a model refresh may ship
+by comparing its eval result against the direction's checked-in ledger, and
+generates the release eval-summary markdown:
+
+```bash
+uv run python -m versta.eval.gate --result output/evals/en-es.json                 # check only
+uv run python -m versta.eval.gate --result output/evals/en-es.json --record        # record a shipping decision
+uv run python -m versta.eval.gate --result output/evals/en-es.json --reason "..."  # override a regression
+```
+
+- Hermetic: reads only the candidate result JSON and `evals/ledger/<direction>.json`; decisions `baseline` / `pass` / `fail` / `override` / `rebaseline` per the semantics table in `evals/README.md`.
+- A refresh fails on chrF regression > threshold (default 1.0 in `versta/eval/config.py`; `--threshold` tunes per run). A failed gate exits 1 and is never recorded. Overrides and corpus rebaselines need a written `--reason`, recorded in the ledger entry and the summary.
+- `--record` appends to the checked-in ledger (`--ledger_dir`, default `evals/ledger`). The ledger is append-only: re-recording a shipped version is an error.
+- The generated summary (default `output/evals/<direction>-<version>-eval-summary.md`) is what gets posted with a release — never handwrite it.
+
 ### `versta.probe` (pack acceptance, NEU-58)
 
 Headless acceptance runner for produced bundles: installs a bundle artifact
@@ -128,12 +145,11 @@ uv run python -m versta.probe.pins --downloads_dir output               # verify
 - The full-catalog sweep is `versta.probe.sweep`: it downloads every published bundle, verifies it against `pack-acceptance/pins.json` (`published` section — served tar checksums plus per-file payload pins), re-packs payloads through the production `versta.bundle` path (the v2.0.0 manifests predate the NEU-25 `leanmt_binary_version` handshake), and probes every direction, writing one scorecard per bundle plus a `sweep-summary.json` (schema `versta.pack-sweep/1`). Single-bundle failures are collected, never fatal to the sweep — "no bundle ships unproven" needs the full failure list, and the epic escalation threshold is counted from the summary.
 - NEU-60 adds: `versta.probe.bands` (derive/verify the pinned golden bands, `pack-acceptance/bands.json`, schema `versta.pack-bands/1` — re-pin only in dedicated commits with git notes, the bench-baseline discipline), `versta.probe.regress` (weekly-sweep defect census, schema `versta.pack-defects/1`, filed by `.github/workflows/pack-sweep-weekly.yml`), `versta.probe.fetch` (retry/backoff fetch of the pinned published bundles — a single transient 503 must not kill a 90-minute sweep), and the publish gate in `versta.batch` (above). See `PACK-ACCEPTANCE-RUNBOOK.md` for thresholds, the re-pin procedure, the failure taxonomy and paging.
 - Scorecards commit to `scorecards/` (schema `versta.pack-scorecard/1`, documented in `scorecards/README.md`; the pinned baseline is the full 32-bundle sweep, one card per bundle plus `es-en.adversarial.json` and `sweep-summary.json`); re-generation happens via the CI workflow and moves pins/scorecards/bands only in dedicated commits. The scorecard and bands schemas are manifest-adjacent: reviewed with the pipeline pair (Nikhil), and the JNI-surface parity of `versta/probe/bridge.py` with the app pair (Maya Lindqvist).
-
 ## Conventions specific to this module
 
 - Language codes are the registry's bare ISO-639 keys; bundle names, metadata fields and directory names all use the `<src>-<tgt>` form.
 - `version.txt` lives at `versta/version.txt` and is read once at import time in each `__main__.py`. Bump it when the bundle format or metadata schema changes — the app uses it to distinguish bundle generations (registry currently at `v2.1.0`, which added `leanmt_binary_version`).
-- The per-direction `metadata.json` (written by `versta/download/download.py`) records: `directory`, `source_language`, `target_language`, `architecture`, `base_model`, `score` (COMET-22 from flores200-plus metrics), `version`, `files` (model/vocabulary/shortlist filenames) and `config` (encoder/decoder layers, ffn depth, heads, split mode = `sentence`). These fields are consumed by the app and by `versta.bundle`; extend additively, never rename or drop.
+- The per-direction `metadata.json` (written by `versta/download/download.py`) records: `directory`, `source_language`, `target_language`, `architecture`, `base_model`, `score` (COMET-22 from flores200-plus metrics — fail-fast when the upstream metric is absent or malformed; never a silent `0.0`, NEU-52), `version`, `files` (model/vocabulary/shortlist filenames) and `config` (encoder/decoder layers, ffn depth, heads, split mode = `sentence`). These fields are consumed by the app and by `versta.bundle`; extend additively, never rename or drop.
 - `versta/schema.py` is the runtime contract gate: it mirrors the app's Kotlin loader shapes (`LanguageModelMetadata`, `LanguageBundleMetadata`, `ExternalLanguageModelDefinition`) and is enforced fail-fast in download, bundle and batch. When the app contract changes, update `versta/schema.py` and its tests in the same change.
 - `versta/leanmt.py` is the format handshake with the leanmt loader (NEU-25): `LEANMT_BINARY_VERSION` mirrors `kBinaryFileVersion` in Versta.Leanmt (`src/Io.hh`). Bundles declare `leanmt_binary_version` in the bundle-level `metadata.json` so the app can pre-flight before JNI, and the pipeline fails closed — download, bundle and archive validation all reject embedded/declared versions other than 1. Never hard-code the number elsewhere; import the constant. Format bumps are negotiated with Elin Sørensen. The same module pins `LEANMT_CLI_SPEC` (`versta.engine-cli/1`, NEU-50) — the versioned contract of `leanmt-bench translate`, the batch file→file CLI the eval harness drives; see PIPELINE.md "leanmt translate CLI". The module also walks the binary's tensor table exactly like the loader's `load_items` (bounds-checked, fail-closed on foreign versions): models with split `encoder_Wemb`/`decoder_Wemb` embeddings (two-vocabulary pairs like ja/zh) must declare `files.target_vocabulary` — leanmt fails fast without it (NEU-26). See PIPELINE.md "Two-vocabulary models".
 - `versta/batch/typing.py` defines the `ModelFile`/`ExportedModel`/`ExportedBundle` TypedDicts crossing the batch boundary — keep them fully typed and in sync with what `versta.bundle.main()` actually returns.

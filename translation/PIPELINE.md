@@ -103,6 +103,30 @@ byte-identically into `output/corpora/` from recorded mirrors, verifying
 before extraction and after. Provenance, license and the revision-bump
 procedure: `evals/corpora/README.md`.
 
+### Quality gate & ledger (`versta.eval`, `versta.eval.gate`, NEU-44/51/52)
+
+A refresh ships only through the gate:
+
+1. Score the candidate: `versta.eval` translates the hash-pinned FLORES-200
+   snapshot (`evals/corpora/flores200-dev.json`) through the reference
+   engine and writes a
+   `versta.eval-result/1` JSON (scores, corpus pin, engine + decode
+   provenance, artifact checksums, size). Line-misaligned engine output
+   fails the run.
+2. Gate it: `versta.eval.gate --result output/evals/<src>-<tgt>.json
+   --record` compares the result against the direction's checked-in ledger
+   (`evals/ledger/<direction>.json`, schema `versta.eval-ledger/1`) and
+   appends the decision on success. chrF regression beyond the threshold
+   (default 1.0, `versta/eval/config.py`) fails the run; overrides and
+   corpus rebaselines ship only with a written `--reason`, recorded in the
+   ledger entry.
+3. Post the summary: every gate run generates the release eval-summary
+   markdown (scores vs. previous version, corpus pin, engine version, size
+   notes, decision + reason) — post the generated file, never handwritten
+   prose.
+
+Gate semantics, ledger fields and exit codes: `evals/README.md`.
+
 ### `versta.eval` (quality measurement, NEU-44)
 
 The quality stage: `uv run python -m versta.eval --source X --target Y
