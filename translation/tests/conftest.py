@@ -258,53 +258,85 @@ EVAL_PAIRS: List[Tuple[str, str]] = [
 ]
 
 
+# Tiny catalog code -> FLORES-200 code map mirroring the real snapshot's;
+# the fixture directions only ever cover English and Spanish.
+EVAL_FLORES_CODES = {"en": "eng_Latn", "es": "spa_Latn"}
+
+
 def write_eval_corpus(
     base: Path,
     direction: str = "en-es",
     pairs: List[Tuple[str, str]] = EVAL_PAIRS,
     manifest_overrides: Optional[Dict[str, object]] = None,
-) -> Path:
+) -> Tuple[Path, Path]:
     """
-    Writes a tiny pinned-corpus tree under `base`: payload files plus a
-    versta.eval-corpora/1 manifest with real SHA-256 hashes, mirroring what
-    the corpus pinning task produces in evals/. Returns the manifest path.
+    Writes a tiny pinned-corpus tree under `base` in the exact layout the
+    corpus pinning task produces (NEU-49): payload files under a snapshot
+    directory plus a versta/corpus-manifest@1 manifest with real SHA-256
+    hashes. Returns (manifest path, corpus fetch-cache root) — pass them to
+    the harness as corpus_manifest_path / corpus_root.
     """
-    flores_source, flores_target = direction.split("-")
-    corpus_dir = base / "evals" / "corpora"
-    corpus_dir.mkdir(parents=True)
+    source, target = direction.split("-")
+    flores_source = EVAL_FLORES_CODES[source]
+    flores_target = EVAL_FLORES_CODES[target]
 
-    source_rel = f"flores200-test/{flores_source}.dev"
-    target_rel = f"flores200-test/{flores_target}.dev"
+    corpus_root = base / "corpora"
+    snapshot = corpus_root / "flores200-test-r1"
+    snapshot.mkdir(parents=True)
 
-    def write_payload(relative: str, lines: List[str]) -> Dict[str, str]:
+    def write_payload(code: str, lines: List[str]) -> Dict[str, object]:
         payload = ("\n".join(lines) + "\n").encode("utf-8")
-        target_file = corpus_dir / relative
-        target_file.parent.mkdir(parents=True, exist_ok=True)
-        target_file.write_bytes(payload)
-        return {"path": relative, "sha256": sha256(payload).hexdigest()}
+        (snapshot / "dev").mkdir(exist_ok=True)
+        (snapshot / "dev" / f"{code}.dev").write_bytes(payload)
+        return {"sha256": sha256(payload).hexdigest(), "sentences": len(lines)}
 
-    manifest = {
-        "schema": "versta.eval-corpora/1",
-        "corpus": "flores-200",
-        "revision": "tests/fixture@0001",
+    source_rel = f"dev/{flores_source}.dev"
+    target_rel = f"dev/{flores_target}.dev"
+    files: Dict[str, Dict[str, object]] = {}
+    files[source_rel] = write_payload(flores_source, [pair[0] for pair in pairs])
+    files.setdefault(
+        target_rel, write_payload(flores_target, [pair[1] for pair in pairs])
+    )
+
+    manifest: Dict[str, object] = {
+        "schema": "versta/corpus-manifest@1",
+        "name": "flores200-test",
+        "revision": 1,
         "split": "dev",
-        "license": "CC-BY-SA-4.0",
-        "directions": {
-            direction: {
-                "flores_source": flores_source,
-                "flores_target": flores_target,
-                "sentences": len(pairs),
-                "source": write_payload(source_rel, [pair[0] for pair in pairs]),
-                "target": write_payload(target_rel, [pair[1] for pair in pairs]),
-            }
+        "upstream": {
+            "name": "FLORES-200",
+            "url": "https://tests.invalid/flores200_dataset.tar.gz",
+            "sha256": "0" * 64,
+            "size_bytes": 0,
+            "license": "CC-BY-SA-4.0",
+            "attribution": "fixture attribution",
         },
+        "artifact": {
+            "file": "flores200-test-r1.tar.gz",
+            "sha256": "0" * 64,
+            "size_bytes": 0,
+            "urls": ["https://tests.invalid/flores200-test-r1.tar.gz"],
+        },
+        "language_map": {"en": "eng_Latn", "es": "spa_Latn"},
+        "files": files,
+        "directions": [
+            {
+                "source": source,
+                "target": target,
+                "base_model": f"Firefox/{direction}",
+                "source_file": source_rel,
+                "target_file": target_rel,
+                "sentences": len(pairs),
+            }
+        ],
     }
     if manifest_overrides:
         manifest.update(manifest_overrides)
 
-    manifest_path = base / "evals" / "corpora.json"
+    manifest_path = base / "evals" / "corpora" / "flores200-test.json"
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-    return manifest_path
+    return manifest_path, corpus_root
 
 
 _FAKE_BERGAMOT_TEMPLATE = '''#!/usr/bin/env python3
@@ -398,8 +430,8 @@ def write_eval_bundle(base: Path, direction: str = "en-es") -> Path:
 
 
 @pytest.fixture()
-def eval_corpus(tmp_path: Path) -> Path:
-    """A verified tiny corpus manifest for direction en-es."""
+def eval_corpus(tmp_path: Path) -> Tuple[Path, Path]:
+    """A verified tiny corpus: (manifest path, fetch-cache root) for en-es."""
     return write_eval_corpus(tmp_path)
 
 

@@ -87,6 +87,10 @@ the generated release eval-summary markdown.
 
 ## Verification
 
+Evaluation corpora used by the quality gates are hash-pinned snapshots fetched
+via `versta.eval.corpora` — see `evals/corpora/README.md` and the section in
+`PIPELINE.md`.
+
 Bundles are produced deterministically: identical inputs yield byte-identical
 `.tar.gz` output, so exports can be verified by comparing SHA-256 checksums
 between runs or machines (set `SOURCE_DATE_EPOCH` to pin a non-default
