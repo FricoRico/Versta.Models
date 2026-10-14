@@ -7,12 +7,12 @@ name = "versta-translation"
 dynamic = ["version"]
 description = "Download and bundle Firefox (Bergamot) translation models for the Versta app"
 requires-python = ">=3.12,<3.13"
-dependencies = [
-    "requests>=2.31,<3",
-]
+dependencies = []
 
 [dependency-groups]
 dev = [
+    "mypy>=1.15,<2",
+    "pytest>=8.3,<9",
     "ruff>=0.12,<1",
 ]
 
@@ -22,3 +22,18 @@ pattern = "^v(?P<version>.+)$"
 
 [tool.hatch.build.targets.wheel]
 packages = ["versta"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.12"
+packages = ["versta"]
+mypy_path = "."
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+warn_return_any = true
+warn_unused_ignores = true
+warn_redundant_casts = true
+strict_equality = true
+extra_checks = true

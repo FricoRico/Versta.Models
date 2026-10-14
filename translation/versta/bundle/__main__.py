@@ -1,9 +1,15 @@
+import json
 import os
 
-from argparse import ArgumentParser, ArgumentTypeError
+from argparse import ArgumentParser, ArgumentTypeError, Namespace
 from pathlib import Path
-from typing import List, TypedDict
+from typing import List, TypedDict, Union
 
+from ..schema import (
+    validate_bundle_archive,
+    validate_bundle_metadata,
+    validate_direction_metadata,
+)
 from .metadata import load_metadata_for_input_dirs, generate_metadata
 from .language import validate_translation_pairs, extract_unique_languages
 from .bundle_tar import bundle_files, create_checksum
@@ -19,7 +25,7 @@ with open(Path(__file__).parent / ".." / "version.txt", "r") as version_file:
     version = version_file.read().strip()
 
 
-def str2bool(v):
+def str2bool(v: Union[str, bool]) -> bool:
     if isinstance(v, bool):
         return v
     if v.lower() in ("yes", "true", "t", "y", "1"):
@@ -30,7 +36,7 @@ def str2bool(v):
         raise ArgumentTypeError("Boolean value expected.")
 
 
-def parse_args():
+def parse_args() -> Namespace:
     parser = ArgumentParser(
         os.path.basename(__file__),
         description="""Bundle multiple Firefox (Bergamot) translation models into a single tarball file.
@@ -120,6 +126,12 @@ def main(
     Returns:
         (Output): A dictionary containing the path to the bundled file and checksum file.
     """
+    # Step 0: Fail-fast validation of every input direction against the app's
+    # per-direction loader contract, including file existence on disk.
+    for input_dir in input_dirs:
+        with open(input_dir / "metadata.json", "r", encoding="utf-8") as handle:
+            validate_direction_metadata(json.load(handle), base_dir=input_dir)
+
     # Step 1: Load metadata for the input directories
     metadata = load_metadata_for_input_dirs(input_dirs)
 
@@ -144,14 +156,22 @@ def main(
     copy_folders(input_dirs, intermediates_dir)
 
     # Step 5: Generate metadata for the model conversion process
-    generate_metadata(version, intermediates_dir, languages, metadata, bidirectional)
+    metadata_file = generate_metadata(
+        version, intermediates_dir, languages, metadata, bidirectional
+    )
+    with open(metadata_file, "r", encoding="utf-8") as handle:
+        validate_bundle_metadata(json.load(handle))
 
     # Step 6: Bundle the folders into a single .tar.gz file
     output_archive = bundle_output_dir / f"{'-'.join(languages)}-bundle.tar.gz"
-    output_files = list(intermediates_dir.iterdir())
+    output_files = sorted(intermediates_dir.iterdir())
 
     bundle_file = bundle_files(output_files, output_archive)
     checksum_file = create_checksum(bundle_file)
+
+    # Step 6b: Fail-fast validation of the produced archive against the app's
+    # bundle loader contract before anything is cleaned up or shipped.
+    validate_bundle_archive(bundle_file)
 
     # Step 7: Remove intermediate files if specified
     if not keep_intermediates:

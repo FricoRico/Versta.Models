@@ -1,6 +1,6 @@
 import os
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
 from .model_file import load_model_file, save_model_file, update_models_json
@@ -10,7 +10,7 @@ with open(Path(__file__).parent.parent / "version.txt", "r") as _version_file:
     BUNDLE_VERSION = _version_file.read().strip()
 
 
-def parse_args():
+def parse_args() -> Namespace:
     parser = ArgumentParser(
         os.path.basename(__file__),
         description="""Batch download and bundle multiple Firefox (Bergamot) translation models together
@@ -68,7 +68,7 @@ def main(
     link_prefix: str,
     registry_url: str,
     keep_intermediates: bool = False,
-):
+) -> None:
     # Step 1: Load the model file
     models = load_model_file(input_file)
 
