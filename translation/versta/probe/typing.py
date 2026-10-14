@@ -7,6 +7,13 @@ manifest-adjacent and is agreed with the pipeline pair (review on the PR).
 
 from typing import List, Optional, TypedDict
 
+# Named schema string for the scorecard document. Every pipeline contract
+# dispatches on a named string (``versta.eval-result/1``,
+# ``versta.eval-corpora/1``, the loader manifests) — position-in-file is not
+# a type. Bump on incompatible shape changes, in lockstep with
+# ``SCORECARD_VERSION``.
+SCORECARD_SCHEMA = "versta.pack-scorecard/1"
+
 
 class CorpusEntry(TypedDict):
     """One probe sentence with its human reference translation."""
@@ -98,6 +105,19 @@ class ScorecardBundle(TypedDict):
     bundle_version: str
 
 
+class ScorecardMetrics(TypedDict):
+    """
+    Provenance of the metric the card's chrF numbers are pinned to. chrF is
+    scored by the stdlib re-implementation (``metrics.py``) and parity-tested
+    against the installed sacrebleu; recording the library's verbatim
+    signature + version pins case/whitespace handling and parameterization
+    exactly, and makes any dependency drift visible per card.
+    """
+
+    sacrebleu_version: str
+    chrf_signature: str  # verbatim CHRF.get_signature()
+
+
 class ScorecardEnvironment(TypedDict):
     host_arch: str
     probe_arch: str
@@ -106,6 +126,7 @@ class ScorecardEnvironment(TypedDict):
     leanmt_commit: Optional[str]
     corpus: str
     corpus_entries: int
+    corpus_sha256: str  # payload hash over the corpus files scored against
 
 
 class Gates(TypedDict):
@@ -118,13 +139,21 @@ class Gates(TypedDict):
 
 
 class Scorecard(TypedDict):
-    """One bundle's acceptance scorecard; committed per pair under scorecards/."""
+    """
+    One bundle's acceptance scorecard; committed per pair under scorecards/.
 
+    Consumers dispatch on ``schema`` (``versta.pack-scorecard/1``) and join
+    against the eval ledger (``versta.eval-result/1``) on
+    ``bundle.sha256`` (lowercase hex both sides).
+    """
+
+    schema: str
     scorecard_version: int
     slug: str
     generated_at: str
     bundle: ScorecardBundle
     environment: ScorecardEnvironment
+    metrics: ScorecardMetrics
     directions: List[DirectionScore]
     gates: Gates
     acceptance: str  # "pass" | "fail"

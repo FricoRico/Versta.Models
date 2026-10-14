@@ -8,11 +8,13 @@ runner fails closed on a malformed corpus — a corpus that cannot name its
 direction or is missing references would make chrF meaningless.
 """
 
+import hashlib
 import json
 
 from pathlib import Path
-from typing import Any, Dict, NoReturn, cast
+from typing import Any, Dict, List, NoReturn, cast
 
+from .install import sha256_of
 from .typing import Corpus
 
 
@@ -118,6 +120,32 @@ def validate_corpus(data: Any, path: str = "corpus") -> Corpus:
         )
 
     return cast(Corpus, data)
+
+
+def corpus_payload_sha256(corpus_paths: List[Path]) -> str:
+    """
+    Pins the exact corpus payloads a run scored against: sha256 over the
+    per-file ``"<name>:<file sha256>"`` lines, sorted by file name. The
+    scorecard records the digest in ``environment.corpus_sha256`` so a card
+    can be tied to the precise corpus bytes, not just the corpus name —
+    same artifact-pinning discipline as the bundle sha256.
+
+    Args:
+        corpus_paths (List[Path]): the corpus files loaded for the run.
+
+    Returns:
+        str: lowercase hex digest; order of ``corpus_paths`` is irrelevant.
+
+    Raises:
+        ValueError: on an empty list or duplicate file names (ambiguous
+            payload description).
+    """
+    if not corpus_paths:
+        raise ValueError("corpus payload hash requires at least one corpus file")
+    if len({path.name for path in corpus_paths}) != len(corpus_paths):
+        raise ValueError("duplicate corpus file names make the payload hash ambiguous")
+    lines = sorted(f"{path.name}:{sha256_of(path)}" for path in corpus_paths)
+    return hashlib.sha256(("\n".join(lines) + "\n").encode("utf-8")).hexdigest()
 
 
 def corpus_path_for(corpus_dir: Path, source: str, target: str) -> Path:

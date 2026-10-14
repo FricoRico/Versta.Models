@@ -23,12 +23,17 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 
+import sacrebleu
+
+from sacrebleu.metrics import CHRF
+
 from .config import SCORECARD_VERSION
 
 from .corpus import Corpus
 from .install import InstalledBundle
 from .metrics import corpus_chrf, digit_preservation
 from .typing import (
+    SCORECARD_SCHEMA,
     DigitPreservation,
     DirectionScore,
     Gates,
@@ -36,6 +41,7 @@ from .typing import (
     Scorecard,
     ScorecardBundle,
     ScorecardEnvironment,
+    ScorecardMetrics,
 )
 
 EXPECT_PASS = "pass"
@@ -119,6 +125,29 @@ GATING_V1 = Gates(
 )
 
 
+def metric_provenance() -> ScorecardMetrics:
+    """
+    Records the exact chrF parameterization the card's numbers are pinned
+    to: the installed sacrebleu's version and its verbatim
+    ``CHRF.get_signature()``. The probe scores chrF with the stdlib
+    re-implementation in ``metrics.py``; the test suite asserts parity
+    against this library's ``corpus_score`` on pinned inputs, so the
+    library's signature describes the scored numbers exactly — including
+    case and whitespace handling, which a shorthand would lose.
+
+    Returns:
+        ScorecardMetrics: sacrebleu version + verbatim chrF signature.
+    """
+    metric = CHRF()
+    # get_signature() resolves nrefs only after an evaluation; probe corpora
+    # are single-reference, so scoring one pinned pair yields nrefs:1.
+    metric.corpus_score(["probe"], [["probe"]])
+    return ScorecardMetrics(
+        sacrebleu_version=sacrebleu.__version__,
+        chrf_signature=str(metric.get_signature()),
+    )
+
+
 def acceptance_of(
     directions: List[DirectionScore],
 ) -> str:
@@ -178,6 +207,7 @@ def build_scorecard(
 
     stamp = generated_at or datetime.now(timezone.utc)
     return Scorecard(
+        schema=SCORECARD_SCHEMA,
         scorecard_version=SCORECARD_VERSION,
         generated_at=stamp.isoformat(timespec="seconds"),
         slug=bundle.slug,
@@ -188,6 +218,7 @@ def build_scorecard(
             bundle_version=bundle.bundle_version,
         ),
         environment=environment,
+        metrics=metric_provenance(),
         directions=direction_scores,
         gates=GATING_V1,
         acceptance=acceptance,

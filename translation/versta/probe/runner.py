@@ -12,7 +12,7 @@ from typing import Optional
 from ..schema import ValidationError
 from .bridge import run_probe
 from .config import CORPUS_NAME, DEFAULT_CORPUS_DIR, ProbeConfig
-from .corpus import corpus_path_for, load_corpus
+from .corpus import corpus_path_for, corpus_payload_sha256, load_corpus
 from .install import InstalledBundle, install_bundle
 from .scorecard import build_scorecard, score_direction, write_scorecard
 from .typing import Scorecard, ScorecardEnvironment
@@ -75,6 +75,7 @@ def run_bundle_probe(
     config = ProbeConfig(threads=threads or ProbeConfig().threads)
     direction_scores = []
     corpus_entries = 0
+    corpus_paths = []
     probe_arch = "unknown"
     for direction in bundle.directions:
         direction_key = f"{direction.source_language}-{direction.target_language}"
@@ -95,6 +96,7 @@ def run_bundle_probe(
                 "than mixing corpus versions"
             )
         corpus_entries += len(corpus["entries"])
+        corpus_paths.append(corpus_path)
 
         output = run_probe(
             probe_bin,
@@ -114,6 +116,7 @@ def run_bundle_probe(
         leanmt_commit=leanmt_commit or os.environ.get("PACK_ACCEPTANCE_LEANMT_COMMIT"),
         corpus=CORPUS_NAME,
         corpus_entries=corpus_entries,
+        corpus_sha256=corpus_payload_sha256(corpus_paths),
     )
     scorecard = build_scorecard(
         bundle,

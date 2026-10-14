@@ -409,6 +409,7 @@ def _scorecard_bundle_and_environment():
         "leanmt_commit": "abc123",
         "corpus": "traveler-v1",
         "corpus_entries": 40,
+        "corpus_sha256": "1" * 64,
     }
     return bundle, environment
 
@@ -429,6 +430,10 @@ def test_scorecard_expectation_rules(tmp_path):
     passthrough = build_scorecard(bundle, [clean], environment, EXPECT_PASS)
     assert passthrough["acceptance"] == "pass"
     assert passthrough["expectation_met"] is True
+    # Consumers dispatch on the named schema string; the numeric version
+    # stays for arithmetic.
+    assert passthrough["schema"] == "versta.pack-scorecard/1"
+    assert passthrough["scorecard_version"] == 1
 
     negative = build_scorecard(bundle, [broken], environment, EXPECT_DIRECTION_FAIL)
     assert negative["acceptance"] == "fail"
@@ -447,3 +452,83 @@ def test_scorecard_expectation_rules(tmp_path):
     )
     assert load_failing["acceptance"] == "fail"
     assert load_failing["expectation_met"] is False
+
+
+# ---------------------------------------------------------------------------
+# Metric provenance + corpus payload pinning (scorecard versta.pack-scorecard/1)
+# ---------------------------------------------------------------------------
+
+
+def test_scorecard_records_verbatim_sacrebleu_signature():
+    import sacrebleu
+
+    from sacrebleu.metrics import CHRF
+
+    from versta.probe.scorecard import metric_provenance
+
+    provenance = metric_provenance()
+
+    # The card records the installed library's verbatim signature — the same
+    # value a caller gets from the library itself.
+    reference = CHRF()
+    reference.corpus_score(["probe"], [["probe"]])
+    assert provenance["chrf_signature"] == str(reference.get_signature())
+    assert provenance["sacrebleu_version"] == sacrebleu.__version__
+
+    # Pinned expectation for the pinned dependency (pyproject: sacrebleu
+    # 2.x): default chrF2, char order 6, no word order, no lowercasing,
+    # whitespace stripped, effective-order smoothing. A resolver bump that
+    # changes this string changes the number space — re-pin deliberately,
+    # in lockstep with the parity vectors above.
+    assert provenance["chrf_signature"] == (
+        "nrefs:1|case:mixed|eff:yes|nc:6|nw:0|space:no|version:2.6.0"
+    )
+
+
+def test_corpus_chrf_live_parity_with_installed_sacrebleu():
+    from sacrebleu.metrics import CHRF
+
+    hypotheses = [
+        "Das Museumsticket kostet 12 Euro.",
+        "My train leaves at 18:45 from platform 7.",
+        "hello world",
+        "",
+    ]
+    references = [
+        "Das Museumsticket kostet 12 Euro.",
+        "My train leaves at 18:45 from platform 7.",
+        "completely different text",
+        "",
+    ]
+    library = CHRF().corpus_score(hypotheses, [references])
+    # The stdlib re-implementation must match the reference library whose
+    # signature the scorecard records — otherwise the recorded signature
+    # would not describe the scored numbers.
+    assert corpus_chrf(hypotheses, references) == pytest.approx(library.score, abs=1e-4)
+
+
+def test_corpus_payload_sha256_is_order_independent_and_content_sensitive(tmp_path):
+    from versta.probe.corpus import corpus_payload_sha256
+
+    first = tmp_path / "en-es.json"
+    second = tmp_path / "es-en.json"
+    first.write_text('{"a": 1}\n', encoding="utf-8")
+    second.write_text('{"b": 2}\n', encoding="utf-8")
+
+    digest = corpus_payload_sha256([first, second])
+    assert corpus_payload_sha256([second, first]) == digest
+
+    first.write_text('{"a": 1} \n', encoding="utf-8")
+    assert corpus_payload_sha256([first, second]) != digest
+
+
+def test_corpus_payload_sha256_rejects_ambiguous_input(tmp_path):
+    from versta.probe.corpus import corpus_payload_sha256
+
+    with pytest.raises(ValueError):
+        corpus_payload_sha256([])
+
+    path = tmp_path / "en-es.json"
+    path.write_text("{}\n", encoding="utf-8")
+    with pytest.raises(ValueError):
+        corpus_payload_sha256([path, path])

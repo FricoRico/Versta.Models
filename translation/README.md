@@ -131,4 +131,6 @@ on the `ubuntu-24.04-arm` CI runner this all runs end to end on every commit
 (`.github/workflows/pack-acceptance.yml`), against model contents pinned in
 `pack-acceptance/pins.json` (content SHA-256s, bench-baseline re-pinning
 discipline). Committed scorecards for the first sweep live in `scorecards/`
-(`en-es`, `en-ja`, `es-en.adversarial`).
+(`en-es`, `en-ja`, `es-en.adversarial`); the card schema is
+`versta.pack-scorecard/1` (field guide: `scorecards/README.md`), dispatching
+on the named schema string and joining the eval ledger on `bundle.sha256`.
