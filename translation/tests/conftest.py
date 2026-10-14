@@ -4,7 +4,7 @@ import struct
 
 from hashlib import sha256
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import pytest
 
@@ -184,19 +184,23 @@ def write_direction_dir(
     direction: str,
     missing: Tuple[str, ...] = (),
     tensor_names: Tuple[str, ...] = SPLIT_VOCAB_TENSORS,
+    model_name: str = "model.bin",
 ) -> Path:
     """
     Writes a complete, schema-valid download output directory for `direction`
     (e.g. "en-es") as versta.download would have produced it. Files listed in
     `missing` are referenced by metadata but omitted from disk. `tensor_names`
     steers the fake model's tensor table (two-vocabulary by default).
+    `model_name` defaults to the historical short name; eval fixtures pass a
+    realistic upstream name so the harness's gemm-precision resolution
+    (keyed on the quantized-model suffix) applies.
     """
     source, target = direction.split("-")
     folder = base / direction
     folder.mkdir(parents=True)
 
     files = {
-        "model": "model.bin",
+        "model": model_name,
         "vocabulary": "vocab.spm",
         "target_vocabulary": "vocab.trg.spm",
         "shortlist": "lex.bin",
@@ -231,3 +235,174 @@ def write_direction_dir(
         json.dump(metadata, handle, indent=4)
 
     return folder
+
+
+# --- versta.eval fixtures: pinned-corpus manifest, fake engine, bundles ---
+
+# A tiny stand-in for the pinned FLORES-200 snapshot: a handful of sentence
+# pairs (including digits, so output-affecting defects are observable). The
+# fake engine's sentence-level dictionary reproduces the target side
+# exactly, so a correct engine scores BLEU/chrF 100 and a mangling engine
+# scores measurably lower.
+EVAL_PAIRS: List[Tuple[str, str]] = [
+    ("The museum opens at 9 in the morning.", "El museo abre a las 9 de la mañana."),
+    ("I need 2 tickets for the train.", "Necesito 2 billetes para el tren."),
+    ("Where is the nearest pharmacy?", "¿Dónde está la farmacia más cercana?"),
+    (
+        "The hotel has 42 rooms on 5 floors.",
+        "El hotel tiene 42 habitaciones en 5 plantas.",
+    ),
+    ("Lunch is served at half past 12.", "El almuerzo se sirve a las 12 y media."),
+    ("Can you help me please?", "¿Puede ayudarme por favor?"),
+]
+
+
+def write_eval_corpus(
+    base: Path,
+    direction: str = "en-es",
+    pairs: List[Tuple[str, str]] = EVAL_PAIRS,
+    manifest_overrides: Optional[Dict[str, object]] = None,
+) -> Path:
+    """
+    Writes a tiny pinned-corpus tree under `base`: payload files plus a
+    versta.eval-corpora/1 manifest with real SHA-256 hashes, mirroring what
+    the corpus pinning task produces in evals/. Returns the manifest path.
+    """
+    flores_source, flores_target = direction.split("-")
+    corpus_dir = base / "evals" / "corpora"
+    corpus_dir.mkdir(parents=True)
+
+    source_rel = f"flores200-test/{flores_source}.dev"
+    target_rel = f"flores200-test/{flores_target}.dev"
+
+    def write_payload(relative: str, lines: List[str]) -> Dict[str, str]:
+        payload = ("\n".join(lines) + "\n").encode("utf-8")
+        target_file = corpus_dir / relative
+        target_file.parent.mkdir(parents=True, exist_ok=True)
+        target_file.write_bytes(payload)
+        return {"path": relative, "sha256": sha256(payload).hexdigest()}
+
+    manifest = {
+        "schema": "versta.eval-corpora/1",
+        "corpus": "flores-200",
+        "revision": "tests/fixture@0001",
+        "split": "dev",
+        "license": "CC-BY-SA-4.0",
+        "directions": {
+            direction: {
+                "flores_source": flores_source,
+                "flores_target": flores_target,
+                "sentences": len(pairs),
+                "source": write_payload(source_rel, [pair[0] for pair in pairs]),
+                "target": write_payload(target_rel, [pair[1] for pair in pairs]),
+            }
+        },
+    }
+    if manifest_overrides:
+        manifest.update(manifest_overrides)
+
+    manifest_path = base / "evals" / "corpora.json"
+    manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    return manifest_path
+
+
+_FAKE_BERGAMOT_TEMPLATE = '''#!/usr/bin/env python3
+"""Fake bergamot CLI for hermetic eval tests: honors the CLI contract
+(--model-config-paths, --log-level, --version; sentences on stdin,
+line-aligned translations on stdout) with a deterministic embedded
+sentence dictionary instead of a real model."""
+import json
+import re
+import sys
+
+MAPPING = json.loads({mapping_json})
+MODE = {mode_literal}
+
+
+def main() -> int:
+    argv = sys.argv[1:]
+    if argv == ["--version"]:
+        print("bergamot-fake 0.0.0-test")
+        return 0
+    if MODE == "exit":
+        sys.stderr.write("fake engine: forced failure\\n")
+        return 3
+    lines = sys.stdin.read().splitlines()
+    if MODE == "drop-last":
+        lines = lines[:-1]
+    output = []
+    for line in lines:
+        translated = MAPPING.get(line, line)
+        if MODE == "digit-mangle":
+            translated = re.sub(r"[0-9]", "#", translated)
+        output.append(translated)
+    sys.stdout.write("\\n".join(output) + "\\n")
+    return 0
+
+
+sys.exit(main())
+'''
+
+
+def write_fake_bergamot(path: Path, mode: str = "faithful") -> Path:
+    """
+    Writes an executable fake bergamot CLI at `path`. Modes: "faithful"
+    (reproduces the EVAL_PAIRS Spanish side exactly), "digit-mangle" (the
+    NEU-30 class: corrupts digits in translations), "drop-last" (violates
+    line alignment), "exit" (fails with a nonzero exit code).
+    """
+    mapping = {source: target for source, target in EVAL_PAIRS}
+    script = _FAKE_BERGAMOT_TEMPLATE.format(
+        mapping_json=repr(json.dumps(mapping, ensure_ascii=False)),
+        mode_literal=repr(mode),
+    )
+    path.write_text(script, encoding="utf-8")
+    path.chmod(0o755)
+    return path
+
+
+def write_eval_bundle(base: Path, direction: str = "en-es") -> Path:
+    """
+    Packs a schema-valid single-direction bundle tarball the way
+    versta.bundle does (direction directory plus bundle-level
+    metadata.json at the archive root) and returns its path.
+    """
+    from versta.bundle.bundle_tar import bundle_files
+    from versta.leanmt import LEANMT_BINARY_VERSION
+
+    source, target = direction.split("-")
+    staging = base / "staging"
+    write_direction_dir(
+        staging, direction, model_name=f"model.{source}{target}.intgemm.alphas.bin"
+    )
+
+    bundle_metadata = {
+        "version": "v2.1.0",
+        "leanmt_binary_version": LEANMT_BINARY_VERSION,
+        "languages": sorted({source, target}),
+        "bidirectional": False,
+        "metadata": [
+            {
+                "directory": direction,
+                "source_language": source,
+                "target_language": target,
+            }
+        ],
+    }
+    (staging / "metadata.json").write_text(
+        json.dumps(bundle_metadata, indent=4), encoding="utf-8"
+    )
+
+    return bundle_files(sorted(staging.iterdir()), base / f"{direction}-bundle.tar.gz")
+
+
+@pytest.fixture()
+def eval_corpus(tmp_path: Path) -> Path:
+    """A verified tiny corpus manifest for direction en-es."""
+    return write_eval_corpus(tmp_path)
+
+
+@pytest.fixture()
+def fake_bergamot(tmp_path: Path) -> Path:
+    """An executable fake bergamot CLI translating the fixture corpus."""
+    return write_fake_bergamot(tmp_path / "bergamot")

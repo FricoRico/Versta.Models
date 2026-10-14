@@ -75,6 +75,25 @@ then syncs computed fields (`size`, `bundle`, `checksum`, `score` ×100,
 `version`) back into the input catalog in place (with a `.bak` backup) and
 validates the updated catalog.
 
+### `versta.eval` (quality measurement, NEU-44)
+
+The quality stage: `uv run python -m versta.eval --source X --target Y
+--bundle <bundle.tar.gz>` translates the pinned FLORES-200 dev snapshot
+(`evals/corpora.json` + hash-verified payloads) through the reference
+runtime — upstream `bergamot-translator` as a black-box CLI for v1, the
+LeanMT batch mode (NEU-50) once it lands — and scores sacreBLEU + chrF
+(COMET-22 optionally, release tier only). The emitted result JSON
+(schema `versta.eval-result/1`) records scores plus everything needed to
+reproduce them: corpus revision and payload hashes, bundle/model
+checksums, engine version and the fixed decode settings
+(`versta/eval/config.py`, mirroring Firefox production). Re-running with
+identical inputs reproduces identical scores. See `evals/README.md` for
+the manifest and result contracts; the release gate and the `evals/`
+ledger that consume these results land with NEU-52, CI wiring with
+NEU-53. Tests are hermetic (a fake engine over a tiny synthetic corpus);
+scoring a real model needs the corpus payloads fetched and a bergamot
+CLI available.
+
 ## The app contract (kept in `versta/schema.py`)
 
 | Artifact | App type (`core/entity`) | Required fields |
