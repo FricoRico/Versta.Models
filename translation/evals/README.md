@@ -66,3 +66,85 @@ and decode config ⇒ identical `scores` and `hypothesis_sha256` on re-run.
 The gate (NEU-52) compares `scores` against the predecessor's ledger
 entry; everything else in the document is audit trail for *why* numbers
 moved when they do.
+
+Additive extension (NEU-52): `model.size_bytes` — bytes of the artifact
+under evaluation (the tarball for bundle runs; the sum of
+model/vocabulary/shortlist payloads for direction-dir runs). Recorded so
+the ledger and the generated eval summary carry size notes without
+touching the filesystem.
+
+## Direction ledger (`evals/ledger/<direction>.json`, schema `versta.eval-ledger/1`)
+
+The checked-in, append-only history of shipped versions for one direction —
+the model-registry history the pipeline charter requires, and the
+predecessor source for every release gate run. Written exclusively by
+`versta.eval.gate --record`; never hand-edited (a mistaken record is
+corrected by a new entry, not by rewriting history).
+
+```json
+{
+  "schema": "versta.eval-ledger/1",
+  "direction": "en-es",
+  "source_language": "en",
+  "target_language": "es",
+  "entries": [
+    {
+      "version": "v2.0.0",
+      "result": { "...versta.eval-result/1 document..." : "..." },
+      "gate": {
+        "decision": "pass",
+        "threshold_chrf": 1.0,
+        "predecessor_version": "v1.12.14",
+        "delta_bleu": 0.31,
+        "delta_chrf": 0.87,
+        "delta_comet22": null,
+        "reason": null,
+        "decided_utc": "2026-10-14T12:00:00Z"
+      }
+    }
+  ]
+}
+```
+
+Rules enforced fail-fast on load — a corrupt ledger is a stop-the-line
+event, because the gate must never compare against history it cannot
+trust:
+
+- `decision` is one of `baseline` | `pass` | `override` | `rebaseline`;
+  `override` and `rebaseline` entries **must** carry a non-empty written
+  `reason` (machine-checked);
+- each embedded `result` is a full `versta.eval-result/1` document — the
+  bundle checksum, corpus pin, engine version and size notes live there;
+- versions are never re-recorded: appending an existing version is an
+  error, and a gate re-run for an already-recorded version compares
+  against the previous entry, never against itself.
+
+## The release gate (`uv run python -m versta.eval.gate`)
+
+```
+uv run python -m versta.eval.gate --result output/evals/en-es.json \
+    --ledger_dir evals/ledger [--threshold 1.0] \
+    [--reason "..."] [--rebaseline] [--record] [--summary_out PATH]
+```
+
+Hermetic by construction — the gate reads only the candidate result JSON
+and the direction ledger, so it runs identically on a laptop and in CI.
+Decisions:
+
+| Situation | Outcome |
+|---|---|
+| No recorded predecessor | `baseline` (ships) |
+| chrF delta ≥ −threshold (default 1.0, `versta/eval/config.py`) | `pass` (ships) |
+| chrF delta < −threshold | `fail`, exit 1 — unless `--reason` given → `override` (ships) |
+| Corpus pin changed vs. predecessor | `fail`, exit 1 — scores across pins are not comparable; `--rebaseline --reason` → `rebaseline` (ships) |
+| `--reason` on a clean pass/baseline | usage error, exit 2 — a reason always justifies something concrete |
+
+`--record` appends a shipping decision (`baseline`/`pass`/`override`/
+`rebaseline`) to the checked-in ledger; a failed gate is never recorded.
+Every run writes the **generated release eval-summary markdown** (default
+`output/evals/<direction>-<version>-eval-summary.md`, exit-code path
+included): decision banner, metric table with deltas vs. the predecessor,
+corpus pin, engine version, artifact checksum and size notes, and the
+recorded reason for override/rebaseline decisions. Posting that file with
+the release satisfies the charter's "every model release posts an eval
+summary" without handwritten prose drifting from the numbers.

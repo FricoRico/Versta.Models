@@ -303,11 +303,39 @@ def download_model(
 
 def _extract_score(entry: dict) -> float:
     """
-    Extracts a quality score (COMET-22) from the registry entry metrics, if available.
+    Extracts the upstream COMET-22 quality score (flores200-plus metrics) from a
+    registry entry.
+
+    Args:
+        entry (dict): A registry entry as returned by `get_entry`.
+
+    Returns:
+        float: The published COMET-22 score. An explicit ``0.0`` upstream is
+            returned as-is — a measured zero is data; only an absent metric
+            is an error.
+
+    Raises:
+        ValueError: If the entry carries no usable
+            `metrics.flores200-plus.comet22` value. Never silently default to
+            ``0.0``: the score lands in the shipped metadata and the deployed
+            catalog, where a missing-metric zero would display the model as
+            zero-quality with no error raised anywhere (NEU-44/NEU-52).
     """
-    metrics = entry.get("metrics", {})
-    flores = metrics.get("flores200-plus", {})
-    return float(flores.get("comet22", 0.0))
+    pair = f"{entry.get('sourceLanguage')}-{entry.get('targetLanguage')}"
+    architecture = entry.get("architecture")
+    where = f"Registry entry for '{pair}' ({architecture})"
+
+    metrics = entry.get("metrics")
+    flores = metrics.get("flores200-plus") if isinstance(metrics, dict) else None
+    score = flores.get("comet22") if isinstance(flores, dict) else None
+    if not isinstance(score, (int, float)) or isinstance(score, bool):
+        raise ValueError(
+            f"{where} has no numeric 'metrics.flores200-plus.comet22' value "
+            f"(got {score!r}). Refusing to stamp a silent 0.0 into the shipped "
+            f"metadata: audit the upstream metrics for this pair, or route the "
+            f"score-semantics question through the app contract before exporting."
+        )
+    return float(score)
 
 
 def _load_model_metadata(base_url: str, model_descriptor: dict) -> dict:

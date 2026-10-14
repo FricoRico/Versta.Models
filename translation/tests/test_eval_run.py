@@ -69,6 +69,18 @@ def test_eval_end_to_end_scores_fixture_corpus(
     # Not a bundle run: no bundle fields, but the model hash is recorded.
     assert "bundle_sha256" not in result["model"]
     assert len(result["model"]["model_sha256"]) == 64
+    # Direction-dir runs size the artifact as the sum of its payloads so the
+    # ledger can carry size notes.
+    payload_dir = tmp_path / "b" / "in" / "en-es"
+    assert result["model"]["size_bytes"] == sum(
+        (payload_dir / name).stat().st_size
+        for name in (
+            "model.enes.intgemm.alphas.bin",
+            "vocab.spm",
+            "vocab.trg.spm",
+            "lex.bin",
+        )
+    )
 
     written = json.loads((tmp_path / "b" / "result.json").read_text("utf-8"))
     assert written == result
@@ -97,6 +109,12 @@ def test_eval_from_shipped_bundle_records_bundle_checksum(
     assert result["scores"]["bleu"] == 100.0
     assert result["model"]["bundle_file"] == "en-es-bundle.tar.gz"
     bundle_sha256 = result["model"]["bundle_sha256"]
+
+    # Bundle runs size the artifact as the tarball the app side-loads.
+    assert (
+        result["model"]["size_bytes"]
+        == (tmp_path / "b" / "bundle" / "en-es-bundle.tar.gz").stat().st_size
+    )
 
     actual = sha256(
         (tmp_path / "b" / "bundle" / "en-es-bundle.tar.gz").read_bytes()
