@@ -1,0 +1,140 @@
+name: pack-acceptance
+
+on:
+  # Green on every commit, like the main CI: a pack that stops loading or
+  # translating must surface on the commit that broke it.
+  push: {}
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: pack-acceptance-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+# `shell: bash` = bash --noprofile --norc -eo pipefail; pipefail is
+# load-bearing whenever output is teed into logs. Same rule as leanmt CI.
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Pack acceptance probe (NEU-60, epic NEU-59). Phase 1 scope: the en-es and
+  # en-ja pinned packs plus the direction-mislabeled adversarial control. The
+  # full 32-bundle sweep + publish gate land in NEU-61 / NEU-62; the device-lab
+  # pass is NEU-63 (Phase 4) — this job is CI-runner-only by design.
+  #
+  # Everything input-side is pinned: model file contents (pack-acceptance/
+  # pins.json, verified after Mozilla's own uncompressedHash gate) and the
+  # leanmt commit the probe binary is built from. Drift fails deliberately;
+  # re-pinning is a dedicated commit with a measured scorecard diff (bench-
+  # baseline discipline, NEU-16/22/23).
+  # ---------------------------------------------------------------------------
+  probe:
+    name: pack probe (arm64)
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Read pins
+        id: pins
+        run: |
+          echo "leanmt_commit=$(python3 -c "import json; print(json.load(open('translation/pack-acceptance/pins.json'))['leanmt']['commit'])")" >> "$GITHUB_OUTPUT"
+
+      - name: Check out pinned Versta.Leanmt
+        uses: actions/checkout@v4
+        with:
+          repository: FricoRico/Versta.Leanmt
+          ref: ${{ steps.pins.outputs.leanmt_commit }}
+          path: .leanmt
+          submodules: recursive
+
+      - name: Build leanmt-probe (aarch64 NEON)
+        env:
+          CC: clang
+          CXX: clang++
+        working-directory: .leanmt
+        run: |
+          cmake -B build -S . -DCMAKE_BUILD_TYPE=Release -DUSE_NEON=ON -DLEANMT_BUILD_PROBE=ON
+          cmake --build build --parallel --target leanmt-probe 2>&1 | tee build.log
+          test -x build/probe/leanmt-probe
+
+      - name: Cache pinned model downloads
+        uses: actions/cache@v4
+        with:
+          path: translation/output
+          key: pack-acceptance-models-${{ hashFiles('translation/pack-acceptance/pins.json') }}
+
+      - name: Download pinned directions (en-es, es-en, en-ja, ja-en)
+        working-directory: translation
+        run: |
+          uv sync
+          uv run python -m versta.download --source en --target es --architecture base-memory --output_dir ./output
+          uv run python -m versta.download --source es --target en --architecture base-memory --output_dir ./output
+          uv run python -m versta.download --source en --target ja --architecture base-memory --output_dir ./output
+          uv run python -m versta.download --source ja --target en --architecture base-memory --output_dir ./output
+
+      - name: Verify downloaded content against pins
+        working-directory: translation
+        run: uv run python -m versta.probe.pins --downloads_dir output
+
+      - name: Build packs (real en-es + en-ja, adversarial mislabeled es-en)
+        working-directory: translation
+        run: |
+          uv run python -m versta.bundle --input_dir output/en-es output/es-en --output_dir output --keep_input
+          uv run python -m versta.bundle --input_dir output/en-ja output/ja-en --output_dir output --keep_input
+          uv run python -m versta.probe.adversarial --model_dir output/en-es --output_dir output/adversarial
+
+      - name: Probe packs (negative control must trip the direction check)
+        working-directory: translation
+        env:
+          PACK_ACCEPTANCE_RUNNER: ubuntu-24.04-arm
+          PACK_ACCEPTANCE_LEANMT_COMMIT: ${{ steps.pins.outputs.leanmt_commit }}
+        run: |
+          PROBE=$GITHUB_WORKSPACE/.leanmt/build/probe/leanmt-probe
+          uv run python -m versta.probe --bundle output/en-es-bundle.tar.gz --probe_bin "$PROBE" --output_dir output/probe-ci --leanmt_commit "$PACK_ACCEPTANCE_LEANMT_COMMIT"
+          uv run python -m versta.probe --bundle output/en-ja-bundle.tar.gz --probe_bin "$PROBE" --output_dir output/probe-ci --leanmt_commit "$PACK_ACCEPTANCE_LEANMT_COMMIT"
+          uv run python -m versta.probe --bundle output/adversarial/es-en-mislabeled-bundle.tar.gz --probe_bin "$PROBE" --output_dir output/probe-ci --expect direction-fail --label es-en.adversarial --leanmt_commit "$PACK_ACCEPTANCE_LEANMT_COMMIT"
+
+      - name: Publish scorecards to step summary
+        run: |
+          {
+            echo "### pack acceptance probe — ${{ github.sha }} (ubuntu-24.04-arm)"
+            echo ""
+            echo '| pack | direction | load ms | chrF (floor) | direction | digits | p50 / p95 ms | RSS peak MiB |'
+            echo '|---|---|---:|---|---|---|---:|---:|'
+            python3 - <<'EOF'
+          import json
+          from pathlib import Path
+          for path in sorted(Path('translation/output/probe-ci/scorecards').glob('*.json')):
+              card = json.load(open(path))
+              for d in card['directions']:
+                  if d['load_ok']:
+                      digits = f"{d['digit_preservation']['passed']}/{d['digit_preservation']['total']}"
+                      print(f"| {card['slug']} ({card['expectation']}) | {d['direction']} | {d['model_load_ms']:.0f} | "
+                            f"{d['chrf']:.1f} ({d['chrf_floor']}) | {d['direction_check']} | {digits} | "
+                            f"{d['latency_ms']['p50_ms']:.0f} / {d['latency_ms']['p95_ms']:.0f} | "
+                            f"{d['rss_peak_kib']/1024:.0f} |")
+                  else:
+                      print(f"| {card['slug']} ({card['expectation']}) | {d['direction']} | — | — | LOAD FAIL | — | — | — |")
+          EOF
+            echo ""
+            echo "_Expectations: en-es/en-ja pass, es-en.adversarial must fail the direction check (NEU-19 negative control)._"
+            echo "_Committed baselines: translation/scorecards/. Re-pin via dedicated commit only._"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload scorecards
+        uses: actions/upload-artifact@v4
+        with:
+          name: pack-scorecards-${{ github.sha }}
+          path: translation/output/probe-ci/scorecards/*.json
+          if-no-files-found: error

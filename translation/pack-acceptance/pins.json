@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "note": "Pack-acceptance content pins (NEU-60). Changes to this file are deliberate re-baselining: dedicated commit, measured scorecard diff attached. Downloads are verified against these content SHA-256 values by `uv run python -m versta.probe.pins` after the registry's own uncompressedHash gate; a mismatch here means upstream re-published without us noticing — investigate before re-pinning.",
+  "registry_url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/db/models.json",
+  "architecture": "base-memory",
+  "leanmt": {
+    "repo": "https://github.com/FricoRico/Versta.Leanmt.git",
+    "commit": "f26e42621fc76b485c55fc2c886a123dc515d436",
+    "note": "leanmt-probe lives on tomasz/neu-60-leanmt-probe until that PR merges; once on main, re-pin to the merge commit."
+  },
+  "directions": {
+    "en-es": {
+      "catalog_entry": "Firefox/en-es (catalog v2.0.0 is BergamotTinyModel; the current registry carries this pair as base-memory — architecture is a probe-input property, not a verdict)",
+      "files": {
+        "model": "3b1c399511c01c84c36fae5c0524df44096288efdc8236e182b5c97d7ad2244c",
+        "vocabulary": "5ae254fa9b15aa182e70fd2a6186b1333c63a29a48043a9224c6aa4fcac058ad",
+        "shortlist": "7d51237c0a07027dcd61643cfbbb0f8c48597d19907ef53d2cae9d6bec2cf25c"
+      }
+    },
+    "es-en": {
+      "files": {
+        "model": "4aed7734152ae0045d1a69ae49c86cfda18f53c61f90e95e1d1de1c7c7c3b033",
+        "vocabulary": "5ae254fa9b15aa182e70fd2a6186b1333c63a29a48043a9224c6aa4fcac058ad",
+        "shortlist": "e2610211d3b9577d012638fe7e7e74ed7b4b708ce96b9e792e67c282a6492daa"
+      }
+    },
+    "en-ja": {
+      "note": "two-vocabulary pack (NEU-26 path): srcvocab/trgvocab split",
+      "files": {
+        "model": "59ae659f9bb63e4f81f474fe3c03d3f4499434b5f9e779fab7c12a45f31fd562",
+        "vocabulary": "970c98d174fc01e0339fbabbf45af36a4be3f26f819ec1a5ea1189f71e091889",
+        "shortlist": "edfb7eb47b98a2689b804ab3614c31b24f1257aa54b1154da3d85e1ae8152d9f",
+        "target_vocabulary": "3b3d9f8f3a034d98d0a476f1794fa79c01e4e98a967ceb6777a66ba2d03ec1e1"
+      }
+    },
+    "ja-en": {
+      "files": {
+        "model": "3a603e20bfe1be86071913f9e23ab5129075bc0a8490151020ac4821e4f17302",
+        "vocabulary": "5cb217758bae05877bb3f0c2f612e4e7c1e4cb03c10db11f4a47098d7ae62919",
+        "shortlist": "525f412f0d210536c2933c78ae395fa0bf2b5ee6cc5dda61ebc2e79410ebaee4"
+      }
+    }
+  }
+}

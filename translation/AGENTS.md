@@ -78,6 +78,29 @@ uv run python -m versta.eval --source en --target es --direction_dir output/en-e
 - `--comet` adds release-tier COMET-22 (optional `unbabel-comet` dependency, cached weights — never required on the PR path).
 - `sacrebleu` is the harness's one runtime dependency; the rest of the module keeps its zero-dependency footprint.
 
+### `versta.probe` (pack acceptance, NEU-60)
+
+Headless acceptance runner for produced bundles: installs a bundle artifact
+through the same checksum + metadata/parse gates the app uses
+(`versta/schema.py`), loads every declared direction via the pinned
+`leanmt-probe` binary (app JNI `LeanmtPackage`/`LeanmtModelConfig` mapping,
+app-default decode: beam 4, max-seq 256, cache off for measurement), runs
+the packaged traveler probe corpus (40 sentences/direction, NEU-30 harm
+class) and writes one scorecard JSON per bundle (`load / chrF + direction
+floor / digit preservation / p50+p95 latency / peak RSS`). Runs green on
+every commit on `ubuntu-24.04-arm` (`.github/workflows/pack-acceptance.yml`).
+
+```bash
+uv run python -m versta.probe --bundle output/en-es-bundle.tar.gz --probe_bin <leanmt-probe> --expect pass
+uv run python -m versta.probe.adversarial --model_dir output/en-es      # direction-mislabeled control pack
+uv run python -m versta.probe.pins --downloads_dir output               # verify downloads vs pack-acceptance/pins.json
+```
+
+- Corpus lives as package data in `versta/probe/corpora/traveler-v1` files (`<src>-<tgt>.json`); the name bumps deliberately when the probe set changes — never mix chrF across corpus versions.
+- v1 acceptance gates: load + chrF direction floor (per-direction floor travels in the corpus file as `chrf_floor`). Digit preservation / latency / RSS are measured and published from the first sweep and become gates in NEU-62 after calibration.
+- chrF is re-implemented in stdlib (`versta/probe/metrics.py`), behavior-identical to sacreBLEU defaults (pinned-value vectors plus a live parity check against the installed sacrebleu in `tests/test_probe.py`); do not change the formula without re-deriving the vectors. Every scorecard records the installed library's verbatim `CHRF.get_signature()` + version under `metrics`.
+- Scorecards commit to `scorecards/` (first sweep: en-es, en-ja, es-en.adversarial); re-generation happens via the CI workflow and moves pins/scorecards only in dedicated commits. The scorecard schema is manifest-adjacent: reviewed with the pipeline pair (Nikhil), and the JNI-surface parity of `versta/probe/bridge.py` with the app pair (Maya Lindqvist).
+
 ## Conventions specific to this module
 
 - Language codes are the registry's bare ISO-639 keys; bundle names, metadata fields and directory names all use the `<src>-<tgt>` form.
