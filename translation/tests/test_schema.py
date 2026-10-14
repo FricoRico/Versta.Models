@@ -1,4 +1,5 @@
 import json
+import struct
 import tarfile
 from pathlib import Path
 
@@ -46,7 +47,8 @@ def _direction(**overrides) -> dict:
 
 def _bundle_metadata(**overrides) -> dict:
     data = {
-        "version": "v2.0.0",
+        "version": "v2.1.0",
+        "leanmt_binary_version": 1,
         "languages": ["en", "es"],
         "bidirectional": True,
         "metadata": [
@@ -132,6 +134,22 @@ class TestBundleMetadata:
         with pytest.raises(ValidationError, match="directory"):
             validate_bundle_metadata(data)
 
+    def test_rejects_missing_leanmt_binary_version(self) -> None:
+        data = _bundle_metadata()
+        del data["leanmt_binary_version"]
+        with pytest.raises(ValidationError, match="leanmt_binary_version"):
+            validate_bundle_metadata(data)
+
+    def test_rejects_non_integer_leanmt_binary_version(self) -> None:
+        with pytest.raises(ValidationError, match="expected integer"):
+            validate_bundle_metadata(_bundle_metadata(leanmt_binary_version="1"))
+
+    def test_fails_closed_on_other_leanmt_binary_versions(self) -> None:
+        with pytest.raises(
+            ValidationError, match="unsupported leanmt binary version 2"
+        ):
+            validate_bundle_metadata(_bundle_metadata(leanmt_binary_version=2))
+
 
 class TestCatalog:
     def test_accepts_app_conformant_catalog(self) -> None:
@@ -208,6 +226,34 @@ class TestGeneratedCatalog:
 
 
 class TestBundleArchive:
+    @staticmethod
+    def _write_bundle_archive(
+        tmp_path: Path, embedded_version: int = 1, declared_version: int = 1
+    ) -> Path:
+        """Writes a structurally valid single-direction bundle archive whose
+        model file embeds `embedded_version` while the manifest declares
+        `declared_version`."""
+        from versta.bundle.bundle_tar import bundle_files
+
+        direction = write_direction_dir(tmp_path / "input", "en-es")
+        (direction / "model.bin").write_bytes(
+            struct.pack("<Q", embedded_version) + b"payload:en-es:model"
+        )
+
+        manifest = _bundle_metadata(
+            leanmt_binary_version=declared_version,
+            bidirectional=False,
+            metadata=[
+                {"directory": "en-es", "source_language": "en", "target_language": "es"}
+            ],
+        )
+        manifest_file = tmp_path / "metadata.json"
+        manifest_file.write_text(json.dumps(manifest, indent=4))
+
+        archive = tmp_path / "en-es-bundle.tar.gz"
+        bundle_files([manifest_file, direction], archive)
+        return archive
+
     def test_rejects_archive_without_bundle_metadata(self, tmp_path: Path) -> None:
         archive = tmp_path / "broken.tar.gz"
         with tarfile.open(archive, "w:gz") as tar:
@@ -218,4 +264,38 @@ class TestBundleArchive:
         from versta.schema import validate_bundle_archive
 
         with pytest.raises(ValidationError, match="metadata.json missing"):
+            validate_bundle_archive(archive)
+
+    def test_accepts_archive_with_matching_embedded_version(
+        self, tmp_path: Path
+    ) -> None:
+        from versta.schema import validate_bundle_archive
+
+        validate_bundle_archive(self._write_bundle_archive(tmp_path))
+
+    def test_rejects_archive_with_mismatched_embedded_version(
+        self, tmp_path: Path
+    ) -> None:
+        """A hand-edited manifest cannot smuggle an incompatible model past the
+        gate: the archive check compares the payload header against the
+        declared leanmt_binary_version."""
+        from versta.schema import validate_bundle_archive
+
+        archive = self._write_bundle_archive(
+            tmp_path, embedded_version=2, declared_version=1
+        )
+        with pytest.raises(ValidationError, match="binary version mismatch"):
+            validate_bundle_archive(archive)
+
+    def test_rejects_archive_declaring_unsupported_version(
+        self, tmp_path: Path
+    ) -> None:
+        from versta.schema import validate_bundle_archive
+
+        archive = self._write_bundle_archive(
+            tmp_path, embedded_version=2, declared_version=2
+        )
+        with pytest.raises(
+            ValidationError, match="unsupported leanmt binary version 2"
+        ):
             validate_bundle_archive(archive)

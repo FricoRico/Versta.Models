@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
 from urllib.request import urlopen, Request
 
+from ..leanmt import assert_leanmt_compatible
 from ..schema import validate_direction_metadata
 
 
@@ -253,6 +254,11 @@ def download_model(
                 )
 
         downloaded[kind] = file_name
+
+    # Fail-closed leanmt handshake (NEU-25): refuse at ingest any model whose
+    # embedded bergamot binary version the leanmt loader would reject — better
+    # to fail the download here than to ship a bundle that dies after JNI.
+    assert_leanmt_compatible(output_dir / downloaded["model"])
 
     model_metadata = _load_model_metadata(base_url, files.get("model", {}))
     model_config = _extract_config(model_metadata)

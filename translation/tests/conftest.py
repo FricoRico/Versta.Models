@@ -1,11 +1,14 @@
 import gzip
 import json
+import struct
 
 from hashlib import sha256
 from pathlib import Path
 from typing import Dict, List, Tuple
 
 import pytest
+
+from versta.leanmt import LEANMT_BINARY_VERSION
 
 
 class FakeResponse:
@@ -34,7 +37,12 @@ FILE_KINDS = {
 
 
 def fake_model_payload(kind: str, source: str, target: str) -> bytes:
-    return f"payload:{source}-{target}:{kind}".encode("utf-8")
+    payload = f"payload:{source}-{target}:{kind}".encode("utf-8")
+    if kind == "model":
+        # Bergamot binary models open with the uint64 format version the leanmt
+        # loader checks (kBinaryFileVersion); keep the fixture header realistic.
+        return struct.pack("<Q", LEANMT_BINARY_VERSION) + payload
+    return payload
 
 
 def make_registry_entry(source: str, target: str, architecture: str = "tiny") -> dict:

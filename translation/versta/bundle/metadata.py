@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from typing import Any, List
 
+from ..leanmt import LEANMT_BINARY_VERSION
 from .typing import BundleMetadata
 
 
@@ -73,6 +74,10 @@ def generate_metadata(
     """
     Generates a metadata file for the model conversion process.
 
+    The manifest carries the leanmt handshake field ``leanmt_binary_version``
+    (NEU-25) so the app can pre-flight a bundle against the leanmt loader
+    contract before crossing JNI.
+
     Args:
         version (str): Version of the model conversion process.
         output_dir (Path): Path to the directory where the metadata file will be saved.
@@ -82,6 +87,7 @@ def generate_metadata(
     """
     metadata = {
         "version": version,
+        "leanmt_binary_version": LEANMT_BINARY_VERSION,
         "languages": languages or [],
         "bidirectional": bidirectional,
         "metadata": language_metadata or [],

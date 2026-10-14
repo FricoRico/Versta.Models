@@ -5,6 +5,7 @@ from argparse import ArgumentParser, ArgumentTypeError, Namespace
 from pathlib import Path
 from typing import List, TypedDict, Union
 
+from ..leanmt import assert_leanmt_compatible
 from ..schema import (
     validate_bundle_archive,
     validate_bundle_metadata,
@@ -127,10 +128,13 @@ def main(
         (Output): A dictionary containing the path to the bundled file and checksum file.
     """
     # Step 0: Fail-fast validation of every input direction against the app's
-    # per-direction loader contract, including file existence on disk.
+    # per-direction loader contract, including file existence on disk, plus the
+    # fail-closed leanmt handshake on each model payload (NEU-25).
     for input_dir in input_dirs:
         with open(input_dir / "metadata.json", "r", encoding="utf-8") as handle:
-            validate_direction_metadata(json.load(handle), base_dir=input_dir)
+            direction_metadata = json.load(handle)
+        validate_direction_metadata(direction_metadata, base_dir=input_dir)
+        assert_leanmt_compatible(input_dir / str(direction_metadata["files"]["model"]))
 
     # Step 1: Load metadata for the input directories
     metadata = load_metadata_for_input_dirs(input_dirs)
