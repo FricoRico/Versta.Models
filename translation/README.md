@@ -92,3 +92,45 @@ uv run mypy
 
 See `PIPELINE.md` for the pipeline architecture, the app contract and the
 reproducibility guarantees.
+
+## Pack acceptance probing (NEU-60)
+
+A bundle is not proven by passing the shape gates above — it is proven when
+it *loads and translates*. `versta.probe` is the pack acceptance runner:
+checksum → the same metadata/parse gate the app goes through
+(`versta/schema.py`) → loads each declared direction through `leanmt-probe`
+(the pinned Versta.Leanmt host binary, built with the exact
+`leanmt::Package`/`Model::Config` mapping the app's JNI bridge uses, with
+app-default decode) → translates the packaged traveler probe corpus
+(`versta/probe/corpora/`, 40 sentences per direction covering numbers, times,
+prices, addresses, directions, emergencies) → writes one scorecard JSON per
+bundle to `scorecards/`.
+
+```bash
+uv run python -m versta.probe \
+    --bundle output/en-es-bundle.tar.gz \
+    --probe_bin <path-to-leanmt-probe> \
+    --output_dir output/probe \
+    --expect pass            # '--expect direction-fail' for the adversarial control
+```
+
+Exit 0 iff the outcome matches `--expect`. The v1 gates are load and the
+chrF direction floor (the NEU-19 mislabeled-direction class); digit
+preservation (NEU-30), p50/p95 latency and peak RSS are measured and
+published on every scorecard and become publish gates in NEU-62 once bands
+are calibrated from the first full sweep.
+
+The adversarial negative control is built from a real payload with swapped
+direction claims:
+
+```bash
+uv run python -m versta.probe.adversarial --model_dir output/en-es --output_dir output/adversarial
+```
+
+on the `ubuntu-24.04-arm` CI runner this all runs end to end on every commit
+(`.github/workflows/pack-acceptance.yml`), against model contents pinned in
+`pack-acceptance/pins.json` (content SHA-256s, bench-baseline re-pinning
+discipline). Committed scorecards for the first sweep live in `scorecards/`
+(`en-es`, `en-ja`, `es-en.adversarial`); the card schema is
+`versta.pack-scorecard/1` (field guide: `scorecards/README.md`), dispatching
+on the named schema string and joining the eval ledger on `bundle.sha256`.

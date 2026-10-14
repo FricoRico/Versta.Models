@@ -1,0 +1,85 @@
+{
+  "schema": "versta.pack-scorecard/1",
+  "scorecard_version": 1,
+  "generated_at": "2026-10-14T21:09:14+00:00",
+  "slug": "en-es",
+  "bundle": {
+    "file": "en-es-bundle.tar.gz",
+    "sha256": "fd32e01b973f8634b9ab94d38d83f4e805be562ea805bf6e099d3154307720d0",
+    "leanmt_binary_version": 1,
+    "bundle_version": "v2.1.0"
+  },
+  "environment": {
+    "host_arch": "aarch64",
+    "probe_arch": "aarch64",
+    "threads": 2,
+    "runner": "ubuntu-24.04-arm",
+    "leanmt_commit": "f26e42621fc76b485c55fc2c886a123dc515d436",
+    "corpus": "traveler-v1",
+    "corpus_entries": 80,
+    "corpus_sha256": "0c4e165f801932bde5e7bfc4bad268a57fadb83031bfccfc5a52a96dd88dd490"
+  },
+  "metrics": {
+    "sacrebleu_version": "2.6.0",
+    "chrf_signature": "nrefs:1|case:mixed|eff:yes|nc:6|nw:0|space:no|version:2.6.0"
+  },
+  "directions": [
+    {
+      "direction": "en-es",
+      "load_ok": true,
+      "model_load_ms": 39.911,
+      "rss_after_load_kib": 54920,
+      "chrf": 81.15,
+      "chrf_floor": 20.0,
+      "direction_check": "pass",
+      "digit_preservation": {
+        "passed": 40,
+        "total": 40,
+        "failing_ids": []
+      },
+      "latency_ms": {
+        "n": 40,
+        "min_ms": 4.297,
+        "p50_ms": 5.518,
+        "p95_ms": 7.033,
+        "max_ms": 8.719
+      },
+      "rss_peak_kib": 85640,
+      "sentences": 40,
+      "translation_failures": 0
+    },
+    {
+      "direction": "es-en",
+      "load_ok": true,
+      "model_load_ms": 39.445,
+      "rss_after_load_kib": 54944,
+      "chrf": 82.91,
+      "chrf_floor": 30.0,
+      "direction_check": "pass",
+      "digit_preservation": {
+        "passed": 40,
+        "total": 40,
+        "failing_ids": []
+      },
+      "latency_ms": {
+        "n": 40,
+        "min_ms": 3.686,
+        "p50_ms": 5.456,
+        "p95_ms": 7.526,
+        "max_ms": 8.846
+      },
+      "rss_peak_kib": 87004,
+      "sentences": 40,
+      "translation_failures": 0
+    }
+  ],
+  "gates": {
+    "load": true,
+    "direction_chrf_floor": true,
+    "digit_preservation": false,
+    "latency_rss": false
+  },
+  "acceptance": "pass",
+  "expectation": "pass",
+  "expectation_met": true
+}
