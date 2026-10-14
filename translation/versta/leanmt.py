@@ -15,6 +15,13 @@ and bundle abort unless every model file's embedded header version equals
 declare anything else. Contract counterpart: "Model loading contract" in the
 Versta.Leanmt README. Key naming and semantics are negotiated with Elin
 Sørensen (NEU-25); app-side pre-flight is owned by Maya Lindqvist.
+
+A second handshake covers the engine CLI the quality harness drives: the
+``versta.engine-cli/1`` batch file→file translate contract of
+``leanmt-bench translate`` (NEU-50), pinned here as ``LEANMT_CLI_SPEC`` and
+documented in PIPELINE.md "leanmt translate CLI". The normative semantics
+live in the Versta.Leanmt README ("Batch translation (file → file)"); a
+spec bump is coordinated exactly like a format bump.
 """
 
 import struct
@@ -25,6 +32,13 @@ from typing import IO, List, Sequence, Tuple
 # Mirrors kBinaryFileVersion in Versta.Leanmt src/Io.hh (the bergamot int8
 # layout). Change only via a negotiated format bump with the leanmt maintainer.
 LEANMT_BINARY_VERSION = 1
+
+# Mirrors kCliSpec in Versta.Leanmt bench/bench_translate.cc: the versioned
+# contract of `leanmt-bench translate` (batch file→file mode, NEU-50). The
+# eval harness refuses any engine binary whose --version does not report
+# this identifier; bump only via a negotiated spec change with the leanmt
+# maintainer.
+LEANMT_CLI_SPEC = "versta.engine-cli/1"
 
 # The version is the first uint64 of the binary model file, as written
 # little-endian by marian/bergamot on every supported platform.
