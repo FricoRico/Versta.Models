@@ -20,8 +20,17 @@ import json
 import tarfile
 
 from pathlib import Path
-from typing import Any, Dict, Optional, Sequence, Set, cast
+from typing import Any, Dict, NoReturn, Optional, Sequence, Set, cast
 from urllib.parse import urlparse
+
+from .leanmt import (
+    LEANMT_BINARY_VERSION,
+    LeanmtFormatError,
+    model_requires_target_vocabulary,
+    parse_binary_model_version,
+    read_tensor_names,
+    read_tensor_table,
+)
 
 
 class ValidationError(ValueError):
@@ -32,7 +41,7 @@ class ValidationError(ValueError):
 CATALOG_ARCHITECTURES: Set[str] = {"MarianMTModel", "BergamotTinyModel"}
 
 
-def _fail(path: str, message: str) -> None:
+def _fail(path: str, message: str) -> NoReturn:
     raise ValidationError(f"{path}: {message}")
 
 
@@ -53,13 +62,13 @@ def _require_string(value: Any, path: str, blank_allowed: bool = False) -> str:
         _fail(path, f"expected string, got {type(value).__name__}")
     if not blank_allowed and not value.strip():
         _fail(path, "must not be blank")
-    return cast(str, value)
+    return value
 
 
 def _require_bool(value: Any, path: str) -> bool:
     if not isinstance(value, bool):
         _fail(path, f"expected boolean, got {type(value).__name__}")
-    return cast(bool, value)
+    return value
 
 
 def _require_number(value: Any, path: str) -> float:
@@ -83,7 +92,10 @@ def validate_language_model_files(
     Validates the ``files`` block of a per-direction metadata.json
     (LanguageModelFilesMetadata: model, vocabulary, target_vocabulary?,
     shortlist). When ``base_dir`` is given, also requires every referenced file
-    to exist below it, matching the app's files.isValid(root).
+    to exist below it, matching the app's files.isValid(root), and enforces the
+    two-vocabulary rule of the leanmt loading contract (NEU-26): a model whose
+    tensor table carries split ``encoder_Wemb``/``decoder_Wemb`` embeddings must
+    declare ``target_vocabulary``, because the loader fails fast without it.
     """
     files = _require_object(files, path)
     _require_keys(files, ("model", "vocabulary", "shortlist"), path)
@@ -102,6 +114,19 @@ def validate_language_model_files(
                 continue
             if not (base_dir / name).is_file():
                 _fail(path, f"referenced file missing on disk: {name!r}")
+
+        try:
+            tensor_names = read_tensor_names(base_dir / files["model"])
+        except LeanmtFormatError as error:
+            _fail(f"{path}.model", str(error))
+        if model_requires_target_vocabulary(tensor_names) and target_vocabulary is None:
+            _fail(
+                f"{path}.target_vocabulary",
+                "required for two-vocabulary models: the model file carries "
+                "split encoder_Wemb/decoder_Wemb embeddings, and leanmt fails "
+                "fast loading such a model without a target vocabulary "
+                "(NEU-26); export the pair's trgVocab with the bundle",
+            )
 
 
 def validate_language_model_config(config: Any, path: str = "config") -> None:
@@ -163,13 +188,35 @@ def validate_bundle_metadata(data: Any, path: str = "metadata") -> None:
     Validates a bundle-level metadata.json as deserialized by the app's
     LanguageBundleMetadata: version, metadata, bidirectional and languages,
     including the app's isValid() rules (languages non-empty, even count when
-    bidirectional, metadata non-empty).
+    bidirectional, metadata non-empty). Also enforces the leanmt handshake
+    field ``leanmt_binary_version`` (NEU-25): required, an integer, and equal
+    to LEANMT_BINARY_VERSION — the gate fails closed on any other value so no
+    bundle ships that the leanmt loader would reject after JNI.
     """
     data = _require_object(data, path)
-    _require_keys(data, ("version", "metadata", "bidirectional", "languages"), path)
+    _require_keys(
+        data,
+        ("version", "metadata", "bidirectional", "languages", "leanmt_binary_version"),
+        path,
+    )
 
     _require_string(data["version"], f"{path}.version", blank_allowed=True)
     bidirectional = _require_bool(data["bidirectional"], f"{path}.bidirectional")
+
+    declared_version = data["leanmt_binary_version"]
+    version_path = f"{path}.leanmt_binary_version"
+    if isinstance(declared_version, bool) or not isinstance(declared_version, int):
+        _fail(
+            version_path,
+            f"expected integer, got {type(declared_version).__name__}",
+        )
+    if declared_version != LEANMT_BINARY_VERSION:
+        _fail(
+            version_path,
+            f"unsupported leanmt binary version {declared_version}: this "
+            f"toolchain produces and accepts v{LEANMT_BINARY_VERSION} only "
+            f"(must mirror leanmt kBinaryFileVersion)",
+        )
 
     languages = data["languages"]
     if not isinstance(languages, list) or not languages:
@@ -343,9 +390,12 @@ def validate_generated_catalog(catalog: Any, path: str = "catalog") -> None:
 def validate_bundle_archive(archive: Path) -> None:
     """
     Validates a produced bundle tarball end to end: the bundle-level
-    metadata.json parses and matches LanguageBundleMetadata, and every declared
+    metadata.json parses and matches LanguageBundleMetadata, every declared
     direction's metadata.json parses, matches LanguageModelMetadata and has all
-    referenced model files present inside the archive.
+    referenced model files present inside the archive, and every model file's
+    embedded bergamot binary version matches the declared
+    (and required) ``leanmt_binary_version`` — the app-facing manifestation of
+    what leanmt's loader enforces on the raw bytes.
 
     Args:
         archive (Path): Path of the produced .tar.gz bundle.
@@ -392,4 +442,63 @@ def validate_bundle_archive(archive: Path) -> None:
                 _fail(
                     direction_path,
                     f"file listed in metadata missing from archive: {name!r}",
+                )
+
+    # Second pass: fail closed on the payload itself. Every model file in the
+    # archive must embed the bergamot binary version the manifest declares and
+    # must satisfy the two-vocabulary vocabulary contract its tensor table
+    # encodes — catching hand-edited manifests and stale repacks that
+    # member-presence checks cannot see.
+    with tarfile.open(archive, "r:gz") as tar:
+        for entry in bundle_metadata["metadata"]:
+            directory = entry["directory"]
+            direction_path = f"{archive.name}:{directory}"
+            direction_metadata = json.loads(
+                metadata_payloads[f"{directory}/metadata.json"].decode("utf-8")
+            )
+            model_member = f"{directory}/{direction_metadata['files']['model']}"
+
+            handle = tar.extractfile(model_member)
+            if handle is None:
+                _fail(direction_path, f"cannot read model member {model_member!r}")
+
+            try:
+                embedded_version = parse_binary_model_version(
+                    handle.read(8), f"{archive.name}:{model_member}"
+                )
+            except LeanmtFormatError as error:
+                _fail(direction_path, str(error))
+
+            if embedded_version != bundle_metadata["leanmt_binary_version"]:
+                _fail(
+                    direction_path,
+                    f"model file binary version mismatch: {model_member!r} "
+                    f"embeds v{embedded_version} but the bundle manifest "
+                    f"declares v{bundle_metadata['leanmt_binary_version']}",
+                )
+
+            # Same version the loader will walk, so the converter can walk its
+            # tensor table too: require split-Wemb models to ship the target
+            # vocabulary (NEU-26).
+            handle = tar.extractfile(model_member)
+            if handle is None:
+                _fail(direction_path, f"cannot read model member {model_member!r}")
+            try:
+                tensor_names = read_tensor_table(
+                    handle, f"{archive.name}:{model_member}"
+                )[1]
+            except LeanmtFormatError as error:
+                _fail(direction_path, str(error))
+
+            if (
+                model_requires_target_vocabulary(tensor_names)
+                and direction_metadata["files"].get("target_vocabulary") is None
+            ):
+                _fail(
+                    direction_path,
+                    f"two-vocabulary model without target_vocabulary: "
+                    f"{model_member!r} carries split encoder_Wemb/decoder_Wemb "
+                    f"embeddings, but the manifest declares no "
+                    f"files.target_vocabulary; leanmt fails fast loading it "
+                    f"(NEU-26)",
                 )

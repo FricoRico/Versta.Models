@@ -48,7 +48,9 @@ One direction at a time (`--source en --target es --architecture tiny`).
 Language codes are normalized (`en-US`→`en`, `zh-Hant`→`zh_hant`;
 `no`/`nb`/`nn`/`hbs` never collapsed). Architecture selection prefers
 `tiny` → `base-memory` → `base`. Every downloaded file is verified against the
-registry's `uncompressedHash` (SHA-256 of the gunzipped payload). The upstream
+registry's `uncompressedHash` (SHA-256 of the gunzipped payload). After hash
+verification the model file must pass the leanmt handshake (see below) —
+ingest fails closed on an incompatible embedded binary version. The upstream
 per-model `metadata.json` provides the engine config (`enc-depth`, `dec-depth`,
 `transformer-ffn-depth`, `transformer-heads`) and the model version. The
 produced per-direction `metadata.json` is validated against the app contract
@@ -58,9 +60,12 @@ before the command exits — invalid output fails the run.
 
 Combines directions (usually a mirrored pair) into `<langs>-bundle.tar.gz`
 plus `<langs>-bundle.tar.sha256`. Steps: validate each input direction
-(metadata + files on disk) → validate pair symmetry (when `--bidirectional`)
-→ copy to intermediates → write bundle-level `metadata.json` (validated) →
-pack deterministically → validate the finished archive → write checksum.
+(metadata + files on disk + leanmt handshake on the model payload) → validate
+pair symmetry (when `--bidirectional`)
+→ copy to intermediates → write bundle-level `metadata.json` (validated;
+carries `leanmt_binary_version`) →
+pack deterministically → validate the finished archive (including embedded
+model headers vs. the declared version) → write checksum.
 
 ### `versta.batch`
 
@@ -74,12 +79,79 @@ validates the updated catalog.
 
 | Artifact | App type (`core/entity`) | Required fields |
 |---|---|---|
-| per-direction `metadata.json` | `LanguageModelMetadata` | `base_model`, `source_language`, `target_language`, `files{model, vocabulary, shortlist}` (+ optional `target_vocabulary`), `config{encoder_layers, decoder_layers, num_heads}` > 0 (+ optional `ffn_depth=2`, `split_mode="sentence"`); referenced files must exist |
-| bundle `metadata.json` | `LanguageBundleMetadata` | `version`, `languages` (non-empty; even count when bidirectional), `bidirectional`, `metadata[]{directory, source_language, target_language}` |
+| per-direction `metadata.json` | `LanguageModelMetadata` | `base_model`, `source_language`, `target_language`, `files{model, vocabulary, shortlist}` (+ `target_vocabulary`: optional for shared-`Wemb` models, required for split-Wemb two-vocabulary models — see below), `config{encoder_layers, decoder_layers, num_heads}` > 0 (+ optional `ffn_depth=2`, `split_mode="sentence"`); referenced files must exist |
+| bundle `metadata.json` | `LanguageBundleMetadata` | `version`, `leanmt_binary_version` (see handshake below), `languages` (non-empty; even count when bidirectional), `bidirectional`, `metadata[]{directory, source_language, target_language}` |
 | checked-in catalog | `ExternalLanguageModelDefinition` | `base_model`, `source_language`, `target_language`, `bidirectional`, `architectures` ∈ {`MarianMTModel`,`BergamotTinyModel`}, `score`, `size` > 0, `version`, `bundle`, `checksum` (absolute URIs); bidirectional groups are exactly two mirrored entries agreeing on size/version/URLs |
 
 Extend additively only — never rename or drop fields. Format changes go
 through Elin Sørensen (LeanMT); loader questions go through Maya Lindqvist.
+
+## leanmt handshake (`leanmt_binary_version`, NEU-25)
+
+The app loads the model `.bin` through leanmt, which fails fast when the
+file's embedded binary format version (a little-endian uint64, the first field
+of the bergamot layout) differs from its `kBinaryFileVersion` (see
+Versta.Leanmt `src/Io.hh`, and "Model loading contract" in its README). That
+error only surfaces after JNI. So bundles additionally **declare** the version
+in the bundle-level `metadata.json`:
+
+```json
+{ "version": "v2.1.0", "leanmt_binary_version": 1, ... }
+```
+
+The app pre-flights this field before calling into native code and shows a
+clean error on stale bundles instead of a native failure. The field name and
+semantics are the negotiated contract with Elin Sørensen.
+
+Converter-side, the pipeline **fails closed** at three points
+(`versta/leanmt.py`, mirrored in `versta/schema.py`):
+
+1. `versta.download` aborts when a freshly downloaded model's embedded header
+   version ≠ `LEANMT_BINARY_VERSION` (1);
+2. `versta.bundle` re-checks every input direction's model payload before
+   packing, and `validate_bundle_metadata` refuses manifests that miss the
+   field or declare anything but `1`;
+3. `validate_bundle_archive` compares each archived model's embedded header
+   against the declared value, so a hand-edited manifest cannot smuggle an
+   incompatible model through.
+
+A future format bump is a coordinated change: leanmt raises
+`kBinaryFileVersion`, this repo raises `LEANMT_BINARY_VERSION`, and the app
+gates old bundles via pre-flight. App builds parse bundle metadata with
+`ignoreUnknownKeys = true`, so the new key is tolerated by app versions that
+pre-date the pre-flight logic.
+
+### Two-vocabulary models (`files.target_vocabulary`, NEU-26)
+
+Firefox MT pairs with disjoint source/target vocabularies (ja, zh) ship two
+sentencepiece files and their models carry split `encoder_Wemb`/
+`decoder_Wemb` embedding tensors on disk; shared-vocabulary pairs carry a
+single `Wemb` instead. leanmt fails fast when a split-Wemb model loads with
+an empty target vocabulary — silently decoding garbage was the pre-NEU-26
+bug. The converter enforces the same rule at the same signal, walking the
+tensor table exactly as `load_items` does (version → header count → headers
+→ NUL-terminated names, bounds-checked):
+
+- `validate_language_model_files` (runs after `versta.download` and on every
+  `versta.bundle` input direction) requires `files.target_vocabulary` —
+  present, non-blank and on disk — when the model's tensor table contains
+  `encoder_Wemb`/`decoder_Wemb`; for shared-`Wemb` models the field stays
+  optional.
+- `validate_bundle_archive` rechecks the rule against the payload inside the
+  produced tarball, after the binary-version comparison, so a hand-edited
+  manifest cannot decouple manifest and payload.
+
+A registry entry missing `trgVocab` for a split-Wemb model aborts the export
+with this error — that is Mozilla-side breakage to raise upstream, never
+something to paper over.
+
+Generation note (ja): the registry's en-ja/ja-en `base-memory` entries are
+the generation Firefox ships as remote-settings model v2.3 (byte-identical;
+en-ja model sha-256 `59ae659f…`), with `dec-depth: 4` in `modelConfig` —
+the `dec-depth: 2` `base` entries are the older cjk_split_vocabs generation;
+they only ship when `--architecture base` is requested explicitly. The
+architecture preference (`tiny` → `base-memory` → `base`) keeps unattended
+batch exports on the current generation.
 
 ## Reproducibility contract
 

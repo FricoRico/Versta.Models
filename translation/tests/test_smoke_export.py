@@ -70,7 +70,7 @@ def test_batch_export_end_to_end_offline(mock_registry: dict, tmp_path: Path) ->
     synced = json.loads(input_file.read_text())
     validate_catalog(synced)
     entry = synced[0][0]
-    assert entry["version"] == "v2.0.0"
+    assert entry["version"] == "v2.1.0"
     assert entry["score"] == 87.4
     assert entry["size"] == bundle.stat().st_size
     assert entry["bundle"].endswith("en-es-bundle.tar.gz")

@@ -1,5 +1,6 @@
 import json
 import os
+import struct
 import tarfile
 
 from hashlib import sha256
@@ -101,7 +102,8 @@ def test_bundle_archive_validates_against_loader_contract(tmp_path: Path) -> Non
     with tarfile.open(result["bundle"], "r:gz") as tar:
         bundle_metadata = json.load(tar.extractfile("metadata.json"))
 
-    assert bundle_metadata["version"] == "v2.0.0"
+    assert bundle_metadata["version"] == "v2.1.0"
+    assert bundle_metadata["leanmt_binary_version"] == 1
     assert bundle_metadata["bidirectional"] is True
     assert bundle_metadata["languages"] == ["en", "es"]
     assert {entry["directory"] for entry in bundle_metadata["metadata"]} == {
@@ -126,6 +128,21 @@ def test_bundle_rejects_direction_with_missing_files(tmp_path: Path) -> None:
     input_es_en = write_direction_dir(tmp_path / "input", "es-en")
 
     with pytest.raises(ValidationError, match="model.bin"):
+        bundle.main(
+            input_dirs=[input_en_es, input_es_en],
+            output_dir=tmp_path / "output",
+            bidirectional=True,
+        )
+
+
+def test_bundle_fails_closed_on_incompatible_model_header(tmp_path: Path) -> None:
+    """An input direction whose model file embeds a bergamot binary version the
+    leanmt loader would reject is refused before any packing happens (NEU-25)."""
+    input_en_es = write_direction_dir(tmp_path / "input", "en-es")
+    input_es_en = write_direction_dir(tmp_path / "input", "es-en")
+    (input_en_es / "model.bin").write_bytes(struct.pack("<Q", 2) + b"tampered")
+
+    with pytest.raises(ValueError, match="binary model version mismatch"):
         bundle.main(
             input_dirs=[input_en_es, input_es_en],
             output_dir=tmp_path / "output",
