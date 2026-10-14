@@ -1,5 +1,4 @@
 import json
-import struct
 import tarfile
 from pathlib import Path
 
@@ -8,6 +7,7 @@ import pytest
 from versta.schema import (
     ValidationError,
     validate_bundle_metadata,
+    validate_bundle_archive,
     validate_catalog,
     validate_catalog_entry,
     validate_catalog_group,
@@ -15,7 +15,7 @@ from versta.schema import (
     validate_generated_catalog,
 )
 
-from conftest import write_direction_dir
+from conftest import SHARED_VOCAB_TENSORS, bergamot_model_bin, write_direction_dir
 
 
 def _direction(**overrides) -> dict:
@@ -114,6 +114,36 @@ class TestDirectionMetadata:
         del data["score"]
         data["files"]["target_vocabulary"] = None
         validate_direction_metadata(data)
+
+    def test_two_vocab_model_requires_target_vocabulary(self, tmp_path: Path) -> None:
+        """NEU-26 contract: leanmt fails fast loading a split-Wemb (two-
+        vocabulary) model without a target vocabulary, so the converter
+        refuses to emit one."""
+        folder = write_direction_dir(tmp_path, "en-ja")
+        data = json.loads((folder / "metadata.json").read_text())
+        data["files"]["target_vocabulary"] = None
+
+        with pytest.raises(ValidationError, match="target_vocabulary"):
+            validate_direction_metadata(data, base_dir=folder)
+
+    def test_single_vocab_model_tolerates_absent_target_vocabulary(
+        self, tmp_path: Path
+    ) -> None:
+        folder = write_direction_dir(
+            tmp_path, "en-es", tensor_names=SHARED_VOCAB_TENSORS
+        )
+        data = json.loads((folder / "metadata.json").read_text())
+        data["files"]["target_vocabulary"] = None
+
+        validate_direction_metadata(data, base_dir=folder)
+
+    def test_rejects_unparseable_model_file(self, tmp_path: Path) -> None:
+        folder = write_direction_dir(tmp_path, "en-es")
+        (folder / "model.bin").write_bytes(b"\x01\x00")
+        data = json.loads((folder / "metadata.json").read_text())
+
+        with pytest.raises(ValidationError, match="truncated"):
+            validate_direction_metadata(data, base_dir=folder)
 
 
 class TestBundleMetadata:
@@ -228,17 +258,26 @@ class TestGeneratedCatalog:
 class TestBundleArchive:
     @staticmethod
     def _write_bundle_archive(
-        tmp_path: Path, embedded_version: int = 1, declared_version: int = 1
+        tmp_path: Path,
+        embedded_version: int = 1,
+        declared_version: int = 1,
+        drop_target_vocabulary: bool = False,
     ) -> Path:
         """Writes a structurally valid single-direction bundle archive whose
         model file embeds `embedded_version` while the manifest declares
-        `declared_version`."""
+        `declared_version`. `drop_target_vocabulary` strips the direction's
+        files.target_vocabulary while keeping the split-Wemb model payload."""
         from versta.bundle.bundle_tar import bundle_files
 
         direction = write_direction_dir(tmp_path / "input", "en-es")
         (direction / "model.bin").write_bytes(
-            struct.pack("<Q", embedded_version) + b"payload:en-es:model"
+            bergamot_model_bin(version=embedded_version, label=b"payload:en-es:model")
         )
+        if drop_target_vocabulary:
+            metadata_path = direction / "metadata.json"
+            direction_metadata = json.loads(metadata_path.read_text())
+            direction_metadata["files"]["target_vocabulary"] = None
+            metadata_path.write_text(json.dumps(direction_metadata, indent=4))
 
         manifest = _bundle_metadata(
             leanmt_binary_version=declared_version,
@@ -297,5 +336,16 @@ class TestBundleArchive:
         )
         with pytest.raises(
             ValidationError, match="unsupported leanmt binary version 2"
+        ):
+            validate_bundle_archive(archive)
+
+    def test_rejects_two_vocab_archive_without_target_vocabulary(
+        self, tmp_path: Path
+    ) -> None:
+        """A hand-edited manifest that drops files.target_vocabulary from a
+        split-Wemb direction is caught by the payload-level archive gate."""
+        archive = self._write_bundle_archive(tmp_path, drop_target_vocabulary=True)
+        with pytest.raises(
+            ValidationError, match="two-vocabulary model without target_vocabulary"
         ):
             validate_bundle_archive(archive)

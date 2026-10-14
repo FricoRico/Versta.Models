@@ -79,7 +79,7 @@ validates the updated catalog.
 
 | Artifact | App type (`core/entity`) | Required fields |
 |---|---|---|
-| per-direction `metadata.json` | `LanguageModelMetadata` | `base_model`, `source_language`, `target_language`, `files{model, vocabulary, shortlist}` (+ optional `target_vocabulary`), `config{encoder_layers, decoder_layers, num_heads}` > 0 (+ optional `ffn_depth=2`, `split_mode="sentence"`); referenced files must exist |
+| per-direction `metadata.json` | `LanguageModelMetadata` | `base_model`, `source_language`, `target_language`, `files{model, vocabulary, shortlist}` (+ `target_vocabulary`: optional for shared-`Wemb` models, required for split-Wemb two-vocabulary models — see below), `config{encoder_layers, decoder_layers, num_heads}` > 0 (+ optional `ffn_depth=2`, `split_mode="sentence"`); referenced files must exist |
 | bundle `metadata.json` | `LanguageBundleMetadata` | `version`, `leanmt_binary_version` (see handshake below), `languages` (non-empty; even count when bidirectional), `bidirectional`, `metadata[]{directory, source_language, target_language}` |
 | checked-in catalog | `ExternalLanguageModelDefinition` | `base_model`, `source_language`, `target_language`, `bidirectional`, `architectures` ∈ {`MarianMTModel`,`BergamotTinyModel`}, `score`, `size` > 0, `version`, `bundle`, `checksum` (absolute URIs); bidirectional groups are exactly two mirrored entries agreeing on size/version/URLs |
 
@@ -120,6 +120,38 @@ A future format bump is a coordinated change: leanmt raises
 gates old bundles via pre-flight. App builds parse bundle metadata with
 `ignoreUnknownKeys = true`, so the new key is tolerated by app versions that
 pre-date the pre-flight logic.
+
+### Two-vocabulary models (`files.target_vocabulary`, NEU-26)
+
+Firefox MT pairs with disjoint source/target vocabularies (ja, zh) ship two
+sentencepiece files and their models carry split `encoder_Wemb`/
+`decoder_Wemb` embedding tensors on disk; shared-vocabulary pairs carry a
+single `Wemb` instead. leanmt fails fast when a split-Wemb model loads with
+an empty target vocabulary — silently decoding garbage was the pre-NEU-26
+bug. The converter enforces the same rule at the same signal, walking the
+tensor table exactly as `load_items` does (version → header count → headers
+→ NUL-terminated names, bounds-checked):
+
+- `validate_language_model_files` (runs after `versta.download` and on every
+  `versta.bundle` input direction) requires `files.target_vocabulary` —
+  present, non-blank and on disk — when the model's tensor table contains
+  `encoder_Wemb`/`decoder_Wemb`; for shared-`Wemb` models the field stays
+  optional.
+- `validate_bundle_archive` rechecks the rule against the payload inside the
+  produced tarball, after the binary-version comparison, so a hand-edited
+  manifest cannot decouple manifest and payload.
+
+A registry entry missing `trgVocab` for a split-Wemb model aborts the export
+with this error — that is Mozilla-side breakage to raise upstream, never
+something to paper over.
+
+Generation note (ja): the registry's en-ja/ja-en `base-memory` entries are
+the generation Firefox ships as remote-settings model v2.3 (byte-identical;
+en-ja model sha-256 `59ae659f…`), with `dec-depth: 4` in `modelConfig` —
+the `dec-depth: 2` `base` entries are the older cjk_split_vocabs generation;
+they only ship when `--architecture base` is requested explicitly. The
+architecture preference (`tiny` → `base-memory` → `base`) keeps unattended
+batch exports on the current generation.
 
 ## Reproducibility contract
 

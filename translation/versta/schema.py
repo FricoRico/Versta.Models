@@ -26,7 +26,10 @@ from urllib.parse import urlparse
 from .leanmt import (
     LEANMT_BINARY_VERSION,
     LeanmtFormatError,
+    model_requires_target_vocabulary,
     parse_binary_model_version,
+    read_tensor_names,
+    read_tensor_table,
 )
 
 
@@ -89,7 +92,10 @@ def validate_language_model_files(
     Validates the ``files`` block of a per-direction metadata.json
     (LanguageModelFilesMetadata: model, vocabulary, target_vocabulary?,
     shortlist). When ``base_dir`` is given, also requires every referenced file
-    to exist below it, matching the app's files.isValid(root).
+    to exist below it, matching the app's files.isValid(root), and enforces the
+    two-vocabulary rule of the leanmt loading contract (NEU-26): a model whose
+    tensor table carries split ``encoder_Wemb``/``decoder_Wemb`` embeddings must
+    declare ``target_vocabulary``, because the loader fails fast without it.
     """
     files = _require_object(files, path)
     _require_keys(files, ("model", "vocabulary", "shortlist"), path)
@@ -108,6 +114,19 @@ def validate_language_model_files(
                 continue
             if not (base_dir / name).is_file():
                 _fail(path, f"referenced file missing on disk: {name!r}")
+
+        try:
+            tensor_names = read_tensor_names(base_dir / files["model"])
+        except LeanmtFormatError as error:
+            _fail(f"{path}.model", str(error))
+        if model_requires_target_vocabulary(tensor_names) and target_vocabulary is None:
+            _fail(
+                f"{path}.target_vocabulary",
+                "required for two-vocabulary models: the model file carries "
+                "split encoder_Wemb/decoder_Wemb embeddings, and leanmt fails "
+                "fast loading such a model without a target vocabulary "
+                "(NEU-26); export the pair's trgVocab with the bundle",
+            )
 
 
 def validate_language_model_config(config: Any, path: str = "config") -> None:
@@ -426,9 +445,10 @@ def validate_bundle_archive(archive: Path) -> None:
                 )
 
     # Second pass: fail closed on the payload itself. Every model file in the
-    # archive must embed the bergamot binary version the manifest declares —
-    # catching hand-edited manifests and stale repacks that member-presence
-    # checks cannot see.
+    # archive must embed the bergamot binary version the manifest declares and
+    # must satisfy the two-vocabulary vocabulary contract its tensor table
+    # encodes — catching hand-edited manifests and stale repacks that
+    # member-presence checks cannot see.
     with tarfile.open(archive, "r:gz") as tar:
         for entry in bundle_metadata["metadata"]:
             directory = entry["directory"]
@@ -455,4 +475,30 @@ def validate_bundle_archive(archive: Path) -> None:
                     f"model file binary version mismatch: {model_member!r} "
                     f"embeds v{embedded_version} but the bundle manifest "
                     f"declares v{bundle_metadata['leanmt_binary_version']}",
+                )
+
+            # Same version the loader will walk, so the converter can walk its
+            # tensor table too: require split-Wemb models to ship the target
+            # vocabulary (NEU-26).
+            handle = tar.extractfile(model_member)
+            if handle is None:
+                _fail(direction_path, f"cannot read model member {model_member!r}")
+            try:
+                tensor_names = read_tensor_table(
+                    handle, f"{archive.name}:{model_member}"
+                )[1]
+            except LeanmtFormatError as error:
+                _fail(direction_path, str(error))
+
+            if (
+                model_requires_target_vocabulary(tensor_names)
+                and direction_metadata["files"].get("target_vocabulary") is None
+            ):
+                _fail(
+                    direction_path,
+                    f"two-vocabulary model without target_vocabulary: "
+                    f"{model_member!r} carries split encoder_Wemb/decoder_Wemb "
+                    f"embeddings, but the manifest declares no "
+                    f"files.target_vocabulary; leanmt fails fast loading it "
+                    f"(NEU-26)",
                 )

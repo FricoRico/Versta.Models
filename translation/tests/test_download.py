@@ -11,7 +11,7 @@ from versta.download.download import (
     normalize_language,
     validate_registry_entry,
 )
-from versta.schema import validate_direction_metadata
+from versta.schema import ValidationError, validate_direction_metadata
 
 from conftest import (
     fake_model_payload,
@@ -121,6 +121,34 @@ def test_download_model_writes_verified_files_and_metadata(
 
     # The produced metadata satisfies the app's loader contract.
     validate_direction_metadata(metadata, base_dir=output_dir)
+
+
+def test_download_model_two_vocab_requires_trgvocab(
+    mock_registry: dict, tmp_path: Path
+) -> None:
+    """NEU-26: the mock model carries split encoder_Wemb/decoder_Wemb
+    embeddings (the en-ja shape), so an entry without trgVocab must not
+    become a bundle the leanmt loader would refuse."""
+    entry = make_registry_entry("en", "ja")
+    del entry["files"]["trgVocab"]
+
+    with pytest.raises(ValidationError, match="target_vocabulary"):
+        download_model("https://models.example/", entry, tmp_path / "en-ja")
+
+
+def test_download_model_en_ja_decoder_layers(
+    mock_registry: dict, tmp_path: Path
+) -> None:
+    """Regression pin for the NEU-26 heads-up: the current en-ja generation
+    (remote-settings v2.3) carries dec-depth 4; the manifest must pass the
+    upstream modelConfig value through verbatim."""
+    entry = make_registry_entry("en", "ja")
+    output_dir = download_model("https://models.example/", entry, tmp_path / "en-ja")
+
+    metadata = json.loads((output_dir / "metadata.json").read_text())
+    assert metadata["config"]["decoder_layers"] == 4
+    assert metadata["files"]["vocabulary"] == "vocab.spm"
+    assert metadata["files"]["target_vocabulary"] == "vocab.trg.spm"
 
 
 def test_download_model_aborts_on_hash_mismatch(
