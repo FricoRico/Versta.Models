@@ -78,11 +78,28 @@ uv run python -m versta.eval --source en --target es --direction_dir output/en-e
 - `--comet` adds release-tier COMET-22 (optional `unbabel-comet` dependency, cached weights — never required on the PR path).
 - `sacrebleu` is the harness's one runtime dependency; the rest of the module keeps its zero-dependency footprint.
 
+### `versta.eval.gate`
+
+The release gate (NEU-44/NEU-52): decides whether a model refresh may ship
+by comparing its eval result against the direction's checked-in ledger, and
+generates the release eval-summary markdown:
+
+```bash
+uv run python -m versta.eval.gate --result output/evals/en-es.json                 # check only
+uv run python -m versta.eval.gate --result output/evals/en-es.json --record        # record a shipping decision
+uv run python -m versta.eval.gate --result output/evals/en-es.json --reason "..."  # override a regression
+```
+
+- Hermetic: reads only the candidate result JSON and `evals/ledger/<direction>.json`; decisions `baseline` / `pass` / `fail` / `override` / `rebaseline` per the semantics table in `evals/README.md`.
+- A refresh fails on chrF regression > threshold (default 1.0 in `versta/eval/config.py`; `--threshold` tunes per run). A failed gate exits 1 and is never recorded. Overrides and corpus rebaselines need a written `--reason`, recorded in the ledger entry and the summary.
+- `--record` appends to the checked-in ledger (`--ledger_dir`, default `evals/ledger`). The ledger is append-only: re-recording a shipped version is an error.
+- The generated summary (default `output/evals/<direction>-<version>-eval-summary.md`) is what gets posted with a release — never handwrite it.
+
 ## Conventions specific to this module
 
 - Language codes are the registry's bare ISO-639 keys; bundle names, metadata fields and directory names all use the `<src>-<tgt>` form.
 - `version.txt` lives at `versta/version.txt` and is read once at import time in each `__main__.py`. Bump it when the bundle format or metadata schema changes — the app uses it to distinguish bundle generations (registry currently at `v2.1.0`, which added `leanmt_binary_version`).
-- The per-direction `metadata.json` (written by `versta/download/download.py`) records: `directory`, `source_language`, `target_language`, `architecture`, `base_model`, `score` (COMET-22 from flores200-plus metrics), `version`, `files` (model/vocabulary/shortlist filenames) and `config` (encoder/decoder layers, ffn depth, heads, split mode = `sentence`). These fields are consumed by the app and by `versta.bundle`; extend additively, never rename or drop.
+- The per-direction `metadata.json` (written by `versta/download/download.py`) records: `directory`, `source_language`, `target_language`, `architecture`, `base_model`, `score` (COMET-22 from flores200-plus metrics — fail-fast when the upstream metric is absent or malformed; never a silent `0.0`, NEU-52), `version`, `files` (model/vocabulary/shortlist filenames) and `config` (encoder/decoder layers, ffn depth, heads, split mode = `sentence`). These fields are consumed by the app and by `versta.bundle`; extend additively, never rename or drop.
 - `versta/schema.py` is the runtime contract gate: it mirrors the app's Kotlin loader shapes (`LanguageModelMetadata`, `LanguageBundleMetadata`, `ExternalLanguageModelDefinition`) and is enforced fail-fast in download, bundle and batch. When the app contract changes, update `versta/schema.py` and its tests in the same change.
 - `versta/leanmt.py` is the format handshake with the leanmt loader (NEU-25): `LEANMT_BINARY_VERSION` mirrors `kBinaryFileVersion` in Versta.Leanmt (`src/Io.hh`). Bundles declare `leanmt_binary_version` in the bundle-level `metadata.json` so the app can pre-flight before JNI, and the pipeline fails closed — download, bundle and archive validation all reject embedded/declared versions other than 1. Never hard-code the number elsewhere; import the constant. Format bumps are negotiated with Elin Sørensen. The module also walks the binary's tensor table exactly like the loader's `load_items` (bounds-checked, fail-closed on foreign versions): models with split `encoder_Wemb`/`decoder_Wemb` embeddings (two-vocabulary pairs like ja/zh) must declare `files.target_vocabulary` — leanmt fails fast without it (NEU-26). See PIPELINE.md "Two-vocabulary models".
 - `versta/batch/typing.py` defines the `ModelFile`/`ExportedModel`/`ExportedBundle` TypedDicts crossing the batch boundary — keep them fully typed and in sync with what `versta.bundle.main()` actually returns.

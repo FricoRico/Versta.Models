@@ -4,6 +4,7 @@ from pathlib import Path
 import pytest
 
 from versta.download.download import (
+    _extract_score,
     download_model,
     get_best_entry,
     get_entry,
@@ -170,3 +171,54 @@ def test_download_model_fails_fast_on_incomplete_entry(tmp_path: Path) -> None:
 
     # Nothing was downloaded when validation failed.
     assert not (tmp_path / "en-es" / "model.bin").exists()
+
+
+# --- NEU-52: the silent 0.0 is dead — missing upstream metrics fail loudly ---
+
+
+@pytest.mark.parametrize(
+    "metrics",
+    [
+        pytest.param(None, id="metrics-key-absent"),
+        pytest.param({}, id="metrics-empty"),
+        pytest.param({"flores200-dev": {"comet22": 0.9}}, id="no-flores200-plus"),
+        pytest.param({"flores200-plus": {}}, id="no-comet22"),
+        pytest.param({"flores200-plus": {"comet22": None}}, id="comet22-null"),
+        pytest.param({"flores200-plus": {"comet22": "0.874"}}, id="comet22-string"),
+        pytest.param({"flores200-plus": {"comet22": True}}, id="comet22-bool"),
+    ],
+)
+def test_extract_score_fails_loudly_when_metric_missing(metrics) -> None:
+    """A shipped model must never display a silent 0.0 in the catalog: the
+    extractor raises the moment the upstream metric is absent or malformed."""
+    entry = make_registry_entry("en", "es")
+    if metrics is None:
+        del entry["metrics"]
+    else:
+        entry["metrics"] = metrics
+
+    with pytest.raises(ValueError, match="en-es.*tiny.*silent 0.0"):
+        _extract_score(entry)
+
+
+def test_extract_score_accepts_present_values_including_a_real_zero() -> None:
+    """Only *absence* is an error: an explicit measured zero is data and
+    must pass through unchanged (distinguishing the two is the whole point)."""
+    entry = make_registry_entry("en", "es")
+    assert _extract_score(entry) == pytest.approx(0.874)
+
+    entry["metrics"]["flores200-plus"]["comet22"] = 0.0
+    assert _extract_score(entry) == 0.0
+
+
+def test_download_model_aborts_without_metadata_when_score_missing(
+    mock_registry: dict, tmp_path: Path
+) -> None:
+    entry = make_registry_entry("en", "es")
+    del entry["metrics"]["flores200-plus"]
+
+    with pytest.raises(ValueError, match="silent 0.0"):
+        download_model("https://models.example/", entry, tmp_path / "en-es")
+
+    # No metadata.json is written: nothing half-scored can be bundled.
+    assert not (tmp_path / "en-es" / "metadata.json").exists()
