@@ -1,47 +1,104 @@
 name: CI
 
 on:
-  push:
-    paths: ["translation/**", ".github/workflows/ci.yml"]
+  # Every push is CI-checked, and no `paths:` filters anywhere: these jobs are
+  # the required status checks for branch protection on `main`, and a
+  # path-filtered skip reports no status at all — the PR would sit blocked on
+  # a check that never runs. The jobs are cheap enough to always run.
+  push: {}
   pull_request:
-    paths: ["translation/**", ".github/workflows/ci.yml"]
+    branches: [main]
+  # Lets any leg be run on demand from the Actions tab. No effect unless
+  # invoked.
+  workflow_dispatch:
 
-defaults:
-  run:
-    working-directory: translation
+# One active run per ref: retriggering or pushing again cancels the stale run.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
 
 jobs:
+  # Repo-wide formatting and lint, per the shared root `ruff.toml`. Modules
+  # are discovered by their `pyproject.toml`, so a new module is covered
+  # automatically — no workflow edit needed.
+  #
+  # ruff runs via `uvx ruff` (standalone binary, no `uv sync`): it only needs
+  # the config files, not each module's dependency stack. This keeps the gate
+  # fast and avoids installing heavy conversion stacks (e.g. PaddleOCR) just
+  # to lint.
   lint:
-    name: Lint (ruff)
+    name: lint
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-      - run: uv sync
-      - run: uv run ruff check .
-      - run: uv run ruff format --check .
 
-  typecheck:
-    name: Type check (mypy)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+
+      - name: ruff check (all modules)
+        run: |
+          failed=0
+          for d in */; do
+            [ -f "$d/pyproject.toml" ] || continue
+            echo "::group::$d"
+            (cd "$d" && uvx ruff check .) || failed=1
+            echo "::endgroup::"
+          done
+          exit $failed
+
+      - name: ruff format --check (all modules)
+        run: |
+          failed=0
+          for d in */; do
+            [ -f "$d/pyproject.toml" ] || continue
+            echo "::group::$d"
+            (cd "$d" && uvx ruff format --check .) || failed=1
+            echo "::endgroup::"
+          done
+          exit $failed
+
+  # mypy is currently configured for `translation/` only (see
+  # `translation/pyproject.toml [tool.mypy]`). Extend this matrix when another
+  # module adopts mypy — do not add a module before its config exists.
+  typecheck:
+    name: typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: translation
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
       - run: uv sync
       - run: uv run mypy
 
+  # Unit tests + fully offline smoke export against a mocked Mozilla registry.
+  # Only `translation/` has a pytest suite today; other modules are verified
+  # by running their CLIs end-to-end (see the root AGENTS.md) until they get
+  # the same treatment.
   test:
-    name: Tests and smoke export (pytest)
+    name: test
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: translation
     steps:
       - uses: actions/checkout@v4
+
       - uses: astral-sh/setup-uv@v5
         with:
           enable-cache: true
+
       - run: uv sync
-      # Fully offline: the smoke export runs against a mocked Mozilla registry.
       - run: uv run pytest -v
