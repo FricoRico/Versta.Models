@@ -29,7 +29,12 @@ uv run python -m versta.supertonic3 verify \
 # 3. Build the shippable bundle (int8-only; ≤120 MB cap enforced)
 uv run python -m versta.supertonic3 bundle --converted output/supertonic3 --version v2.0.0
 
-# 4. Merge the feed entry (models.json) with the measured tarball size
+# 4. Record the release in the checked-in conversion ledger (refuses a
+#    failed gate without an explicit --override_reason)
+uv run python -m versta.supertonic3 record --converted output/supertonic3 \
+  --bundle output/supertonic3-bundle.tar.gz --version v2.0.0
+
+# 5. Merge the feed entry (models.json) with the measured tarball size
 uv run python -m versta.supertonic3 feed --version v2.0.0 \
   --bundle output/supertonic3-bundle.tar.gz
 ```

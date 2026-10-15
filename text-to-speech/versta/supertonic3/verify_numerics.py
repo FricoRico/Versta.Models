@@ -28,7 +28,13 @@ from typing import Dict, List, Optional
 
 import numpy as np
 
-from .config import FP32_CONTROL_GATE, INT8_GATE, LSD_FRAME_SIZE, LSD_HOP_SIZE
+from .config import (
+    FP32_CONTROL_GATE,
+    INT8_GATE,
+    LSD_FRAME_SIZE,
+    LSD_HOP_SIZE,
+    MNN_RUN_CONFIG,
+)
 from .sources import ONNX_FILES, UPSTREAM_REPO
 from .typing import (
     MODEL_STAGES,
@@ -47,6 +53,15 @@ _THRESHOLDS_REF = (
 )
 
 
+#: Default sizes for the dynamic dims of the Supertonic 3 stages, sized like
+#: a typical utterance (spike exercised T=38..162). CLI `--dim` overrides.
+DEFAULT_DIM_SIZES: Dict[str, int] = {
+    "batch_size": 1,
+    "text_length": 64,
+    "latent_length": 48,
+}
+
+
 def _input_feed(
     session, seed: int, dim_overrides: Dict[str, int]
 ) -> Dict[str, np.ndarray]:
@@ -55,7 +70,9 @@ def _input_feed(
     feed: Dict[str, np.ndarray] = {}
     for meta in session.get_inputs():
         shape = [
-            dim if isinstance(dim, int) and dim > 0 else dim_overrides.get(str(dim), 64)
+            dim
+            if isinstance(dim, int) and dim > 0
+            else dim_overrides.get(str(dim), DEFAULT_DIM_SIZES.get(str(dim), 64))
             for dim in meta.shape
         ]
         if "float" in meta.type:
@@ -70,8 +87,20 @@ def _input_feed(
     return feed
 
 
-def _run_mnn(model_path: Path, feed: Dict[str, np.ndarray]) -> Dict[str, np.ndarray]:
-    """Runs one MNN model through the express Interpreter API."""
+def _run_mnn(
+    model_path: Path,
+    feed: Dict[str, np.ndarray],
+    input_names: List[str],
+    output_names: List[str],
+) -> Dict[str, np.ndarray]:
+    """
+    Runs one MNN model through the Module API (runtime manager + placeholders).
+
+    This is the exact call path the NEU-64 spike validated bit-deterministic
+    (module loaded per run, shapes set per placeholder at write time, so no
+    resizeTensor/resizeSession sequencing is involved — the Interpreter API
+    gave shape-inference errors and non-bit-exact re-runs on these graphs).
+    """
     try:
         import MNN  # type: ignore
     except ImportError as exc:
@@ -79,29 +108,30 @@ def _run_mnn(model_path: Path, feed: Dict[str, np.ndarray]) -> Dict[str, np.ndar
             "MNN python bindings not importable; install the wheel matching the "
             f"vendored tag ({model_path}) or build pymnn from vendor/mnn"
         ) from exc
-    interpreter = MNN.Interpreter(str(model_path))
-    session = interpreter.createSession()
-    inputs = interpreter.getSessionInputAll(session)
-    for name, value in feed.items():
-        tensor = inputs[name]
-        if tuple(tensor.getShape()) != tuple(value.shape):
-            interpreter.resizeTensor(tensor, value.shape)
-        interpreter.resizeSession(session)
-        tensor = inputs[name]
-        tensor.copyFrom(
-            MNN.Tensor(
-                value.shape if hasattr(value, "shape") else value,
-                MNN.Halide_Type_Float,
-                value,
-                MNN.Tensor_DimensionType_Caffe,
-            )
+    runtime = MNN.nn.create_runtime_manager((MNN_RUN_CONFIG,))
+    module = MNN.nn.load_module_from_file(
+        str(model_path), input_names, output_names, runtime_manager=runtime
+    )
+    mnn_inputs = []
+    for name in input_names:
+        value = feed[name]
+        is_integer = np.issubdtype(value.dtype, np.integer)
+        placeholder = MNN.expr.placeholder(
+            tuple(value.shape),
+            dtype=MNN.numpy.int32 if is_integer else MNN.numpy.float32,
         )
-    interpreter.runSession(session)
-    outputs = {}
-    for name, tensor in interpreter.getSessionOutputAll(session).items():
-        outputs[name] = np.array(tensor.getData(), dtype=np.float32).reshape(
-            tensor.getShape()
-        )
+        placeholder.write(value.astype(np.int32 if is_integer else np.float32))
+        mnn_inputs.append(placeholder)
+    forwarded = module.forward(mnn_inputs)
+    outputs: Dict[str, np.ndarray] = {}
+    for name, expr in zip(output_names, forwarded):
+        if isinstance(expr, list):
+            expr = expr[0]
+        if expr.dtype == MNN.numpy.float32:
+            value = np.array(expr.read(), dtype=np.float32)
+        else:
+            value = np.array(MNN.expr.convert(expr, MNN.expr.NCHW).read())
+        outputs[name] = value
     return outputs
 
 
@@ -166,8 +196,10 @@ def compare_stage(
     feed = _input_feed(session, seed, dim_overrides)
     reference = session.run(None, feed)
     model_path = converted_dir / precision / f"{stage}.mnn"
-    candidate = _run_mnn(model_path, feed)
-    repeat = _run_mnn(model_path, feed)
+    input_names = [i.name for i in session.get_inputs()]
+    output_names = [o.name for o in session.get_outputs()]
+    candidate = _run_mnn(model_path, feed, input_names, output_names)
+    repeat = _run_mnn(model_path, feed, input_names, output_names)
     for name in candidate:
         if not np.array_equal(candidate[name], repeat[name]):
             raise RuntimeError(
@@ -175,11 +207,16 @@ def compare_stage(
                 "seeded re-run diverged (golden-audio CI precondition violated)"
             )
 
-    output_names = [o.name for o in session.get_outputs()]
     reference_flat = np.concatenate([np.atleast_1d(o.reshape(-1)) for o in reference])
-    candidate_flat = np.concatenate(
-        [np.atleast_1d(candidate[name].reshape(-1)) for name in output_names]
-    )
+    # MNN may rename outputs; align by name when possible, else by order.
+    if set(output_names).issubset(candidate.keys()):
+        candidate_flat = np.concatenate(
+            [np.atleast_1d(candidate[name].reshape(-1)) for name in output_names]
+        )
+    else:
+        candidate_flat = np.concatenate(
+            [np.atleast_1d(value.reshape(-1)) for value in candidate.values()]
+        )
     limit = min(len(reference_flat), len(candidate_flat))
     reference_flat, candidate_flat = reference_flat[:limit], candidate_flat[:limit]
 
@@ -201,7 +238,7 @@ def compare_stage(
     if is_wav and precision == "int8":
         ok = ok and metric["lsd_db"] <= INT8_GATE["max_lsd_db"]
         ok = ok and metric["spectral_r"] >= INT8_GATE["min_spectral_r"]
-    metric["passed"] = (
+    metric["passed"] = bool(
         ok if precision in ("fp32", "int8") else True
     )  # fp16 informational
     return metric
@@ -250,8 +287,8 @@ def _print_table(report: VerificationReport) -> None:
         gate = "pass" if m["passed"] else "FAIL"
         print(
             f"| {m['stage']} | {m['precision']} | {m['snr_db']:.2f} | {m['cosine']:.4f} "
-            f"| {m['lsd_db'] if m['lsd_db'] is not None else '—'} "
-            f"| {m['spectral_r'] if m['spectral_r'] is not None else '—'} | {gate} |"
+            f"| {f'{m["lsd_db"]:.2f}' if m['lsd_db'] is not None else '—'} "
+            f"| {f'{m["spectral_r"]:.4f}' if m['spectral_r'] is not None else '—'} | {gate} |"
         )
 
 

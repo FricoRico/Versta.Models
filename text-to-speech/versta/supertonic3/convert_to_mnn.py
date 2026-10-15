@@ -15,6 +15,7 @@ reference set and ``--weightQuantBits 8`` for the shipped int8 set
 import argparse
 import hashlib
 import json
+import os
 import platform
 import subprocess
 
@@ -175,6 +176,22 @@ def download_upstream(revision: str, cache_dir: Path) -> Path:
     return snapshot
 
 
+def _converter_env(mnnconvert: Path) -> Dict[str, str]:
+    """
+    Process environment for the vendored MNNConvert: it links against shared
+    libraries built next to it (and in tool/express subdirs), so
+    LD_LIBRARY_PATH must cover those directories.
+    """
+    env = dict(os.environ)
+    lib_dirs = [str(mnnconvert.parent)]
+    for subdir in ("express", "tools"):
+        candidate = mnnconvert.parent / subdir
+        if candidate.exists():
+            lib_dirs.append(str(candidate))
+    env["LD_LIBRARY_PATH"] = ":".join(lib_dirs) + ":" + env.get("LD_LIBRARY_PATH", "")
+    return env
+
+
 def convert_stage(
     mnnconvert: Path,
     snapshot: Path,
@@ -201,7 +218,7 @@ def convert_stage(
         args.append("--fp16")
     elif precision == "int8":
         args += ["--weightQuantBits", "8"]
-    subprocess.run(args, check=True)
+    subprocess.run(args, check=True, env=_converter_env(mnnconvert))
     out = output_dir / precision / f"{stage}.mnn"
     if not out.exists():
         raise RuntimeError(f"MNNConvert did not produce {out}")
