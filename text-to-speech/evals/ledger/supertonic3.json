@@ -1,5 +1,274 @@
 {
   "schema": "versta.tts-conversion-ledger/1",
   "model": "supertonic3",
-  "entries": []
+  "entries": [
+    {
+      "recorded_at": "2026-10-15T12:49:16.501208+00:00",
+      "version": "v2.0.0",
+      "upstream": {
+        "repo": "Supertone/supertonic-3",
+        "revision": "3cadd1ee6394adea1bd021217a0e650ede09a323"
+      },
+      "toolchain": {
+        "mnn_commit": "d407447ed56c4121a11ccbd266dc184ca1ead0c2",
+        "mnn_tag": "3.6.1",
+        "python": "3.12.15"
+      },
+      "artifacts": [
+        {
+          "path": "fp32/duration_predictor.mnn",
+          "sha256": "ffc76676af86591ff56ba3b7382f0f1338d46969092668b1cc6f58428e217eb5",
+          "bytes": 3619788
+        },
+        {
+          "path": "fp16/duration_predictor.mnn",
+          "sha256": "8b70cee4f76ae5b2de90fec445074580b079d1f46e9364440ad979d87c86ace1",
+          "bytes": 1901592
+        },
+        {
+          "path": "int8/duration_predictor.mnn",
+          "sha256": "4230673f331d0d0ea334512f61da49df2464f77fa7fd19ac5fb9142c19a30345",
+          "bytes": 2682560
+        },
+        {
+          "path": "fp32/text_encoder.mnn",
+          "sha256": "1651408a934ea0d2e6649623ff528ae3164cb14b6f94037e8499e83a60d2aa5c",
+          "bytes": 35809692
+        },
+        {
+          "path": "fp16/text_encoder.mnn",
+          "sha256": "af5c6f2ae2aa842ef93cfea6c60e4b3b2aa6a7a61ce30c5c0af4fcec2f7efccf",
+          "bytes": 18102780
+        },
+        {
+          "path": "int8/text_encoder.mnn",
+          "sha256": "86066d50614cb6a8ca3326944e67e3b3b2226c9966af14de543bf02380e68bfa",
+          "bytes": 15907596
+        },
+        {
+          "path": "fp32/vector_estimator.mnn",
+          "sha256": "6048c661928e3ca17177e43dc6842c4b73cec6c6f6f7b8390f766a5111dd201a",
+          "bytes": 256378388
+        },
+        {
+          "path": "fp16/vector_estimator.mnn",
+          "sha256": "839dce10ee23caf833f5e5e23a858c69cb59ee0a80719f1bbf9ad1851375a3e2",
+          "bytes": 128634116
+        },
+        {
+          "path": "int8/vector_estimator.mnn",
+          "sha256": "8ace20d1aed8a03952d12583328cfcb6423a9b0ba01e2ea06e9fe32318b447a1",
+          "bytes": 65770964
+        },
+        {
+          "path": "fp32/vocoder.mnn",
+          "sha256": "19db419bd63866d6bc1bc9e491a418978607651235d5f63d0f592e8eb8a99a60",
+          "bytes": 101387960
+        },
+        {
+          "path": "fp16/vocoder.mnn",
+          "sha256": "bd2d387feacc0dc8ed5fa5a120ef9b00650798ec70e827c0b4a5823df7653dce",
+          "bytes": 50803744
+        },
+        {
+          "path": "int8/vocoder.mnn",
+          "sha256": "c033f1f9e7482f223059de2ca93936fa0584a055ed6be27853b909a11fbc4a46",
+          "bytes": 25805732
+        },
+        {
+          "path": "passthrough/tts.json",
+          "sha256": "42078d3aef1cd43ab43021f3c54f47d2d75ceb4e75f627f118890128b06a0d09",
+          "bytes": 8253
+        },
+        {
+          "path": "passthrough/unicode_indexer.json",
+          "sha256": "9bf7346e43883a81f8645c81224f786d43c5b57f3641f6e7671a7d6c493cb24f",
+          "bytes": 277676
+        },
+        {
+          "path": "passthrough/voice_styles/F1.json",
+          "sha256": "bbdec6ee00231c2c742ad05483df5334cab3b52fda3ba38e6a07059c4563dbc2",
+          "bytes": 292046
+        },
+        {
+          "path": "passthrough/voice_styles/F2.json",
+          "sha256": "7c722c6a72707b1a77f035d67f0d1351ba187738e06f7683e8c72b1df3477fc6",
+          "bytes": 292423
+        },
+        {
+          "path": "passthrough/voice_styles/F3.json",
+          "sha256": "12f6ef2573baa2defa1128069cb59f203e3ab67c92af77b42df8a0e3a2f7c6ab",
+          "bytes": 290794
+        },
+        {
+          "path": "passthrough/voice_styles/F4.json",
+          "sha256": "c2fa764c1225a76dfc3e2c73e8aa4f70d9ee48793860eb34c295fff01c2e032b",
+          "bytes": 291808
+        },
+        {
+          "path": "passthrough/voice_styles/F5.json",
+          "sha256": "45966e73316415626cf41a7d1c6f3b4c70dbc1ba2bee5c1978ef0ce33244fc8d",
+          "bytes": 291479
+        },
+        {
+          "path": "passthrough/voice_styles/M1.json",
+          "sha256": "e35604687f5d23694b8e91593a93eec0e4eca6c0b02bb8ed69139ab2ea6b0a5b",
+          "bytes": 291748
+        },
+        {
+          "path": "passthrough/voice_styles/M2.json",
+          "sha256": "b76cbf62bac707c710cf0ae5aba5e31eea1a6339a9734bfae33ab98499534a50",
+          "bytes": 292055
+        },
+        {
+          "path": "passthrough/voice_styles/M3.json",
+          "sha256": "ea1ac35ccb91b0d7ecad533a2fbd0eec10c91513d8951e3b25fbba99954e159b",
+          "bytes": 290198
+        },
+        {
+          "path": "passthrough/voice_styles/M4.json",
+          "sha256": "ca8eefad4fcd989c9379032ff3e50738adc547eeb5e221b82593a6d7b3bac303",
+          "bytes": 291522
+        },
+        {
+          "path": "passthrough/voice_styles/M5.json",
+          "sha256": "dd22b92740314321f8ae11c5e87f8dd60d060f15dd3a632b5adf77f471f77af2",
+          "bytes": 291469
+        },
+        {
+          "path": "passthrough/LICENSE",
+          "sha256": "0d944a9110fed9a9602d60e0423a272903e7bd21ab060490774efc77c2275e9f",
+          "bytes": 15007
+        }
+      ],
+      "verification": {
+        "schema": "versta.tts-verification/1",
+        "seed": 42,
+        "upstream": {
+          "repo": "Supertone/supertonic-3",
+          "revision": "3cadd1ee6394adea1bd021217a0e650ede09a323"
+        },
+        "toolchain": {
+          "mnn_commit": "d407447ed56c4121a11ccbd266dc184ca1ead0c2",
+          "mnn_tag": "3.6.1",
+          "python": "3.12.15"
+        },
+        "metrics": [
+          {
+            "stage": "duration_predictor",
+            "precision": "fp32",
+            "snr_db": 100.49207477821082,
+            "cosine": 1.0,
+            "lsd_db": null,
+            "spectral_r": null,
+            "passed": true
+          },
+          {
+            "stage": "duration_predictor",
+            "precision": "fp16",
+            "snr_db": 48.62389183854497,
+            "cosine": 1.0,
+            "lsd_db": null,
+            "spectral_r": null,
+            "passed": true
+          },
+          {
+            "stage": "duration_predictor",
+            "precision": "int8",
+            "snr_db": 52.17900819053517,
+            "cosine": 1.0,
+            "lsd_db": null,
+            "spectral_r": null,
+            "passed": true
+          },
+          {
+            "stage": "text_encoder",
+            "precision": "fp32",
+            "snr_db": 71.23544201106087,
+            "cosine": 0.9999998211860657,
+            "lsd_db": null,
+            "spectral_r": null,
+            "passed": true
+          },
+          {
+            "stage": "text_encoder",
+            "precision": "fp16",
+            "snr_db": 55.90001505160977,
+            "cosine": 0.9999987483024597,
+            "lsd_db": null,
+            "spectral_r": null,
+            "passed": true
+          },
+          {
+            "stage": "text_encoder",
+            "precision": "int8",
+            "snr_db": 26.884086881831813,
+            "cosine": 0.9989762902259827,
+            "lsd_db": null,
+            "spectral_r": null,
+            "passed": true
+          },
+          {
+            "stage": "vector_estimator",
+            "precision": "fp32",
+            "snr_db": 61.409235663275595,
+            "cosine": 0.9999997019767761,
+            "lsd_db": null,
+            "spectral_r": null,
+            "passed": true
+          },
+          {
+            "stage": "vector_estimator",
+            "precision": "fp16",
+            "snr_db": 37.2442936943469,
+            "cosine": 0.9999074935913086,
+            "lsd_db": null,
+            "spectral_r": null,
+            "passed": true
+          },
+          {
+            "stage": "vector_estimator",
+            "precision": "int8",
+            "snr_db": 24.723361166332026,
+            "cosine": 0.9985451102256775,
+            "lsd_db": null,
+            "spectral_r": null,
+            "passed": true
+          },
+          {
+            "stage": "vocoder",
+            "precision": "fp32",
+            "snr_db": 55.179769211696915,
+            "cosine": 0.9999985694885254,
+            "lsd_db": 0.12413462542629658,
+            "spectral_r": 0.9999988846469764,
+            "passed": true
+          },
+          {
+            "stage": "vocoder",
+            "precision": "fp16",
+            "snr_db": 46.26579746427055,
+            "cosine": 0.9999939203262329,
+            "lsd_db": 0.3067968432051679,
+            "spectral_r": 0.9999954966665062,
+            "passed": true
+          },
+          {
+            "stage": "vocoder",
+            "precision": "int8",
+            "snr_db": 23.69812659418441,
+            "cosine": 0.997944712638855,
+            "lsd_db": 5.121561823322623,
+            "spectral_r": 0.9985975114666585,
+            "passed": true
+          }
+        ],
+        "thresholds_ref": "NEU-64 spike table 2026-10-14 (LSD/spectral-r per language); gates in config.py",
+        "passed": true
+      },
+      "bundle_sha256": "b924644a13e2ca3c30db0f36c81ce268fb3d6deab0793fd06ec5d3a7c68de110",
+      "bundle_bytes": 99840987,
+      "override_reason": null
+    }
+  ]
 }
