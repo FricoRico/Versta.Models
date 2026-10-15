@@ -1,0 +1,248 @@
+name: release-eval
+
+# Full quality-gate evaluation for ONE release candidate direction
+# (NEU-44/53). This is the network job the PR path deliberately is not:
+# it fetches the hash-pinned FLORES-200 corpus snapshot from artifact
+# storage, downloads the candidate bundle, translates ~1k sentences through
+# the pinned bergamot-translator container and runs the release gate against
+# the checked-in evals/ ledger. Expect ~15-30 min per direction (longer with
+# COMET-22: the scoring model is a ~2 GB download on a cold cache).
+#
+# Dispatch from the release-candidate branch so the ledger commit lands on
+# the branch the release ships from. NEVER dispatch against main directly:
+# the ledger push-back would fail branch protection, and a recorded-but-
+# unpushed ledger is worse than a loud failure.
+#
+# What the job guarantees:
+#   * Reproducible — corpus payloads are hash-verified against the
+#     checked-in manifest (revision + per-file SHA-256), decode settings
+#     are package constants (`versta/eval/config.py`, mirroring Firefox
+#     production), and the engine image ref lands in the result JSON
+#     (engine.image) next to its probed version string.
+#   * Runtime is logged — wall-clock per stage goes to the job log and the
+#     run summary; harness-side translation time is recorded in the result
+#     JSON (run.duration_seconds).
+#   * A failing gate blocks the candidate — the job exits with the gate's
+#     exit code, so a regression is a red required-adjacent check on the
+#     release branch, never a footnote.
+#   * The generated eval-summary markdown is posted to the run summary and
+#     uploaded as an artifact (also on failure) — post that file with the
+#     release, never handwritten prose.
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: "Source language code (e.g. en)"
+        required: true
+      target:
+        description: "Target language code (e.g. es)"
+        required: true
+      bundle_url:
+        description: "Candidate <langs>-bundle.tar.gz URL in artifact storage"
+        required: true
+      bundle_sha256:
+        description: "Expected SHA-256 of the bundle (from `versta.bundle`)"
+        required: true
+      bergamot_image:
+        description: "bergamot-translator image, pinned by digest (name@sha256:…); recorded in the result JSON"
+        required: true
+      comet:
+        description: "Also score COMET-22 (release tier; pulls unbabel-comet + a ~2 GB scoring model)"
+        type: boolean
+        default: false
+      threshold:
+        description: "chrF regression threshold override in points (empty = package default 1.0)"
+        required: false
+        default: ""
+      reason:
+        description: "Written justification, recorded in the ledger — required for override/rebaseline"
+        required: false
+        default: ""
+      rebaseline:
+        description: "Accept the candidate as a new baseline after a deliberate corpus-pin change (requires reason)"
+        type: boolean
+        default: false
+      record:
+        description: "Append a shipping decision to evals/ledger/ and push it back to this ref"
+        type: boolean
+        default: true
+
+permissions:
+  contents: write # ledger push-back
+
+# One gate run per direction at a time, and never cancel mid-record: a
+# half-written ledger entry is a stop-the-line event by contract.
+concurrency:
+  group: release-eval-${{ github.event.inputs.source }}-${{ github.event.inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  eval:
+    name: eval ${{ github.event.inputs.source }}-${{ github.event.inputs.target }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    defaults:
+      run:
+        working-directory: translation
+    env:
+      SRC: ${{ github.event.inputs.source }}
+      TGT: ${{ github.event.inputs.target }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync dependencies
+        run: uv sync
+
+      - name: Install the COMET-22 scorer (release tier)
+        if: github.event.inputs.comet == 'true'
+        run: uv pip install unbabel-comet
+
+      - name: Fetch the pinned corpus snapshot
+        run: |
+          START=$SECONDS
+          uv run python -m versta.eval.corpora fetch
+          echo "corpus_fetch_seconds=$((SECONDS - START))" >> "$GITHUB_ENV"
+
+      - name: Download and verify the candidate bundle
+        run: |
+          START=$SECONDS
+          mkdir -p output/rc
+          BUNDLE="output/rc/$(basename '${{ github.event.inputs.bundle_url }}')"
+          curl -fSL --retry 3 --output "$BUNDLE" '${{ github.event.inputs.bundle_url }}'
+          echo "${{ github.event.inputs.bundle_sha256 }}  $BUNDLE" | sha256sum -c -
+          echo "bundle=$BUNDLE" >> "$GITHUB_ENV"
+          echo "bundle_download_seconds=$((SECONDS - START))" >> "$GITHUB_ENV"
+          ls -l "$BUNDLE"
+
+      - name: Pull the pinned engine image
+        run: |
+          START=$SECONDS
+          # Digest-pinned only: a movable tag would make runs non-reproducible
+          # even though engine.image is recorded in the result JSON.
+          case '${{ github.event.inputs.bergamot_image }}' in
+            *@sha256:*) ;;
+            *) echo "::error::bergamot_image must be digest-pinned (name@sha256:…)"; exit 1;;
+          esac
+          docker pull '${{ github.event.inputs.bergamot_image }}'
+          docker image inspect '${{ github.event.inputs.bergamot_image }}' \
+            --format 'engine image id: {{.Id}}'
+          echo "engine_pull_seconds=$((SECONDS - START))" >> "$GITHUB_ENV"
+
+      - name: Run the eval harness
+        id: harness
+        run: |
+          ARGS=(--source "$SRC" --target "$TGT" --bundle "$bundle" \
+                --bergamot_image '${{ github.event.inputs.bergamot_image }}')
+          RUN=(uv run)
+          if [ '${{ github.event.inputs.comet }}' = 'true' ]; then
+            ARGS+=(--comet)
+            # unbabel-comet was pip-installed on top of the synced env;
+            # plain `uv run` would re-sync and prune it again.
+            RUN=(uv run --no-sync)
+          fi
+          "${RUN[@]}" python -m versta.eval "${ARGS[@]}"
+          echo "result=output/evals/${SRC}-${TGT}.json" >> "$GITHUB_ENV"
+
+      - name: Run the release gate
+        id: gate
+        # The gate's exit code IS the job result, but artifacts and the
+        # ledger push-back must run first — capture it instead of failing
+        # the step here.
+        run: |
+          ARGS=(--result "$result")
+          if [ '${{ github.event.inputs.record }}' = 'true' ]; then
+            ARGS+=(--record)
+          fi
+          if [ -n '${{ github.event.inputs.threshold }}' ]; then
+            ARGS+=(--threshold '${{ github.event.inputs.threshold }}')
+          fi
+          if [ '${{ github.event.inputs.rebaseline }}' = 'true' ]; then
+            ARGS+=(--rebaseline)
+          fi
+          if [ -n '${{ github.event.inputs.reason }}' ]; then
+            ARGS+=(--reason '${{ github.event.inputs.reason }}')
+          fi
+          set +e
+          uv run python -m versta.eval.gate "${ARGS[@]}"
+          CODE=$?
+          set -e
+          echo "gate_exit=$CODE" >> "$GITHUB_ENV"
+          exit 0
+
+      - name: Commit the ledger entry back to this ref
+        working-directory: ${{ github.workspace }}
+        if: github.event.inputs.record == 'true' && env.gate_exit == '0'
+        run: |
+          DIR="${SRC}-${TGT}"
+          if [ "$GITHUB_REF_NAME" = "main" ]; then
+            echo "::error::Ledger push-back to main is refused by branch protection by design. Re-dispatch this workflow from the release-candidate branch."
+            exit 1
+          fi
+          VERSION=$(jq -r '.model.version' "translation/$result")
+          DECISION=$(jq -r '.entries[-1].gate.decision' "translation/evals/ledger/$DIR.json")
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add translation/evals/ledger
+          if git diff --cached --quiet; then
+            echo "Ledger unchanged (dry run or re-run of a recorded version) — nothing to push."
+          else
+            git commit -m "evals ledger: $DIR $VERSION $DECISION (release-eval run $GITHUB_RUN_ID)"
+            git push origin "HEAD:${GITHUB_REF_NAME}" || {
+              echo "::error::Ledger recorded locally but the push failed. Re-run on the release-candidate branch (never main), or cherry-pick HEAD before discarding this runner."
+              exit 1
+            }
+          fi
+
+      - name: Upload eval artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-${{ github.event.inputs.source }}-${{ github.event.inputs.target }}-run${{ github.run_number }}
+          path: |
+            translation/output/evals/*.json
+            translation/output/evals/*-eval-summary.md
+            translation/evals/ledger/${{ github.event.inputs.source }}-${{ github.event.inputs.target }}.json
+          if-no-files-found: warn
+
+      - name: Post the run summary
+        if: always()
+        run: |
+          if [ ! -f "$result" ]; then
+            # The harness never produced a result (export/download/engine
+            # failure upstream) — the failing step already carries the log.
+            echo "## release-eval ${SRC}-${TGT} — FAILED before scoring" >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          VERSION=$(jq -r '.model.version' "$result")
+          DURATION=$(jq -r '.run.duration_seconds' "$result")
+          DECISION=$(jq -r 'if "'$gate_exit'" == "0" then "ships" elif "'$gate_exit'" == "1" then "BLOCKED by gate" else "gate usage error" end' <<< '{}')
+          {
+            echo "## release-eval ${SRC}-${TGT} ${VERSION} — ${DECISION}"
+            echo
+            echo "| stage | wall clock |"
+            echo "|---|---|"
+            echo "| corpus fetch (hash-verified) | ${corpus_fetch_seconds}s |"
+            echo "| bundle download + sha256 check | ${bundle_download_seconds}s |"
+            echo "| engine image pull | ${engine_pull_seconds}s |"
+            echo "| translate + score (run.duration_seconds) | ${DURATION}s |"
+            echo
+            echo "Corpus pin, payload hashes, engine version and decode settings: see the result JSON artifact."
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+          SUMMARY=$(ls output/evals/*-eval-summary.md 2>/dev/null | head -1)
+          if [ -n "$SUMMARY" ]; then
+            cat "$SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Enforce the gate
+        if: always()
+        run: |
+          if [ "$gate_exit" != "0" ]; then
+            echo "::error::Release gate failed for ${SRC}-${TGT} (exit $gate_exit). The candidate does not ship; see the eval summary artifact for scores vs. the predecessor."
+            exit "$gate_exit"
+          fi

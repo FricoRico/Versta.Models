@@ -23,7 +23,7 @@ import tempfile
 
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Optional
+from typing import Optional, cast
 
 from . import corpora
 from .comet import COMET22_MODEL, score_comet22
@@ -64,12 +64,55 @@ def write_result(result: EvalResult, output_path: Path) -> Path:
     return output_path
 
 
+DEFAULT_CORPUS_ROOT = Path("output") / "corpora"
+
+
+def load_result(path: Path) -> EvalResult:
+    """
+    Loads an eval result JSON with fail-fast structural validation — the
+    release gate consumes only well-formed ``versta.eval-result/1``
+    documents.
+
+    Args:
+        path (Path): The result JSON file.
+
+    Returns:
+        EvalResult: The validated result.
+
+    Raises:
+        ValueError: If the file is missing, not JSON, or not a
+            schema-conformant result.
+    """
+    if not path.is_file():
+        raise ValueError(f"eval result not found: {path}")
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"{path} is not valid JSON: {exc}")
+    if not isinstance(data, dict):
+        raise ValueError(f"{path}: eval result must be a JSON object")
+    if data.get("schema") != EVAL_RESULT_SCHEMA:
+        raise ValueError(
+            f"{path}: schema must be {EVAL_RESULT_SCHEMA!r} "
+            f"(got {data.get('schema')!r})"
+        )
+    for key in ("direction", "source_language", "target_language"):
+        value = data.get(key)
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(f"{path}: {key} must be a non-empty string")
+    for key in ("model", "corpus", "engine", "metrics", "scores", "run"):
+        if not isinstance(data.get(key), dict):
+            raise ValueError(f"{path}: {key} must be an object")
+    return cast(EvalResult, data)
+
+
 def evaluate_direction(
     *,
     source: str,
     target: str,
     engine: Engine,
     corpus_manifest_path: Path,
+    corpus_root: Path = DEFAULT_CORPUS_ROOT,
     direction_dir: Optional[Path] = None,
     bundle: Optional[Path] = None,
     with_comet: bool = False,
@@ -91,7 +134,10 @@ def evaluate_direction(
         target (str): Target language code (e.g. ``es``).
         engine (Engine): The configured reference runtime.
         corpus_manifest_path (Path): The pinned corpus manifest
-            (``evals/corpora.json``).
+            (``evals/corpora/flores200-dev.json``).
+        corpus_root (Path): The fetch cache root the verified snapshot is
+            read from (``output/corpora`` by default; run
+            ``uv run python -m versta.eval.corpora fetch`` first).
         direction_dir (Path | None): A ``versta.download`` output directory.
         bundle (Path | None): A shipped ``*-bundle.tar.gz`` to evaluate from.
         with_comet (bool): Also score COMET-22 (release tier; needs the
@@ -125,7 +171,7 @@ def evaluate_direction(
     # Verify the pinned corpus before spending any engine time.
     manifest = corpora.load_manifest(corpus_manifest_path)
     corpus = corpora.resolve_slice(
-        manifest, direction, corpus_dir=corpus_manifest_path.parent / "corpora"
+        manifest, direction, corpus_dir=corpora.snapshot_dir(manifest, corpus_root)
     )
 
     work_dir = Path(tempfile.mkdtemp(prefix="versta-eval-", dir=work_root))
@@ -165,6 +211,7 @@ def evaluate_direction(
             architecture=model.architecture,
             model_sha256=model.model_sha256,
             metadata_sha256=model.metadata_sha256,
+            size_bytes=model.size_bytes,
         )
         if model.bundle_sha256 is not None and model.bundle_file is not None:
             model_info["bundle_file"] = model.bundle_file

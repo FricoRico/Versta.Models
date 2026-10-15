@@ -75,11 +75,52 @@ then syncs computed fields (`size`, `bundle`, `checksum`, `score` ×100,
 `version`) back into the input catalog in place (with a `.bak` backup) and
 validates the updated catalog.
 
+## Evaluation corpora (pinned)
+
+Quality gates score against hash-pinned reference corpora, not live upstream
+downloads. `evals/corpora/flores200-dev.json` pins the FLORES-200 dev snapshot
+covering every shipped direction (artifact SHA-256, per-file hashes and
+sentence counts); `uv run python -m versta.eval.corpora fetch` reproduces it
+byte-identically into `output/corpora/` from recorded mirrors, verifying
+before extraction and after. Provenance, license and the revision-bump
+procedure: `evals/corpora/README.md`.
+
+### Quality gate & ledger (`versta.eval`, `versta.eval.gate`, NEU-44/51/52)
+
+A refresh ships only through the gate:
+
+1. Score the candidate: `versta.eval` translates the hash-pinned FLORES-200
+   snapshot (manifest `evals/corpora/flores200-dev.json`, payloads fetched
+   into `output/corpora/`) through the reference engine and writes a
+   `versta.eval-result/1` JSON (scores, corpus pin, engine + decode
+   provenance, artifact checksums, size). Line-misaligned engine output
+   fails the run.
+2. Gate it: `versta.eval.gate --result output/evals/<src>-<tgt>.json
+   --record` compares the result against the direction's checked-in ledger
+   (`evals/ledger/<direction>.json`, schema `versta.eval-ledger/1`) and
+   appends the decision on success. chrF regression beyond the threshold
+   (default 1.0, `versta/eval/config.py`) fails the run; overrides and
+   corpus rebaselines ship only with a written `--reason`, recorded in the
+   ledger entry.
+3. Post the summary: every gate run generates the release eval-summary
+   markdown (scores vs. previous version, corpus pin, engine version, size
+   notes, decision + reason) — post the generated file, never handwritten
+   prose.
+
+Gate semantics, ledger fields and exit codes: `evals/README.md`.
+
+CI wiring (NEU-53): PR CI runs the gate/metrics/ledger logic hermetically
+against the tiny synthetic fixture pair (the suite refuses real network by
+contract); the full pinned-corpus eval runs on release candidates only, via
+the dispatchable `release-eval` workflow — see "CI wiring (NEU-53)" in
+`evals/README.md`.
+
 ### `versta.eval` (quality measurement, NEU-44)
 
 The quality stage: `uv run python -m versta.eval --source X --target Y
 --bundle <bundle.tar.gz>` translates the pinned FLORES-200 dev snapshot
-(`evals/corpora.json` + hash-verified payloads) through the reference
+(checked-in manifest in `evals/corpora/`, hash-verified payloads fetched to
+`output/corpora/` by `versta.eval.corpora fetch`) through the reference
 runtime — upstream `bergamot-translator` as a black-box CLI for v1, the
 LeanMT batch mode (NEU-50) once it lands — and scores sacreBLEU + chrF
 (COMET-22 optionally, release tier only). The emitted result JSON
@@ -88,9 +129,9 @@ reproduce them: corpus revision and payload hashes, bundle/model
 checksums, engine version and the fixed decode settings
 (`versta/eval/config.py`, mirroring Firefox production). Re-running with
 identical inputs reproduces identical scores. See `evals/README.md` for
-the manifest and result contracts; the release gate and the `evals/`
-ledger that consume these results land with NEU-52, CI wiring with
-NEU-53. Tests are hermetic (a fake engine over a tiny synthetic corpus);
+the manifest and result contracts, the release gate (`versta.eval.gate`,
+NEU-52) and the `evals/` ledger it records into, and the CI wiring
+(NEU-53). Tests are hermetic (a fake engine over a tiny synthetic corpus);
 scoring a real model needs the corpus payloads fetched and a bergamot
 CLI available.
 

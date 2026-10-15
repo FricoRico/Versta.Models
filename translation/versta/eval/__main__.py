@@ -24,7 +24,7 @@ from pathlib import Path
 from typing import Optional
 
 from .engines import create_engine
-from .evaluate import DEFAULT_OUTPUT_DIR, evaluate_direction
+from .evaluate import DEFAULT_CORPUS_ROOT, DEFAULT_OUTPUT_DIR, evaluate_direction
 
 
 def parse_args() -> Namespace:
@@ -66,8 +66,18 @@ def parse_args() -> Namespace:
     parser.add_argument(
         "--corpus_manifest",
         type=Path,
-        default=Path("evals") / "corpora.json",
-        help="The pinned corpus manifest (default: evals/corpora.json).",
+        default=Path("evals") / "corpora" / "flores200-dev.json",
+        help="The pinned corpus manifest (default: the checked-in "
+        "evals/corpora/flores200-dev.json).",
+    )
+
+    parser.add_argument(
+        "--corpus_dir",
+        type=Path,
+        default=DEFAULT_CORPUS_ROOT,
+        help="Fetch cache root holding the verified corpus snapshot "
+        "(default: output/corpora; populate it with "
+        "`python -m versta.eval.corpora fetch`).",
     )
 
     parser.add_argument(
@@ -128,6 +138,7 @@ def main(
     direction_dir: Optional[Path],
     bundle: Optional[Path],
     corpus_manifest: Path,
+    corpus_dir: Path,
     engine: str,
     bergamot_bin: Optional[Path],
     bergamot_image: Optional[str],
@@ -145,6 +156,7 @@ def main(
         bundle (Path | None): Shipped bundle tarball (exclusive with
             direction_dir).
         corpus_manifest (Path): Pinned corpus manifest path.
+        corpus_dir (Path): Fetch cache root holding the verified snapshot.
         engine (str): Engine identifier ("bergamot" or reserved "leanmt").
         bergamot_bin (Path | None): Local bergamot binary.
         bergamot_image (str | None): Bergamot container image.
@@ -169,6 +181,7 @@ def main(
         target=target,
         engine=runtime,
         corpus_manifest_path=corpus_manifest,
+        corpus_root=corpus_dir,
         direction_dir=direction_dir,
         bundle=bundle,
         with_comet=comet,
@@ -196,6 +209,7 @@ if __name__ == "__main__":
         direction_dir=args.direction_dir,
         bundle=args.bundle,
         corpus_manifest=args.corpus_manifest,
+        corpus_dir=args.corpus_dir,
         engine=args.engine,
         bergamot_bin=args.bergamot_bin,
         bergamot_image=args.bergamot_image,

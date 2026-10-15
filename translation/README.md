@@ -69,7 +69,27 @@ uv run python -m versta.batch --input_file pairs.json --output_dir ./output
 
 This generates one tarball per language pair and a `models.json` definition that can be deployed to the cloud object storage.
 
+## Quality evaluation
+
+Shipped quality is measured, gated and recorded by two CLIs (see
+`PIPELINE.md` and `evals/README.md` for the full contract):
+
+```bash
+# Score one direction against the pinned FLORES-200 snapshot:
+uv run python -m versta.eval --source en --target es --bundle output/en-es-bundle.tar.gz
+# Gate the result against the direction's evals/ ledger history and record it:
+uv run python -m versta.eval.gate --result output/evals/en-es.json --record
+```
+
+A refresh fails the gate on chrF regression > 1.0 vs. its predecessor;
+overrides require a written reason that lands in the checked-in ledger and
+the generated release eval-summary markdown.
+
 ## Verification
+
+Evaluation corpora used by the quality gates are hash-pinned snapshots fetched
+via `versta.eval.corpora` — see `evals/corpora/README.md` and the section in
+`PIPELINE.md`.
 
 Bundles are produced deterministically: identical inputs yield byte-identical
 `.tar.gz` output, so exports can be verified by comparing SHA-256 checksums

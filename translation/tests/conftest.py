@@ -1,5 +1,6 @@
 import gzip
 import json
+import socket
 import struct
 
 from hashlib import sha256
@@ -9,6 +10,38 @@ from typing import Dict, List, Optional, Tuple
 import pytest
 
 from versta.leanmt import LEANMT_BINARY_VERSION
+from versta.eval.typing import EvalResult
+
+
+# --- Hermetic suite guard: no real network on the PR path (NEU-53) ---------
+
+
+class NetworkBlockedError(RuntimeError):
+    """A test attempted a real network connection; the suite is hermetic."""
+
+
+def _blocked_network(*args: object, **kwargs: object) -> None:
+    raise NetworkBlockedError(
+        "test attempted a real network connection. The PR-CI suite is "
+        "hermetic by construction (mocked registry, tiny synthetic fixture "
+        "corpus, fake engine) — mock the network boundary in the test "
+        "instead. Real-network model evaluation runs only in the "
+        "release-candidate workflow "
+        "(.github/workflows/release-eval.yml)."
+    )
+
+
+@pytest.fixture(autouse=True)
+def _no_network(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    Fails any outbound connection attempt from a test, fast and
+    deterministically. The whole suite is designed hermetic — fixtures mock
+    the download boundary (urlopen), the corpus fetch and the engine — so a
+    real connection means a boundary regression that must not flake CI on
+    network state (or, worse, silently evaluate against live upstream data).
+    """
+    monkeypatch.setattr(socket, "create_connection", _blocked_network)
+    monkeypatch.setattr(socket.socket, "connect", _blocked_network)
 
 
 class FakeResponse:
@@ -257,53 +290,85 @@ EVAL_PAIRS: List[Tuple[str, str]] = [
 ]
 
 
+# Tiny catalog code -> FLORES-200 code map mirroring the real snapshot's;
+# the fixture directions only ever cover English and Spanish.
+EVAL_FLORES_CODES = {"en": "eng_Latn", "es": "spa_Latn"}
+
+
 def write_eval_corpus(
     base: Path,
     direction: str = "en-es",
     pairs: List[Tuple[str, str]] = EVAL_PAIRS,
     manifest_overrides: Optional[Dict[str, object]] = None,
-) -> Path:
+) -> Tuple[Path, Path]:
     """
-    Writes a tiny pinned-corpus tree under `base`: payload files plus a
-    versta.eval-corpora/1 manifest with real SHA-256 hashes, mirroring what
-    the corpus pinning task produces in evals/. Returns the manifest path.
+    Writes a tiny pinned-corpus tree under `base` in the exact layout the
+    corpus pinning task produces (NEU-49): payload files under a snapshot
+    directory plus a versta/corpus-manifest@1 manifest with real SHA-256
+    hashes. Returns (manifest path, corpus fetch-cache root) — pass them to
+    the harness as corpus_manifest_path / corpus_root.
     """
-    flores_source, flores_target = direction.split("-")
-    corpus_dir = base / "evals" / "corpora"
-    corpus_dir.mkdir(parents=True)
+    source, target = direction.split("-")
+    flores_source = EVAL_FLORES_CODES[source]
+    flores_target = EVAL_FLORES_CODES[target]
 
-    source_rel = f"flores200-test/{flores_source}.dev"
-    target_rel = f"flores200-test/{flores_target}.dev"
+    corpus_root = base / "corpora"
+    snapshot = corpus_root / "flores200-test-r1"
+    snapshot.mkdir(parents=True)
 
-    def write_payload(relative: str, lines: List[str]) -> Dict[str, str]:
+    def write_payload(code: str, lines: List[str]) -> Dict[str, object]:
         payload = ("\n".join(lines) + "\n").encode("utf-8")
-        target_file = corpus_dir / relative
-        target_file.parent.mkdir(parents=True, exist_ok=True)
-        target_file.write_bytes(payload)
-        return {"path": relative, "sha256": sha256(payload).hexdigest()}
+        (snapshot / "dev").mkdir(exist_ok=True)
+        (snapshot / "dev" / f"{code}.dev").write_bytes(payload)
+        return {"sha256": sha256(payload).hexdigest(), "sentences": len(lines)}
 
-    manifest = {
-        "schema": "versta.eval-corpora/1",
-        "corpus": "flores-200",
-        "revision": "tests/fixture@0001",
+    source_rel = f"dev/{flores_source}.dev"
+    target_rel = f"dev/{flores_target}.dev"
+    files: Dict[str, Dict[str, object]] = {}
+    files[source_rel] = write_payload(flores_source, [pair[0] for pair in pairs])
+    files.setdefault(
+        target_rel, write_payload(flores_target, [pair[1] for pair in pairs])
+    )
+
+    manifest: Dict[str, object] = {
+        "schema": "versta/corpus-manifest@1",
+        "name": "flores200-test",
+        "revision": 1,
         "split": "dev",
-        "license": "CC-BY-SA-4.0",
-        "directions": {
-            direction: {
-                "flores_source": flores_source,
-                "flores_target": flores_target,
-                "sentences": len(pairs),
-                "source": write_payload(source_rel, [pair[0] for pair in pairs]),
-                "target": write_payload(target_rel, [pair[1] for pair in pairs]),
-            }
+        "upstream": {
+            "name": "FLORES-200",
+            "url": "https://tests.invalid/flores200_dataset.tar.gz",
+            "sha256": "0" * 64,
+            "size_bytes": 0,
+            "license": "CC-BY-SA-4.0",
+            "attribution": "fixture attribution",
         },
+        "artifact": {
+            "file": "flores200-test-r1.tar.gz",
+            "sha256": "0" * 64,
+            "size_bytes": 0,
+            "urls": ["https://tests.invalid/flores200-test-r1.tar.gz"],
+        },
+        "language_map": {"en": "eng_Latn", "es": "spa_Latn"},
+        "files": files,
+        "directions": [
+            {
+                "source": source,
+                "target": target,
+                "base_model": f"Firefox/{direction}",
+                "source_file": source_rel,
+                "target_file": target_rel,
+                "sentences": len(pairs),
+            }
+        ],
     }
     if manifest_overrides:
         manifest.update(manifest_overrides)
 
-    manifest_path = base / "evals" / "corpora.json"
+    manifest_path = base / "evals" / "corpora" / "flores200-test.json"
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
     manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-    return manifest_path
+    return manifest_path, corpus_root
 
 
 _FAKE_BERGAMOT_TEMPLATE = '''#!/usr/bin/env python3
@@ -397,8 +462,8 @@ def write_eval_bundle(base: Path, direction: str = "en-es") -> Path:
 
 
 @pytest.fixture()
-def eval_corpus(tmp_path: Path) -> Path:
-    """A verified tiny corpus manifest for direction en-es."""
+def eval_corpus(tmp_path: Path) -> Tuple[Path, Path]:
+    """A verified tiny corpus: (manifest path, fetch-cache root) for en-es."""
     return write_eval_corpus(tmp_path)
 
 
@@ -406,3 +471,70 @@ def eval_corpus(tmp_path: Path) -> Path:
 def fake_bergamot(tmp_path: Path) -> Path:
     """An executable fake bergamot CLI translating the fixture corpus."""
     return write_fake_bergamot(tmp_path / "bergamot")
+
+
+# --- versta.eval.gate fixtures: synthetic result/ledger documents ---
+
+
+def make_eval_result(
+    direction: str = "en-es",
+    version: str = "v2.0.0",
+    bleu: float = 41.25,
+    chrf: float = 60.1,
+    comet22: Optional[float] = None,
+    corpus_revision: str = "tests/fixture@0001",
+    engine_version: str = "bergamot-fake 0.0.0-test",
+    size_bytes: int = 24_000_000,
+    started_utc: str = "2026-10-13T12:00:00Z",
+) -> EvalResult:
+    """
+    Builds a schema-valid versta.eval-result/1 document with deterministic
+    hashes, so gate/ledger tests need no engine, corpus payloads or network.
+    Defaults model the en-es tiny direction at the shipped v2.0.0.
+    """
+    source, target = direction.split("-")
+    digest = sha256(f"{direction}:{version}".encode("utf-8")).hexdigest()
+    model = {
+        "base_model": f"{direction}:tiny",
+        "version": version,
+        "architecture": "tiny",
+        "model_sha256": digest,
+        "metadata_sha256": sha256(f"metadata:{digest}".encode()).hexdigest(),
+        "bundle_file": f"{direction}-bundle.tar.gz",
+        "bundle_sha256": sha256(f"bundle:{digest}".encode()).hexdigest(),
+        "size_bytes": size_bytes,
+    }
+    return EvalResult(
+        schema="versta.eval-result/1",
+        direction=direction,
+        source_language=source,
+        target_language=target,
+        model=model,
+        corpus={
+            "corpus": "flores-200",
+            "split": "dev",
+            "revision": corpus_revision,
+            "sentences": len(EVAL_PAIRS),
+            "source_sha256": sha256(f"src:{corpus_revision}".encode()).hexdigest(),
+            "target_sha256": sha256(f"tgt:{corpus_revision}".encode()).hexdigest(),
+        },
+        engine={
+            "name": "bergamot-translator",
+            "variant": "local",
+            "version": engine_version,
+            "decode": {"beam_size": 1},
+            "config_sha256": sha256(b"decode-config").hexdigest(),
+        },
+        metrics={
+            "sacrebleu_version": "2.5.1",
+            "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.5.1",
+            "chrf_signature": "nrefs:1|case:mixed|eff:yes|nc:6|nw:0|space:no|version:2.5.1",
+            "comet22_model": "Unbabel/wmt22-comet-da" if comet22 is not None else None,
+        },
+        scores={"bleu": bleu, "chrf": chrf, "comet22": comet22},
+        run={
+            "started_utc": started_utc,
+            "duration_seconds": 1.5,
+            "hypothesis_sha256": sha256(f"hyp:{digest}".encode()).hexdigest(),
+        },
+    )

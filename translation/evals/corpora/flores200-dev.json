@@ -1,0 +1,703 @@
+{
+  "schema": "versta/corpus-manifest@1",
+  "name": "flores200-dev",
+  "revision": 1,
+  "split": "dev",
+  "upstream": {
+    "name": "FLORES-200",
+    "url": "https://dl.fbaipublicfiles.com/nllb/flores200_dataset.tar.gz",
+    "sha256": "b8b0b76783024b85797e5cc75064eb83fc5288b41e9654dabc7be6ae944011f6",
+    "size_bytes": 25585843,
+    "license": "CC-BY-SA-4.0",
+    "attribution": "NLLB Team, Marta R. Costa-jussa, James Cross, et al. \"No Language Left Behind: Scaling Human-Centered Machine Translation\" (2022), FLORES-200 evaluation dataset, Meta AI."
+  },
+  "artifact": {
+    "file": "flores200-dev-r1.tar.gz",
+    "sha256": "ab517371931a26060b21e01eb5ae8e3d8d164fdb518a09fdd50944ed829cb9e7",
+    "size_bytes": 2026126,
+    "urls": [
+      "https://models.versta.app/evals/corpora/flores200-dev-r1.tar.gz",
+      "https://github.com/FricoRico/Versta.Models/releases/download/evals-corpora-flores200-dev-r1/flores200-dev-r1.tar.gz"
+    ]
+  },
+  "language_map": {
+    "ar": "arb_Arab",
+    "bg": "bul_Cyrl",
+    "ca": "cat_Latn",
+    "cs": "ces_Latn",
+    "da": "dan_Latn",
+    "de": "deu_Latn",
+    "el": "ell_Grek",
+    "en": "eng_Latn",
+    "es": "spa_Latn",
+    "et": "est_Latn",
+    "fa": "pes_Arab",
+    "fi": "fin_Latn",
+    "fr": "fra_Latn",
+    "he": "heb_Hebr",
+    "hr": "hrv_Latn",
+    "hu": "hun_Latn",
+    "id": "ind_Latn",
+    "it": "ita_Latn",
+    "ja": "jpn_Jpan",
+    "ko": "kor_Hang",
+    "lv": "lvs_Latn",
+    "mt": "mlt_Latn",
+    "nl": "nld_Latn",
+    "pl": "pol_Latn",
+    "pt": "por_Latn",
+    "ro": "ron_Latn",
+    "ru": "rus_Cyrl",
+    "sk": "slk_Latn",
+    "sl": "slv_Latn",
+    "sv": "swe_Latn",
+    "tr": "tur_Latn",
+    "uk": "ukr_Cyrl",
+    "vi": "vie_Latn",
+    "zh-Hans": "zho_Hans"
+  },
+  "files": {
+    "dev/arb_Arab.dev": {
+      "sha256": "abf6f8ae0a4a93e0a6855b9a42bc5a772fa0c72d11baaa0ff1c8650bea42fd6c",
+      "sentences": 997
+    },
+    "dev/bul_Cyrl.dev": {
+      "sha256": "3d169c7aa492f41d29e4680f2b22a10ba71873e1b7a2295a851f50242e01a07e",
+      "sentences": 997
+    },
+    "dev/cat_Latn.dev": {
+      "sha256": "aa6ccc695356d9a456119a4b440ab2bf203a370fde32bccc1de54129332d4df9",
+      "sentences": 997
+    },
+    "dev/ces_Latn.dev": {
+      "sha256": "f7add857302b8224da3d7a39741043a91a1a5c286f5beac3362eab382c019eb0",
+      "sentences": 997
+    },
+    "dev/dan_Latn.dev": {
+      "sha256": "344ed47e2f4d62be47a6df9939ab1761f40dc06b80132db2745818722d67eebf",
+      "sentences": 997
+    },
+    "dev/deu_Latn.dev": {
+      "sha256": "12fac774c6f79d966774a1829648a6e107700662e9e7b9e31ad08541382b97aa",
+      "sentences": 997
+    },
+    "dev/ell_Grek.dev": {
+      "sha256": "ee0f3636d4bb65c7aec0201022d23aca1f2053a167d78d6669303df4fbc02f23",
+      "sentences": 997
+    },
+    "dev/eng_Latn.dev": {
+      "sha256": "51a25f527fd81f428b6933d85a2f5e5544af92aa82042c7fbf0c4120327fba0a",
+      "sentences": 997
+    },
+    "dev/spa_Latn.dev": {
+      "sha256": "9a99ddc459542da2d980b21cc049e799172545938cb02a5e7c92ebd8234b2121",
+      "sentences": 997
+    },
+    "dev/est_Latn.dev": {
+      "sha256": "b3b3fd9f2539e61eb7aa03582d41103db20768d8c1fe7dc7e71adef938b4347b",
+      "sentences": 997
+    },
+    "dev/pes_Arab.dev": {
+      "sha256": "13b25899ffbb0547dd7f48365a50375103d3aec7f4979004cc82f4c1c31bc3f0",
+      "sentences": 997
+    },
+    "dev/fin_Latn.dev": {
+      "sha256": "9769916f6411822e510b47b1aac01fb123061a0da9ef14a621540b81c490ef4a",
+      "sentences": 997
+    },
+    "dev/fra_Latn.dev": {
+      "sha256": "7c1e1043b9d8cc6cb6fd4388ce068060f36518fd3597357a381cfdbe8ce5ab00",
+      "sentences": 997
+    },
+    "dev/heb_Hebr.dev": {
+      "sha256": "4aa10a3c4c24d45e4ac6c3fdd168d58ad4b8e48736d0494945180c70af40a3b2",
+      "sentences": 997
+    },
+    "dev/hrv_Latn.dev": {
+      "sha256": "60416e67502bffa7f82a6f4a40507475ebc7bb12af8ec8eadb5dba8b94d5121e",
+      "sentences": 997
+    },
+    "dev/hun_Latn.dev": {
+      "sha256": "28a5fa7798d1e9d4309e98ccf2fd3f82e7a12258759d12b479ae65947da2259f",
+      "sentences": 997
+    },
+    "dev/ind_Latn.dev": {
+      "sha256": "bf26d9a91c0ac76d2b9be2afe969d6e3af641ae947b930b830d4025c8961ce12",
+      "sentences": 997
+    },
+    "dev/ita_Latn.dev": {
+      "sha256": "192429adab7b6c43f75db8363151a91b7a21cdb83bafc2a1d5ee2f1dec7f81c6",
+      "sentences": 997
+    },
+    "dev/jpn_Jpan.dev": {
+      "sha256": "17a422e2729f2eaecf7bf98aea70e3e72b8cac8acd72547d6ec1ada07ff92f4f",
+      "sentences": 997
+    },
+    "dev/kor_Hang.dev": {
+      "sha256": "b309cfc95f11fcf5be423eb43c31cef9aef91c504ebd25d4ef6b11cb916c29c2",
+      "sentences": 997
+    },
+    "dev/lvs_Latn.dev": {
+      "sha256": "822574e7aee34623909bb92aefec3d31c23f6f4733bfbb218965a93ed4669da0",
+      "sentences": 997
+    },
+    "dev/mlt_Latn.dev": {
+      "sha256": "7c04d878ea23faf32ffb403081246edd5d180334545ce6caf0cfa42527310052",
+      "sentences": 997
+    },
+    "dev/nld_Latn.dev": {
+      "sha256": "c1ba086285d30ea498dc01c1585b2dff336c9ddde07638863524858c379c485c",
+      "sentences": 997
+    },
+    "dev/pol_Latn.dev": {
+      "sha256": "1689a0f8e778bae6fbf87ead221643975f0255c74f01a325dd06b0b0934cc962",
+      "sentences": 997
+    },
+    "dev/por_Latn.dev": {
+      "sha256": "cf748f9311660dbfc4dbaad9301c98865c6b6f72fba86ee496e7b00e3472575e",
+      "sentences": 997
+    },
+    "dev/ron_Latn.dev": {
+      "sha256": "710eca0b694af56224299c81c947b42d3476286a41a766655cd390c1ab5f06ab",
+      "sentences": 997
+    },
+    "dev/rus_Cyrl.dev": {
+      "sha256": "3cad8426c208a2d5f5ccb1bbf5b5284129ffc30636cff4f4421f5f6f31d891a5",
+      "sentences": 997
+    },
+    "dev/slk_Latn.dev": {
+      "sha256": "19715530e64985035e234765e10a210f7eb690f56fe041e2453c9ec9e584a632",
+      "sentences": 997
+    },
+    "dev/slv_Latn.dev": {
+      "sha256": "e80c1ef5c808a04e183780dab2d57b659059a827ed6420ff068d2bd2bd4dfdb4",
+      "sentences": 997
+    },
+    "dev/swe_Latn.dev": {
+      "sha256": "09cd17e9f68d14d424d517f818cf2821e5a32d5de14ef4b87276b1de6f344b5e",
+      "sentences": 997
+    },
+    "dev/tur_Latn.dev": {
+      "sha256": "0e08ae46ed14e71d8a3257c174565427e335c0ce3a33135e6e7506bb47f9d068",
+      "sentences": 997
+    },
+    "dev/ukr_Cyrl.dev": {
+      "sha256": "824ae17eae74cce5fccff102c31bc73a13b3fb6d37904ed3c52e1ceabfb4c0b2",
+      "sentences": 997
+    },
+    "dev/vie_Latn.dev": {
+      "sha256": "40a52e72054d03906de8231fd6f4de3d26cf0a19c4b2b525545128cfbfea7e2a",
+      "sentences": 997
+    },
+    "dev/zho_Hans.dev": {
+      "sha256": "ae677073476a27d6d11db642df5c18b86ca5dfcbbeefeba7d99ec93b7f5bd177",
+      "sentences": 997
+    }
+  },
+  "directions": [
+    {
+      "source": "ar",
+      "target": "en",
+      "base_model": "Firefox/ar-en",
+      "source_file": "dev/arb_Arab.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "ar",
+      "base_model": "Firefox/en-ar",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/arb_Arab.dev",
+      "sentences": 997
+    },
+    {
+      "source": "bg",
+      "target": "en",
+      "base_model": "Firefox/bg-en",
+      "source_file": "dev/bul_Cyrl.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "bg",
+      "base_model": "Firefox/en-bg",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/bul_Cyrl.dev",
+      "sentences": 997
+    },
+    {
+      "source": "ca",
+      "target": "en",
+      "base_model": "Firefox/ca-en",
+      "source_file": "dev/cat_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "ca",
+      "base_model": "Firefox/en-ca",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/cat_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "zh-Hans",
+      "target": "en",
+      "base_model": "Firefox/zh-Hans-en",
+      "source_file": "dev/zho_Hans.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "zh-Hans",
+      "base_model": "Firefox/en-zh-Hans",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/zho_Hans.dev",
+      "sentences": 997
+    },
+    {
+      "source": "hr",
+      "target": "en",
+      "base_model": "Firefox/hr-en",
+      "source_file": "dev/hrv_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "hr",
+      "base_model": "Firefox/en-hr",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/hrv_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "cs",
+      "target": "en",
+      "base_model": "Firefox/cs-en",
+      "source_file": "dev/ces_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "cs",
+      "base_model": "Firefox/en-cs",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/ces_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "da",
+      "target": "en",
+      "base_model": "Firefox/da-en",
+      "source_file": "dev/dan_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "da",
+      "base_model": "Firefox/en-da",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/dan_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "nl",
+      "target": "en",
+      "base_model": "Firefox/nl-en",
+      "source_file": "dev/nld_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "nl",
+      "base_model": "Firefox/en-nl",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/nld_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "et",
+      "target": "en",
+      "base_model": "Firefox/et-en",
+      "source_file": "dev/est_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "et",
+      "base_model": "Firefox/en-et",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/est_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "fa",
+      "target": "en",
+      "base_model": "Firefox/fa-en",
+      "source_file": "dev/pes_Arab.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "fa",
+      "base_model": "Firefox/en-fa",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/pes_Arab.dev",
+      "sentences": 997
+    },
+    {
+      "source": "fi",
+      "target": "en",
+      "base_model": "Firefox/fi-en",
+      "source_file": "dev/fin_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "fi",
+      "base_model": "Firefox/en-fi",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/fin_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "fr",
+      "target": "en",
+      "base_model": "Firefox/fr-en",
+      "source_file": "dev/fra_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "fr",
+      "base_model": "Firefox/en-fr",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/fra_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "de",
+      "target": "en",
+      "base_model": "Firefox/de-en",
+      "source_file": "dev/deu_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "de",
+      "base_model": "Firefox/en-de",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/deu_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "el",
+      "target": "en",
+      "base_model": "Firefox/el-en",
+      "source_file": "dev/ell_Grek.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "el",
+      "base_model": "Firefox/en-el",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/ell_Grek.dev",
+      "sentences": 997
+    },
+    {
+      "source": "he",
+      "target": "en",
+      "base_model": "Firefox/he-en",
+      "source_file": "dev/heb_Hebr.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "he",
+      "base_model": "Firefox/en-he",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/heb_Hebr.dev",
+      "sentences": 997
+    },
+    {
+      "source": "hu",
+      "target": "en",
+      "base_model": "Firefox/hu-en",
+      "source_file": "dev/hun_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "hu",
+      "base_model": "Firefox/en-hu",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/hun_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "id",
+      "target": "en",
+      "base_model": "Firefox/id-en",
+      "source_file": "dev/ind_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "id",
+      "base_model": "Firefox/en-id",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/ind_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "it",
+      "target": "en",
+      "base_model": "Firefox/it-en",
+      "source_file": "dev/ita_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "it",
+      "base_model": "Firefox/en-it",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/ita_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "ja",
+      "target": "en",
+      "base_model": "Firefox/ja-en",
+      "source_file": "dev/jpn_Jpan.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "ja",
+      "base_model": "Firefox/en-ja",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/jpn_Jpan.dev",
+      "sentences": 997
+    },
+    {
+      "source": "ko",
+      "target": "en",
+      "base_model": "Firefox/ko-en",
+      "source_file": "dev/kor_Hang.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "ko",
+      "base_model": "Firefox/en-ko",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/kor_Hang.dev",
+      "sentences": 997
+    },
+    {
+      "source": "mt",
+      "target": "lv",
+      "base_model": "Firefox/mt-lv",
+      "source_file": "dev/mlt_Latn.dev",
+      "target_file": "dev/lvs_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "pl",
+      "target": "en",
+      "base_model": "Firefox/pl-en",
+      "source_file": "dev/pol_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "pl",
+      "base_model": "Firefox/en-pl",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/pol_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "pt",
+      "target": "en",
+      "base_model": "Firefox/po-en",
+      "source_file": "dev/por_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "pt",
+      "base_model": "Firefox/en-po",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/por_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "ro",
+      "target": "en",
+      "base_model": "Firefox/ro-en",
+      "source_file": "dev/ron_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "ro",
+      "base_model": "Firefox/en-ro",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/ron_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "ru",
+      "target": "en",
+      "base_model": "Firefox/ru-en",
+      "source_file": "dev/rus_Cyrl.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "ru",
+      "base_model": "Firefox/en-ru",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/rus_Cyrl.dev",
+      "sentences": 997
+    },
+    {
+      "source": "sk",
+      "target": "en",
+      "base_model": "Firefox/sk-en",
+      "source_file": "dev/slk_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "sk",
+      "base_model": "Firefox/en-sk",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/slk_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "sl",
+      "target": "en",
+      "base_model": "Firefox/sl-en",
+      "source_file": "dev/slv_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "sl",
+      "base_model": "Firefox/en-sl",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/slv_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "es",
+      "target": "en",
+      "base_model": "Firefox/es-en",
+      "source_file": "dev/spa_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "es",
+      "base_model": "Firefox/en-es",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/spa_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "sv",
+      "target": "en",
+      "base_model": "Firefox/sv-en",
+      "source_file": "dev/swe_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "sv",
+      "base_model": "Firefox/en-sv",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/swe_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "tr",
+      "target": "en",
+      "base_model": "Firefox/tr-en",
+      "source_file": "dev/tur_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "tr",
+      "base_model": "Firefox/en-tr",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/tur_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "uk",
+      "target": "en",
+      "base_model": "Firefox/uk-en",
+      "source_file": "dev/ukr_Cyrl.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "uk",
+      "base_model": "Firefox/en-uk",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/ukr_Cyrl.dev",
+      "sentences": 997
+    },
+    {
+      "source": "vi",
+      "target": "en",
+      "base_model": "Firefox/vi-en",
+      "source_file": "dev/vie_Latn.dev",
+      "target_file": "dev/eng_Latn.dev",
+      "sentences": 997
+    },
+    {
+      "source": "en",
+      "target": "vi",
+      "base_model": "Firefox/en-vi",
+      "source_file": "dev/eng_Latn.dev",
+      "target_file": "dev/vie_Latn.dev",
+      "sentences": 997
+    }
+  ]
+}

@@ -48,6 +48,9 @@ class DirectionInput:
     model_sha256: str
     bundle_file: Optional[str]
     bundle_sha256: Optional[str]
+    # Bytes of the artifact under evaluation: tarball size for bundle runs,
+    # sum of the model/vocabulary/shortlist payloads for direction runs.
+    size_bytes: int
 
 
 def sha256_file(path: Path) -> str:
@@ -85,6 +88,7 @@ def _direction_input(
     direction_dir: Path,
     bundle_file: Optional[str],
     bundle_sha256: Optional[str],
+    size_bytes: Optional[int],
 ) -> DirectionInput:
     """
     Builds a DirectionInput from an on-disk direction directory, validating
@@ -110,6 +114,10 @@ def _direction_input(
     )
     model_path = payload("model")
 
+    payload_paths = [model_path, vocabulary_path, payload("shortlist")]
+    if target_vocabulary_path is not None:
+        payload_paths.append(target_vocabulary_path)
+
     return DirectionInput(
         direction=direction,
         source_language=source_language,
@@ -125,6 +133,13 @@ def _direction_input(
         model_sha256=sha256_file(model_path),
         bundle_file=bundle_file,
         bundle_sha256=bundle_sha256,
+        # For bundle runs the caller passes the tarball size (the artifact
+        # the app downloads); for direction runs the payloads are the size.
+        size_bytes=(
+            size_bytes
+            if size_bytes is not None
+            else sum(path.stat().st_size for path in payload_paths)
+        ),
     )
 
 
@@ -146,7 +161,10 @@ def load_direction_dir(direction_dir: Path) -> DirectionInput:
     if not direction_dir.is_dir():
         raise ModelInputError(f"direction directory not found: {direction_dir}")
     return _direction_input(
-        direction_dir=direction_dir, bundle_file=None, bundle_sha256=None
+        direction_dir=direction_dir,
+        bundle_file=None,
+        bundle_sha256=None,
+        size_bytes=None,
     )
 
 
@@ -221,4 +239,5 @@ def load_from_bundle(
         direction_dir=extract_dir / direction,
         bundle_file=bundle_path.name,
         bundle_sha256=bundle_sha256,
+        size_bytes=bundle_path.stat().st_size,
     )
