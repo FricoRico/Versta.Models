@@ -172,6 +172,45 @@ they only ship when `--architecture base` is requested explicitly. The
 architecture preference (`tiny` → `base-memory` → `base`) keeps unattended
 batch exports on the current generation.
 
+## leanmt translate CLI (`versta.engine-cli/1`, NEU-50)
+
+The quality harness scores the *shipped* engine against the *shipped*
+bundle by driving leanmt's bench/translate binary as a black-box CLI. The
+engine side of that contract is `leanmt-bench translate` (Versta.Leanmt,
+`bench/bench_translate.cc`; full semantics in its README "Batch translation
+(file → file)"); this repo pins the contract version as
+`LEANMT_CLI_SPEC = "versta.engine-cli/1"` in `versta/leanmt.py` — same
+handshake style as `leanmt_binary_version` above. The harness must refuse
+to run against a binary whose `--version` does not report the pinned spec
+identifier; a spec bump is a deliberate, coordinated event that makes
+old/new scores non-comparable by construction.
+
+```bash
+leanmt-bench translate \
+    --model model.bin --vocab vocab.src.spm [--target-vocab vocab.trg.spm] \
+    --shortlist lex.bin \
+    --input input.txt --output output.txt \
+    [--threads N] [--beam N] [--batch N]
+```
+
+Contract summary (the engine README is normative):
+
+- `--input` holds UTF-8 sentences, one per line; `--output` receives exactly
+  one translation per input line, in order, each `\n`-terminated. Blank
+  input lines abort with the line number (matches the corpus rule "no blank
+  lines; output must stay line-aligned"); a translation containing a raw
+  newline aborts the run rather than corrupting alignment.
+- Exit codes: `0` success, `1` runtime failure (unreadable input,
+  model-load error including the NEU-25/NEU-26 fail-fasts, decode failure,
+  unwritable output), `2` usage error.
+- Deterministic for a fixed model + decode settings: bit-identical across
+  reruns, thread counts and `--batch` values; the translation cache is off
+  in this mode. `--threads`, `--beam` (default 3, `1` = greedy) pin the
+  decode; the effective settings are echoed to stderr and `--version`
+  reports engine + spec versions for the result JSON's `engine` block.
+- Split-Wemb pairs (NEU-26) pass `--target-vocab`, mirroring the bundle's
+  `files.target_vocabulary`.
+
 ## Reproducibility contract
 
 Identical inputs must produce byte-identical bundles:
