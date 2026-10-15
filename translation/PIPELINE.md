@@ -109,6 +109,12 @@ A refresh ships only through the gate:
 
 Gate semantics, ledger fields and exit codes: `evals/README.md`.
 
+CI wiring (NEU-53): PR CI runs the gate/metrics/ledger logic hermetically
+against the tiny synthetic fixture pair (the suite refuses real network by
+contract); the full pinned-corpus eval runs on release candidates only, via
+the dispatchable `release-eval` workflow — see "CI wiring (NEU-53)" in
+`evals/README.md`.
+
 ### `versta.eval` (quality measurement, NEU-44)
 
 The quality stage: `uv run python -m versta.eval --source X --target Y
@@ -123,9 +129,9 @@ reproduce them: corpus revision and payload hashes, bundle/model
 checksums, engine version and the fixed decode settings
 (`versta/eval/config.py`, mirroring Firefox production). Re-running with
 identical inputs reproduces identical scores. See `evals/README.md` for
-the manifest and result contracts; the release gate and the `evals/`
-ledger that consume these results land with NEU-52, CI wiring with
-NEU-53. Tests are hermetic (a fake engine over a tiny synthetic corpus);
+the manifest and result contracts, the release gate (`versta.eval.gate`,
+NEU-52) and the `evals/` ledger it records into, and the CI wiring
+(NEU-53). Tests are hermetic (a fake engine over a tiny synthetic corpus);
 scoring a real model needs the corpus payloads fetched and a bergamot
 CLI available.
 
