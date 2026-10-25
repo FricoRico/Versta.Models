@@ -72,6 +72,7 @@ uv run python -m versta.bundle
 - `--input_dir` defaults to `output/<PACK_NAME>` (the export pack); every manifest entry is verified (exists, size, sha256) before bundling. Files are stored flat at the archive root, including `manifest.json`.
 - Produces `<output_dir>/<unique_id>-bundle.tar.gz` + `.tar.sha256` and updates `models.json` in place: version (from `versta/version.txt`), tarball size, and `models.versta.app` bundle/checksum URLs. `id`, `name`, `architectures` and `languages` are preserved.
 - Stdlib only; the legacy multi-input-dir metadata extraction (`metadata.py`/`language.py`) was removed with the ORT export.
+- The catalog is **single-generation**: the app bakes `models.json` at build time, so entry `size`/URLs must match what the models host actually serves, and the entry is repointed (both here and on the host) only when the app's supported bundle generation switches. Bundler runs never add, remove, or stamp entries.
 
 ## Conventions specific to this module
 
