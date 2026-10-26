@@ -601,7 +601,7 @@
     ],
     [
         {
-            "base_model": "Firefox/mt-lv",
+            "base_model": "Firefox/lv-en",
             "source_language": "lv",
             "target_language": "en",
             "bidirectional": false,
@@ -647,7 +647,7 @@
     ],
     [
         {
-            "base_model": "Firefox/po-en",
+            "base_model": "Firefox/pt-en",
             "source_language": "pt",
             "target_language": "en",
             "bidirectional": true,
@@ -661,7 +661,7 @@
             "checksum": "https://models.versta.app/translation/en-pt-bundle.tar.sha256"
         },
         {
-            "base_model": "Firefox/en-po",
+            "base_model": "Firefox/en-pt",
             "source_language": "en",
             "target_language": "pt",
             "bidirectional": true,
