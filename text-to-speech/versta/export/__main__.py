@@ -45,9 +45,9 @@ def parse_args():
     parser.add_argument(
         "--model_format",
         type=str,
-        default="kokoro",
-        help="Specify the format of the model to convert."
-        "This could be either 'kokoro' or 'piper' at the moment, defaulting to 'kokoro'.",
+        default="piper",
+        help="Specify the format of the model to convert. "
+        "Only 'piper' is supported; 'kokoro' is archived (see versta/export/_archive/).",
     )
 
     parser.add_argument(
