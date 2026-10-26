@@ -35,7 +35,11 @@ Mozilla GCS bucket                      Versta.Models                    models.
                                   ┌──────────────────────────┐      deploy (manual)
                                   │ versta.batch             │      │ tarball + .sha256 │
                                   │  • loop pairs            │      │ catalog models.json│
-                                  │  • generated catalog     │      └───────────────┘
+                                  │  • publish gate (NEU-60):│      └───────────────┘
+                                  │    no passing scorecard  │
+                                  │    in golden bands → no  │
+                                  │    catalog written       │
+                                  │  • generated catalog     │
                                   │  • sync checked-in       │
                                   │    models.json in place  │
                                   │  ⇒ validate both         │
@@ -74,6 +78,20 @@ downloads + bundles each group, writes a generated `models.json` (validated),
 then syncs computed fields (`size`, `bundle`, `checksum`, `score` ×100,
 `version`) back into the input catalog in place (with a `.bak` backup) and
 validates the updated catalog.
+
+**Publish gate (NEU-60):** before any catalog write, every produced bundle
+must be backed by a pass-rated pack-acceptance scorecard
+(`versta.pack-scorecard/1`) covering its exact bytes (`bundle.file` +
+`bundle.sha256`), with every direction loading, clearing the direction/chrF
+sanity floor, at 100% digit preservation, and inside the pinned golden band
+(`pack-acceptance/bands.json`, schema `versta.pack-bands/1`) vs. the
+previously published bundle. Any failure refuses the run (non-zero exit, no
+`models.json` written, input catalog untouched). `--skip_publish_gate` is
+for development/dry-run exports only. Standalone check: `uv run python -m
+versta.batch.publish_gate --bundle <tar>`. Thresholds, the re-pin procedure
+and the failure taxonomy live in `PACK-ACCEPTANCE-RUNBOOK.md`. The scorecard
+and bands shapes are manifest-adjacent: landed jointly with the pipeline
+pair (NEU-38).
 
 ### `versta.eval` (quality measurement, NEU-44)
 
@@ -235,8 +253,16 @@ uv run python -m versta.download --source en --target es --architecture tiny --o
 uv run python -m versta.download --source es --target en --architecture tiny --output_dir ./output
 uv run python -m versta.bundle --input_dir ./output/en-es ./output/es-en --output_dir ./output
 
-# Many pairs from a catalog:
+# Many pairs from a catalog (publishes only with passing scorecards; use
+# --skip_publish_gate for a development/dry-run export):
 uv run python -m versta.batch --input_file models.json --output_dir ./output/export
+
+# Is this bundle publishable yet? (exit 0 publishable / 2 refused):
+uv run python -m versta.batch.publish_gate --bundle output/en-es-bundle.tar.gz
+
+# Golden bands: verify the committed pin against the committed scorecards,
+# or re-pin (dedicated commit only — see PACK-ACCEPTANCE-RUNBOOK.md):
+uv run python -m versta.probe.bands --check
 
 # Quality gates (what CI runs):
 uv run ruff check . && uv run ruff format --check .
@@ -253,5 +279,14 @@ Artifacts land in the gitignored `output/` tree. Deploying to
 `.github/workflows/ci.yml` runs on pushes to `main` and PRs touching
 `translation/`: ruff lint + format check, mypy on the `versta` package, and
 the pytest suite — including `tests/test_smoke_export.py`, a full batch export
-driven against a mocked Mozilla registry (hermetic, no network). A real-model
+driven against a mocked Mozilla registry (hermetic, no network) with the
+publish gate's refuse/pass paths, plus `versta.probe.bands --check` locking
+the pinned golden bands to the committed scorecards. A real-model
 export is validated manually per release (see README's verification section).
+
+`.github/workflows/pack-acceptance.yml` sweeps every published bundle on
+arm64 per commit (probe + adversarial negative control + publish-gate
+demonstration: the deliberately mislabeled control pack must be refused, a
+proven bundle must pass). `.github/workflows/pack-sweep-weekly.yml` runs the
+same sweep on Mondays and files one deduped GitHub issue per regressed
+bundle (label `pack-acceptance`); see `PACK-ACCEPTANCE-RUNBOOK.md`.
