@@ -25,14 +25,33 @@ _BETA = 2
 # -> ["44", "7788", "123456"].
 _DIGIT_RUN = re.compile(r"\d+")
 
+# Eastern Arabic-Indic (U+0660-U+0669) and Extended Arabic-Indic / Persian
+# (U+06F0-U+06F9) digits carry the same values as ASCII digits; fa outputs
+# legitimately keep the Persian script ("قیمت ۴۵۰۰ ریال"), so source and
+# output compare values after transliteration (NEU-135).
+_EASTERN_DIGITS = str.maketrans(
+    {
+        **{chr(0x0660 + d): str(d) for d in range(10)},
+        **{chr(0x06F0 + d): str(d) for d in range(10)},
+    }
+)
+
+
+def _normalize_digit_surface(text: str) -> str:
+    """Transliterates Eastern Arabic/Persian digits to ASCII digits."""
+    return text.translate(_EASTERN_DIGITS)
+
+
 # --- Number-surface normalization --------------------------------------------
 # Digit preservation in the NEU-30 sense is about *values*, not orthography:
-# models legitimately localize "9" as "nine" (ja->en) or "6:30" as "6時30分"
-# (en->ja). The check therefore compares values after normalizing the output
-# surface back to ASCII digit runs. V1 covers what the first sweep observed:
-# English cardinal/ordinal number words, English month names, and Japanese
-# clock forms. Extend the maps when a probed pair is seen to spell numbers in
-# another language; do not accept lost/corrupted values by weakening the rule.
+# models legitimately localize "9" as "nine" (ja->en), "6:30" as "6時30分"
+# (en->ja) or "12" as Persian "۱۲" (en->fa). The check therefore compares
+# values after normalizing the output surface back to ASCII digit runs.
+# Coverage: Eastern Arabic/Persian digit scripts, English + Catalan + Spanish
+# + French cardinal number words, English ordinal words and month names, and
+# Japanese + Korean clock forms. Extend the maps when a probed pair is seen
+# to spell numbers in another language; do not accept lost/corrupted values
+# by weakening the rule.
 
 _NUMBER_WORDS = {
     "zero": 0,
@@ -101,20 +120,118 @@ _MONTH_WORDS = {
     "december": 12,
 }
 
+# Catalan, Spanish and French cardinals (NEU-135: en-ca / en-es / en-fr pairs
+# legitimately spell number values in the target language). Cross-language
+# homographs keep one entry only when all readings share the same value
+# ("six" en/fr = 6, "onze" ca/fr = 11); no token maps to two values.
+# English-looking tokens ("once" = 11 es, "set" = 7 ca) follow the existing
+# "may" precedent: a false pass still requires the source to carry that value.
+_NUMBER_WORDS_CA = {
+    "zero": 0,
+    "una": 1,
+    "dos": 2,
+    "tres": 3,
+    "quatre": 4,
+    "cinc": 5,
+    "sis": 6,
+    "set": 7,
+    "vuit": 8,
+    "nou": 9,
+    "deu": 10,
+    "onze": 11,
+    "dotze": 12,
+    "tretze": 13,
+    "catorze": 14,
+    "quinze": 15,
+    "setze": 16,
+    "disset": 17,
+    "divuit": 18,
+    "dinou": 19,
+    "vint": 20,
+    "trenta": 30,
+    "quaranta": 40,
+    "cinquanta": 50,
+    "seixanta": 60,
+    "setanta": 70,
+    "vuitanta": 80,
+    "noranta": 90,
+    "cent": 100,
+}
+
+_NUMBER_WORDS_ES = {
+    "cero": 0,
+    "un": 1,
+    "uno": 1,
+    "dos": 2,
+    "tres": 3,
+    "cuatro": 4,
+    "cinco": 5,
+    "seis": 6,
+    "siete": 7,
+    "ocho": 8,
+    "nueve": 9,
+    "diez": 10,
+    "once": 11,
+    "doce": 12,
+    "trece": 13,
+    "catorce": 14,
+    "quince": 15,
+    "dieciséis": 16,
+    "diecisiete": 17,
+    "dieciocho": 18,
+    "diecinueve": 19,
+    "veinte": 20,
+    "treinta": 30,
+    "cuarenta": 40,
+    "cincuenta": 50,
+    "sesenta": 60,
+    "setenta": 70,
+    "ochenta": 80,
+    "noventa": 90,
+    "cien": 100,
+    "ciento": 100,
+}
+
+_NUMBER_WORDS_FR = {
+    "zéro": 0,
+    "une": 1,
+    "deux": 2,
+    "trois": 3,
+    "cinq": 5,
+    "sept": 7,
+    "huit": 8,
+    "neuf": 9,
+    "dix": 10,
+    "douze": 12,
+    "treize": 13,
+    "quatorze": 14,
+    "seize": 16,
+    "vingt": 20,
+    "trente": 30,
+    "quarante": 40,
+    "cinquante": 50,
+    "soixante": 60,
+}
+
 _WORD_TO_NUMBER: Dict[str, int] = {
     **_NUMBER_WORDS,
     **_ORDINAL_WORDS,
     **_MONTH_WORDS,
+    **_NUMBER_WORDS_CA,
+    **_NUMBER_WORDS_ES,
+    **_NUMBER_WORDS_FR,
 }
 
 # Clock-like value carriers, compared as (hour % 12, minute) values rather
 # than digit runs. Covers "18:45" / "6:45 pm", Japanese "18時45分" / "10時"
-# (minutes omitted = :00; the negative lookahead keeps duration "9時間" out),
-# and bare meridiem forms "8pm". The 12-hour normalization deliberately treats
-# meridiem as locale style ("las 8 de la tarde" ≡ "8 pm" ≡ "20時"): v1 guards
+# and Korean "23시 30분" / "10시" (minutes omitted = :00; the negative
+# lookaheads keep duration "9時間" / "9시간" out), and bare meridiem forms
+# "8pm". The 12-hour normalization deliberately treats meridiem as locale
+# style ("las 8 de la tarde" ≡ "8 pm" ≡ "20時" ≡ "오후 8시"): v1 guards
 # value corruption (dropped/doubled/changed numbers), not am/pm choice.
 _CLOCK_COLON = re.compile(r"(\d{1,2})\s*[:：]\s*(\d{2})\s*(?:am|pm|a\.m\.|p\.m\.)?\b")
 _CLOCK_JA = re.compile(r"(\d{1,2})\s*時(?!\s*間)(?:\s*(\d{1,2})\s*分)?")
+_CLOCK_KO = re.compile(r"(\d{1,2})\s*시(?!\s*간)(?:\s*(\d{1,2})\s*분)?")
 _CLOCK_MERIDIEM = re.compile(r"(?<![:：\d])(\d{1,2})\s*(?:am|pm|a\.m\.|p\.m\.)\b")
 
 
@@ -140,6 +257,10 @@ def _clock_values(text: str) -> List[Tuple[str, Tuple[int, int]]]:
     for match in _CLOCK_COLON.finditer(text):
         values.append((match.group(0), (int(match.group(1)) % 12, int(match.group(2)))))
     for match in _CLOCK_JA.finditer(text):
+        values.append(
+            (match.group(0), (int(match.group(1)) % 12, int(match.group(2) or 0)))
+        )
+    for match in _CLOCK_KO.finditer(text):
         values.append(
             (match.group(0), (int(match.group(1)) % 12, int(match.group(2) or 0)))
         )
@@ -173,8 +294,8 @@ def digit_preservation(source: str, output: str) -> bool:
     source carries must survive the translation with its value intact. Clock
     values compare as 12h-normalized H:MM pairs ("10:00" -> "10時" passes,
     "6:30" -> "6 pm" fails), and all other digit runs compare as multisets
-    after number-word normalization ("3枚" -> "three" passes, "3" -> "4"
-    fails).
+    after digit-script and number-word normalization ("3枚" -> "three" passes,
+    "قیمت ۴۵۰۰ ریال" -> "4500" passes, "3" -> "4" fails).
 
     Args:
         source (str): probe source sentence.
@@ -183,7 +304,8 @@ def digit_preservation(source: str, output: str) -> bool:
     Returns:
         bool: True when every source number value appears in the output.
     """
-    normalized_output = _normalize_number_surface(output)
+    source = _normalize_digit_surface(source)
+    normalized_output = _normalize_number_surface(_normalize_digit_surface(output))
     source_clocks = _clock_values(source)
     output_clocks = _clock_values(normalized_output)
 
