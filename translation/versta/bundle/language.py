@@ -1,6 +1,36 @@
 from typing import List
 
+from ..language_codes import bundle_languages, normalize_language
 from .metadata import BundleMetadata
+
+
+def assert_boundary_codes(metadata_list: List[BundleMetadata]) -> None:
+    """
+    Fail-fast guard for the bundle language-code boundary (NEU-133): every
+    direction entering a bundle must already declare registry-normalized codes
+    ("zh", "zh_hant", bare ISO-639). BCP-47 tags (e.g. "zh-Hans") belong to
+    the catalog layer only; a direction carrying one would leak it into the
+    bundle manifest and archive name, breaking the deterministic slug rule
+    the app's install-time join relies on.
+
+    Args:
+        metadata_list (List[BundleMetadata]): Metadata of the bundling inputs.
+
+    Raises:
+        ValueError: On the first direction whose codes are not normalized.
+    """
+    for metadata in metadata_list:
+        for field in ("source_language", "target_language"):
+            code = metadata[field]
+            normalized = normalize_language(code)
+            if code != normalized:
+                directory = metadata["directory"]
+                raise ValueError(
+                    f"Direction '{directory}' declares {field} {code!r}, which is "
+                    f"not a bundle-boundary code; expected the registry-normalized "
+                    f"form {normalized!r} (normalize before bundling — BCP-47 codes "
+                    f"live in the catalog layer only, NEU-133)."
+                )
 
 
 def validate_translation_pairs(
@@ -41,7 +71,8 @@ def validate_translation_pairs(
 
 def extract_unique_languages(metadata: List[BundleMetadata]) -> List[str]:
     """
-    Extracts unique languages from a list of language pairs.
+    Extracts unique languages from a list of language pairs, in the canonical
+    bundle-boundary form (normalized, sorted — see versta/language_codes.py).
 
     Args:
         metadata (List[BundleMetadata]): List of BundleMetadata dictionaries containing source and target language pairs.
@@ -49,11 +80,7 @@ def extract_unique_languages(metadata: List[BundleMetadata]) -> List[str]:
     Returns:
         List[str]: A sorted list of unique languages.
     """
-    unique_languages = set()
-
-    # Split each pair and add the languages to the set
+    codes: List[str] = []
     for data in metadata:
-        unique_languages.update([data["source_language"], data["target_language"]])
-
-    # Return the unique languages as a sorted list
-    return sorted(unique_languages)
+        codes.extend([data["source_language"], data["target_language"]])
+    return bundle_languages(codes)

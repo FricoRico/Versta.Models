@@ -209,6 +209,72 @@ class TestCatalog:
     def test_single_direction_group_needs_no_reverse(self) -> None:
         validate_catalog_group([_catalog_entry(bidirectional=False)])
 
+    def test_accepts_catalog_code_with_normalized_bundle_slug(self) -> None:
+        """NEU-133: catalog codes may be BCP-47 (zh-Hans) while the bundle
+        keeps the registry-normalized slug (en-zh); the join is the shared
+        normalize_language mapping."""
+        zh_hans_url = "https://models.versta.app/translation/en-zh-bundle.tar.gz"
+        zh_hans_checksum = (
+            "https://models.versta.app/translation/en-zh-bundle.tar.sha256"
+        )
+        validate_catalog(
+            [
+                [
+                    _catalog_entry(
+                        base_model="Firefox/zh-Hans-en",
+                        source_language="zh-Hans",
+                        target_language="en",
+                        bundle=zh_hans_url,
+                        checksum=zh_hans_checksum,
+                    ),
+                    _catalog_entry(
+                        base_model="Firefox/en-zh-Hans",
+                        source_language="en",
+                        target_language="zh-Hans",
+                        bundle=zh_hans_url,
+                        checksum=zh_hans_checksum,
+                    ),
+                ]
+            ]
+        )
+
+    def test_rejects_bundle_slug_in_unnormalized_codes(self) -> None:
+        """A bundle named from raw BCP-47 codes (en-zh-Hans) never matches the
+        deterministic registry-code slug and must fail the catalog gate."""
+        with pytest.raises(ValidationError, match="en-zh-bundle.tar.gz"):
+            validate_catalog_group(
+                [
+                    _catalog_entry(
+                        source_language="zh-Hans",
+                        target_language="en",
+                        bundle="https://models.versta.app/translation/en-zh-Hans-bundle.tar.gz",
+                        checksum="https://models.versta.app/translation/en-zh-Hans-bundle.tar.sha256",
+                    ),
+                    _catalog_entry(
+                        source_language="en",
+                        target_language="zh-Hans",
+                        bundle="https://models.versta.app/translation/en-zh-Hans-bundle.tar.gz",
+                        checksum="https://models.versta.app/translation/en-zh-Hans-bundle.tar.sha256",
+                    ),
+                ]
+            )
+
+    def test_rejects_checksum_not_matching_bundle_slug(self) -> None:
+        bad_checksum = (
+            "https://models.versta.app/translation/en-es-bundle.tar.gz.sha256"
+        )
+        with pytest.raises(ValidationError, match="en-es-bundle.tar.sha256"):
+            validate_catalog_group(
+                [
+                    _catalog_entry(checksum=bad_checksum),
+                    _catalog_entry(
+                        source_language="es",
+                        target_language="en",
+                        checksum=bad_checksum,
+                    ),
+                ]
+            )
+
     def test_rejects_empty_catalog(self) -> None:
         with pytest.raises(ValidationError, match="non-empty"):
             validate_catalog([])

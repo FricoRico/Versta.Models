@@ -105,6 +105,40 @@ CLI available.
 Extend additively only — never rename or drop fields. Format changes go
 through Elin Sørensen (LeanMT); loader questions go through Maya Lindqvist.
 
+### Language codes at the bundle boundary (NEU-133)
+
+There are two code layers, and the mapping between them is owned, singularly,
+by `versta/language_codes.py`:
+
+- **Catalog layer** (checked-in `models.json`): BCP-47-style display codes —
+  `zh-Hans` for simplified Chinese. These are the human-facing fields the app
+  lists packs by.
+- **Bundle-boundary layer** (direction `metadata.json`, bundle
+  `metadata.json.languages`, `<slug>-bundle.tar.gz` archive names): the
+  Mozilla registry's pair keys — bare ISO-639 codes, with Chinese as `zh`
+  (simplified) / `zh_hant` (traditional). This layer is canonical at the
+  artifact boundary on purpose: bundle payloads are derived 1:1 from Mozilla's
+  published artifacts, archive names stay derivable from contents, and probe
+  corpora (`en-zh`/`zh-en`) measure the packs exactly as shipped. Re-coding
+  bundles to catalog codes would re-burn every published hash without changing
+  a single model byte.
+
+Contract rules, all fail-fast enforced:
+
+1. Bundles only ever contain registry-normalized codes — `versta.bundle`
+   refuses a direction whose `metadata.json` declares a BCP-47 code
+   (`assert_boundary_codes`), so `zh-Hans` can never leak into a manifest or
+   archive name.
+2. The catalog↔bundle join is **never string equality**: both sides are
+   compared through `normalize_language` (this is what `versta.batch`'s
+   catalog sync does via `_entry_key`, and what the app must do when joining
+   catalog language codes to bundle-declared languages at install time).
+3. Every catalog entry's `bundle`/`checksum` URL basename must be the
+   deterministic slug of its group's normalized codes
+   (`validate_catalog_bundle_alignment`, covered by the checked-in catalog
+   test): catalog `zh-Hans` ↔ bundle `en-zh-bundle.tar.gz` is valid, catalog
+   pointing at `en-zh-Hans-bundle.tar.gz` fails CI.
+
 ## leanmt handshake (`leanmt_binary_version`, NEU-25)
 
 The app loads the model `.bin` through leanmt, which fails fast when the

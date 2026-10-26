@@ -6,8 +6,13 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, cast
 from urllib.request import urlopen, Request
 
+from ..language_codes import normalize_language
 from ..leanmt import assert_leanmt_compatible
 from ..schema import validate_direction_metadata
+
+# `normalize_language` is re-exported here for backwards compatibility; its
+# canonical home is versta/language_codes.py (the shared catalog/bundle code
+# contract, NEU-133).
 
 
 def load_registry(registry_url: str) -> Dict[str, Any]:
@@ -26,38 +31,6 @@ def load_registry(registry_url: str) -> Dict[str, Any]:
     """
     with urlopen(Request(registry_url, method="GET"), timeout=60) as response:
         return cast(Dict[str, Any], json.loads(response.read().decode("utf-8")))
-
-
-def normalize_language(code: str) -> str:
-    """
-    Normalizes a user-supplied language code to the form used as a key in the Firefox registry.
-
-    The registry uses bare ISO-639 codes (e.g. "en", "nl") and, for Chinese, distinguishes
-    "zh" (simplified) from "zh_hant" (traditional). Script- or region-qualified inputs are mapped
-    accordingly so callers may request models using common BCP-47-style tags:
-
-      * "zh-Hans"/"zh-CN"/"zh"            -> "zh"      (simplified)
-      * "zh-Hant"/"zh-TW"/"zh-HK"/"zh-MO" -> "zh_hant" (traditional)
-      * "en-US"/"en-GB"/"pt-BR"          -> "en"/"pt" (region subtag stripped)
-      * "no"/"nb"/"nn"/"hbs"             -> unchanged (distinct real pairs, never collapsed)
-
-    Args:
-        code (str): A language code, possibly with script/region subtags (e.g. "zh-Hans").
-
-    Returns:
-        str: The normalized language code used in registry pair keys.
-    """
-    parts = re.split(r"[-_]", code.lower())
-    base = parts[0]
-
-    if base == "zh":
-        return (
-            "zh_hant"
-            if any(part in ("hant", "tw", "hk", "mo") for part in parts[1:])
-            else "zh"
-        )
-
-    return base
 
 
 def get_pair_entries(

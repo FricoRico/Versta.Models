@@ -12,7 +12,11 @@ from ..schema import (
     validate_direction_metadata,
 )
 from .metadata import load_metadata_for_input_dirs, generate_metadata
-from .language import validate_translation_pairs, extract_unique_languages
+from .language import (
+    assert_boundary_codes,
+    validate_translation_pairs,
+    extract_unique_languages,
+)
 from .bundle_tar import bundle_files, create_checksum
 from .utils import copy_folders, remove_folder
 
@@ -139,7 +143,10 @@ def main(
     # Step 1: Load metadata for the input directories
     metadata = load_metadata_for_input_dirs(input_dirs)
 
-    # Step 2: Validate the translation pairs
+    # Step 2: Validate the translation pairs, and refuse non-canonical
+    # language codes at the bundle boundary (NEU-133): bundle manifests and
+    # archive names carry registry-normalized codes only.
+    assert_boundary_codes(metadata)
     if bidirectional:
         validate_translation_pairs(metadata)
 
