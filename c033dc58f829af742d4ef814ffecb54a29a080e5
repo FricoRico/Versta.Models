@@ -1,0 +1,13 @@
+NEU-60 re-pin procedure, exercised on the seed pin.
+
+Derivation: python -m versta.probe.bands (scorecards/ -> pack-acceptance/bands.json).
+Determinism check after seeding: deleted pack-acceptance/bands.json, regenerated from the
+same tree -> sha256 ba7355002e30f4dd27c4a133206316c9768529d9b84813a2919223a8bfd4a4c5 both
+times; git diff empty; 'bands --check' green (63 directions, corpus traveler-v1, drop 3.0).
+
+No band moved: seeded from the NEU-59 kickoff cards (x86_64, leanmt 07015949). The arm64
+CI reference numbers seen so far (en-es 81.02->81.15, ja-en 63.82->63.25; run 40295579930)
+came from a stale pre-calibration corpus (corpus_sha256 mismatch), so per the never-mix-
+corpora rule they are deliberately NOT band champions. First true data re-pin is expected
+from the first full arm64 weekly sweep; land it as a dedicated commit with the measured
+scorecard diffs attached, per PACK-ACCEPTANCE-RUNBOOK.md.
