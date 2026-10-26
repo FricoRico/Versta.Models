@@ -81,23 +81,12 @@ jobs:
 
       - name: Fetch published bundles (32 packs, v2.0.0 catalog)
         working-directory: translation
+        # Retry/backoff fetch (NEU-60): one transient CDN 503 must not kill a
+        # 32-bundle sweep. Fetch is strict here — content pins are verified
+        # next, so a missing artifact fails deliberately.
         run: |
           uv sync
-          python3 - <<'EOF'
-          import json, subprocess
-          from pathlib import Path
-          pins = json.load(open('pack-acceptance/pins.json'))['published']
-          out = Path('output/published')
-          out.mkdir(parents=True, exist_ok=True)
-          for name, pin in sorted(pins['bundles'].items()):
-              tar = out / name
-              sidecar = out / (name[:-3] + '.sha256')
-              if not tar.exists():
-                  subprocess.run(['curl', '-fsSL', pin['url'], '-o', str(tar)], check=True)
-              if not sidecar.exists():
-                  subprocess.run(['curl', '-fsSL', pin['url'].replace('.tar.gz', '.tar.sha256'), '-o', str(sidecar)], check=True)
-              print('fetched', name)
-          EOF
+          uv run python -m versta.probe.fetch --pins pack-acceptance/pins.json --output_dir output/published
 
       - name: Verify served bundles against published pins
         working-directory: translation
@@ -138,6 +127,34 @@ jobs:
             --probe_bin "$GITHUB_WORKSPACE/.leanmt/build/probe/leanmt-probe" \
             --output_dir output/probe-ci --expect direction-fail --label es-en.adversarial \
             --leanmt_commit "$PACK_ACCEPTANCE_LEANMT_COMMIT"
+
+      # NEU-60 publish-gate demonstration on every run: the gate must refuse
+      # the deliberately broken adversarial pack and must pass a clean
+      # re-packed bundle whose card lies inside the golden bands.
+      - name: Publish gate refuses the deliberately broken pack (NEU-60)
+        working-directory: translation
+        run: |
+          set +e
+          uv run python -m versta.batch.publish_gate \
+            --bundle output/adversarial/es-en-mislabeled-bundle.tar.gz \
+            --scorecards_dir output/probe-ci/scorecards \
+            --bands_file pack-acceptance/bands.json | tee output/gate-demo.log
+          status=${PIPESTATUS[0]}
+          set -e
+          if [ "$status" -eq 0 ]; then
+            echo "::error::publish gate wrongly PUBLISHED the direction-mislabeled control pack"
+            exit 1
+          fi
+          echo "publish gate refused the mislabeled control pack (exit $status), as designed"
+          grep -q "never publish evidence" output/gate-demo.log
+
+      - name: Publish gate passes a proven bundle (positive control)
+        working-directory: translation
+        run: |
+          uv run python -m versta.batch.publish_gate \
+            --bundle output/sweep/repacked/en-es-bundle.tar.gz \
+            --scorecards_dir output/sweep/scorecards \
+            --bands_file pack-acceptance/bands.json
 
       - name: Publish sweep summary to step summary
         run: |
