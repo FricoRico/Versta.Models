@@ -144,10 +144,21 @@ def write_tarball(staging: Path, output_dir: Path) -> Tuple[Path, Path]:
 
 
 def bundle(converted_dir: Path, output_dir: Path, version: str) -> Tuple[Path, Path]:
-    """Full bundle build: assemble → readme → metadata → lint → tarball+sha256."""
+    """
+    Full bundle build: assemble → readme → metadata → lint → tarball+sha256.
+
+    The staging directory name must never equal the documented converted dir
+    (``output/supertonic3``): ``assemble_bundle_dir`` clears the staging dir
+    and would otherwise delete the conversion tree it reads from.
+    """
+    staging = output_dir / "supertonic3-bundle-staging"
+    if converted_dir.resolve() == staging.resolve():
+        raise ValueError(
+            f"converted dir {converted_dir} aliases the staging dir; "
+            "bundling would destroy the conversion tree"
+        )
     with open(converted_dir / "conversion-record.json", encoding="utf-8") as handle:
         record = json.load(handle)
-    staging = output_dir / "supertonic3"
     assemble_bundle_dir(converted_dir, staging)
     write_readme(staging, record)
     metadata = build_metadata(version)

@@ -16,9 +16,9 @@ from versta.supertonic3.typing import MODEL_STAGES
 STYLE_NAMES = ["F1", "F2", "F3", "F4", "F5", "M1", "M2", "M3", "M4", "M5"]
 
 
-def _fake_converted(tmp_path: Path) -> Path:
+def _fake_converted(tmp_path: Path, name: str = "converted") -> Path:
     """A minimal but complete conversion output tree."""
-    converted = tmp_path / "converted"
+    converted = tmp_path / name
     for stage in MODEL_STAGES:
         stage_dir = converted / "int8"
         stage_dir.mkdir(parents=True, exist_ok=True)
@@ -59,6 +59,27 @@ def test_bundle_is_byte_reproducible(tmp_path):
     first, _ = bundle(converted, tmp_path / "a", "v2.0.0")
     second, _ = bundle(converted, tmp_path / "b", "v2.0.0")
     assert first.read_bytes() == second.read_bytes()
+
+
+def test_bundle_keeps_the_documented_output_layout_alive(tmp_path):
+    """README invocation: --converted output/supertonic3 --output_dir output.
+
+    Regression: the staging dir once aliased the converted dir, so the
+    bundler destroyed the conversion tree before copying from it.
+    """
+    output = tmp_path / "output"
+    converted = _fake_converted(output, name="supertonic3")
+    tarball, _ = bundle(converted, output, "v2.0.0")
+    assert tarball.exists()
+    assert (converted / "int8" / "vocoder.mnn").exists()
+    assert (converted / "conversion-record.json").exists()
+
+
+def test_bundle_refuses_staging_alias(tmp_path):
+    converted = _fake_converted(tmp_path, name="supertonic3-bundle-staging")
+    with pytest.raises(ValueError, match="aliases the staging dir"):
+        bundle(converted, tmp_path, "v2.0.0")
+    assert (converted / "int8" / "vocoder.mnn").exists()
 
 
 def test_lint_fails_closed_on_missing_license(tmp_path):
