@@ -146,7 +146,52 @@ def test_corpus_chrf_rejects_misaligned_input():
             True,
         ),
         ("博物館から徒歩15分です。", "The museum is a fifteen-minute walk away.", True),
+        # Eastern Arabic / Persian digit scripts (fa; NEU-135)
+        (
+            "بلیط موزه ۱۲ یورو است.",
+            "The museum ticket costs 12 euros.",
+            True,
+        ),
+        (
+            "بلیط موزه ۱۲ یورو است.",
+            "The museum ticket costs ۱۲ euros.",
+            True,
+        ),
+        (
+            "قیمت ۴۵۰۰ ریال است.",
+            "The fare is 4500 rials.",
+            True,
+        ),
+        (
+            "قطار من ساعت ۲۳:۳۰ حرکت می‌کند.",
+            "My train leaves at 23:30.",
+            True,
+        ),
+        # Korean clock forms (en-ko; NEU-135)
+        (
+            "My train leaves at 23:30.",
+            "제 기차는 23시 30분에 출발합니다.",
+            True,
+        ),
+        ("The museum opens at 10:00.", "박물관은 10시에 문을 엽니다.", True),
+        # duration stays out of the clock extractor
+        ("여행은 9시간 걸립니다.", "The journey takes 9 hours.", True),
+        # Catalan / Spanish / French number words (NEU-135)
+        (
+            "I need 5 tickets and 2 coffees.",
+            "Necessito cinc bitllets i dos cafès.",
+            True,
+        ),
+        ("I arrive on October 3.", "Llego el tres de octubre.", True),
+        ("The ticket costs 12 euros.", "Le billet coûte douze euros.", True),
         # genuine corruption cases stay failing
+        ("قیمت ۴۵۰۰ ریال است.", "The fare is 5400 rials.", False),
+        ("The meeting starts at 8:30.", "회의는 8시 20분에 시작됩니다.", False),
+        (
+            "I need 5 tickets and 2 coffees.",
+            "Necessito sis bitllets i dos cafès.",
+            False,
+        ),
         ("朝食は6時30分から10時までですか。", "Is breakfast from 6pm to 10pm?", False),
         (
             "The flight takes 9 hours and 25 minutes.",
