@@ -225,14 +225,25 @@ _WORD_TO_NUMBER: Dict[str, int] = {
 # Clock-like value carriers, compared as (hour % 12, minute) values rather
 # than digit runs. Covers "18:45" / "6:45 pm", Japanese "18時45分" / "10時"
 # and Korean "23시 30분" / "10시" (minutes omitted = :00; the negative
-# lookaheads keep duration "9時間" / "9시간" out), and bare meridiem forms
-# "8pm". The 12-hour normalization deliberately treats meridiem as locale
+# lookaheads keep duration "9時間" / "9시간" out), bare meridiem forms "8pm",
+# and English word-clock forms (NEU-145: ko "저녁 8시" -> "eight in the
+# evening" legitimately lexicalizes the clock, but no extractor recognized
+# the surface and the clock path had already consumed "8시"). Word-hours are
+# one..twelve / digits 1-12 and only in the explicit clock contexts
+# "N o'clock" / "N in the (morning|afternoon|evening)" — bare cardinals stay
+# in the plain-run path, so counts ("two reservations") never enter clock
+# matching. The 12-hour normalization deliberately treats meridiem as locale
 # style ("las 8 de la tarde" ≡ "8 pm" ≡ "20時" ≡ "오후 8시"): v1 guards
 # value corruption (dropped/doubled/changed numbers), not am/pm choice.
 _CLOCK_COLON = re.compile(r"(\d{1,2})\s*[:：]\s*(\d{2})\s*(?:am|pm|a\.m\.|p\.m\.)?\b")
 _CLOCK_JA = re.compile(r"(\d{1,2})\s*時(?!\s*間)(?:\s*(\d{1,2})\s*分)?")
 _CLOCK_KO = re.compile(r"(\d{1,2})\s*시(?!\s*간)(?:\s*(\d{1,2})\s*분)?")
 _CLOCK_MERIDIEM = re.compile(r"(?<![:：\d])(\d{1,2})\s*(?:am|pm|a\.m\.|p\.m\.)\b")
+_CLOCK_EN_WORD = re.compile(
+    r"\b([1-9]|1[0-2]|one|two|three|four|five|six|seven|eight|nine|ten"
+    r"|eleven|twelve)\s+(o['’]clock|in\sthe\s(?:morning|afternoon|evening))\b",
+    re.IGNORECASE,
+)
 
 
 def _normalize_number_surface(text: str) -> str:
@@ -266,6 +277,10 @@ def _clock_values(text: str) -> List[Tuple[str, Tuple[int, int]]]:
         )
     for match in _CLOCK_MERIDIEM.finditer(text):
         values.append((match.group(0), (int(match.group(1)) % 12, 0)))
+    for match in _CLOCK_EN_WORD.finditer(text):
+        token = match.group(1)
+        hour = int(token) if token.isdigit() else _NUMBER_WORDS[token.lower()]
+        values.append((match.group(0), (hour % 12, 0)))
     return values
 
 
