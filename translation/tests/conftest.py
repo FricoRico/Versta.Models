@@ -1,5 +1,6 @@
 import gzip
 import json
+import socket
 import struct
 
 from hashlib import sha256
@@ -10,6 +11,37 @@ import pytest
 
 from versta.leanmt import LEANMT_BINARY_VERSION
 from versta.eval.typing import EvalResult
+
+
+# --- Hermetic suite guard: no real network on the PR path (NEU-53) ---------
+
+
+class NetworkBlockedError(RuntimeError):
+    """A test attempted a real network connection; the suite is hermetic."""
+
+
+def _blocked_network(*args: object, **kwargs: object) -> None:
+    raise NetworkBlockedError(
+        "test attempted a real network connection. The PR-CI suite is "
+        "hermetic by construction (mocked registry, tiny synthetic fixture "
+        "corpus, fake engine) — mock the network boundary in the test "
+        "instead. Real-network model evaluation runs only in the "
+        "release-candidate workflow "
+        "(.github/workflows/release-eval.yml)."
+    )
+
+
+@pytest.fixture(autouse=True)
+def _no_network(monkeypatch: pytest.MonkeyPatch) -> None:
+    """
+    Fails any outbound connection attempt from a test, fast and
+    deterministically. The whole suite is designed hermetic — fixtures mock
+    the download boundary (urlopen), the corpus fetch and the engine — so a
+    real connection means a boundary regression that must not flake CI on
+    network state (or, worse, silently evaluate against live upstream data).
+    """
+    monkeypatch.setattr(socket, "create_connection", _blocked_network)
+    monkeypatch.setattr(socket.socket, "connect", _blocked_network)
 
 
 class FakeResponse:

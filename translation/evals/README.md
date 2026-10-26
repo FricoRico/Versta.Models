@@ -197,3 +197,32 @@ corpus pin, engine version, artifact checksum and size notes, and the
 recorded reason for override/rebaseline decisions. Posting that file with
 the release satisfies the charter's "every model release posts an eval
 summary" without handwritten prose drifting from the numbers.
+
+## CI wiring (NEU-53)
+
+Two jobs, deliberately split:
+
+- **PR CI stays hermetic** (`.github/workflows/ci.yml`, the required
+  `test` check): the whole pytest suite — gate decisions, metrics,
+  ledger, corpus manifest validation — runs against the tiny synthetic
+  fixture pair and a fake engine, in seconds, with no network. A
+  `conftest.py` guard fails any test that attempts a real connection, so
+  the hermetic property is enforced, not aspirational; branch protection
+  (NEU-34) stays green and cheap.
+- **Release candidates run the real thing**
+  (`.github/workflows/release-eval.yml`, `workflow_dispatch` on the
+  release-candidate branch): fetches the hash-pinned corpus snapshot,
+  downloads and SHA-256-verifies the candidate bundle, translates through
+  the digest-pinned `bergamot-translator` image with the fixed decode
+  settings, runs the gate and — on a shipping decision — appends the
+  ledger entry and pushes it back to the release branch. Wall-clock per
+  stage goes to the run summary alongside the generated eval-summary
+  markdown; the gate's exit code is the job result, so **a failing gate
+  blocks the release candidate**.
+
+Dispatch inputs (`source`, `target`, `bundle_url` + `bundle_sha256`,
+`bergamot_image`, optional `comet`/`threshold`/`reason`/`rebaseline`/
+`record`) mirror the CLI flags above. Reproduce a CI run locally with the
+same three commands shown in the job log (`versta.eval.corpora fetch` →
+`versta.eval` → `versta.eval.gate`); everything the numbers depend on is
+pinned in-repo or recorded in the result JSON, so the local run matches.
