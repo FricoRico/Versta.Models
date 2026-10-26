@@ -1,10 +1,16 @@
 # pack-acceptance/
 
-Inputs for the pack acceptance harness (NEU-58; runner: `versta.probe`,
-workflow: `../../.github/workflows/pack-acceptance.yml`).
+Inputs for the pack acceptance harness (NEU-58–NEU-60; runner: `versta.probe`,
+workflows: `../../.github/workflows/pack-acceptance.yml` (+ weekly:
+`pack-sweep-weekly.yml`); ops: `../PACK-ACCEPTANCE-RUNBOOK.md`).
 
 - `pins.json` — the probe inputs, pinned by content SHA-256 (`directions`)
   plus the Versta.Leanmt commit the `leanmt-probe` binary is built from.
+- `bands.json` — the golden-output bands (schema `versta.pack-bands/1`,
+  NEU-60): per shipped direction the chrF measured on the previously
+  published bundle, the publish-allowed drop below it, and the measurement's
+  provenance. Derived from `../scorecards/` by `python -m versta.probe.bands`
+  (`--check` verifies; CI enforces tree consistency).
 
 ## Re-pinning discipline
 

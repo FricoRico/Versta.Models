@@ -34,10 +34,16 @@ one artifact — the epic thread's defect census is counted from it.
 - `directions[]` — per direction: load verdict and timing, `chrf` vs the
   corpus-carried `chrf_floor` (`direction_check`), value-level digit
   preservation, p50/p95 latency, peak RSS, sentence/failure counts.
-- `gates` — which measurements gate this card's `acceptance` (v1: `load` +
-  `direction_chrf_floor`; digit preservation and latency/RSS are measured
-  and published from the first sweep, and gate from NEU-60 on calibrated
-  per-pair bands).
+- `gates` — which measurements gate this card's `acceptance` (v1 gates: `load`
+  + `direction_chrf_floor`; digit preservation and latency/RSS are always
+  measured and published). The **publish gate** (NEU-60,
+  `versta/batch/publish_gate.py`) sits on top of the card: it additionally
+  requires digit preservation 100% and chrF inside the pinned golden band
+  (`../pack-acceptance/bands.json`) before a bundle may publish into the
+  catalog. Cards stay the measurement record; publishability is the gate's
+  verdict.
 - `acceptance` / `expectation` / `expectation_met` — the v1 verdict, the
   run's declared expectation (`pass`, or `direction-fail` for the
-  adversarial negative control), and whether reality matched it.
+  adversarial negative control), and whether reality matched it. The publish
+  gate never accepts a card with `expectation != "pass"` as publish
+  evidence.
