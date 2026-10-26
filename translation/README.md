@@ -17,8 +17,11 @@ uv run python -m versta.download --source en --target es --architecture tiny --o
 ```
 
 Replace `--source` and `--target` with the source and target language codes of choice (eg. `en` and `es`),
-and `--architecture` with one of `tiny`, `base` or `base-memory` (defaults to `tiny`). After downloading,
-you will have the model files in the `./output/en-es` directory, together with a `metadata.json` file.
+and `--architecture` with one of `tiny`, `base` or `base-memory` (defaults to `tiny`). Codes are
+normalized before registry lookup — you may pass `zh-Hans`, but the model directory and metadata
+always carry the registry code (`zh`); see PIPELINE.md "Language codes at the bundle boundary".
+After downloading, you will have the model files in the `./output/en-es` directory, together with
+a `metadata.json` file.
 
 ## Bundling Models
 After downloading the models, we need to bundle them to be used in the Android application. The models are side-loaded by the user during runtime. To make it convenient for the user to do so, we bundle the assets required for the models into a tarball. This can conveniently be done using the custom CLI tool.

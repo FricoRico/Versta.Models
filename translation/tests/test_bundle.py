@@ -123,6 +123,46 @@ def test_bundle_rejects_missing_reverse_pair(tmp_path: Path) -> None:
         )
 
 
+def test_bundle_emits_registry_normalized_language_codes(tmp_path: Path) -> None:
+    """en/zh directions bundle as 'en-zh': languages, archive name and member
+    directories all carry the registry codes (NEU-133)."""
+    input_en_zh = write_direction_dir(tmp_path / "input", "en-zh")
+    input_zh_en = write_direction_dir(tmp_path / "input", "zh-en")
+
+    result = bundle.main(
+        input_dirs=[input_en_zh, input_zh_en],
+        output_dir=tmp_path / "output",
+        bidirectional=True,
+    )
+
+    assert result["bundle"].name == "en-zh-bundle.tar.gz"
+    assert result["checksum"].name == "en-zh-bundle.tar.sha256"
+    validate_bundle_archive(result["bundle"])
+
+    with tarfile.open(result["bundle"], "r:gz") as tar:
+        bundle_metadata = json.load(tar.extractfile("metadata.json"))
+    assert bundle_metadata["languages"] == ["en", "zh"]
+
+
+def test_bundle_rejects_bcp47_direction_codes(tmp_path: Path) -> None:
+    """A direction carrying a catalog-layer code (zh-Hans) is refused at the
+    bundle boundary instead of leaking into the manifest (NEU-133)."""
+    input_en_zh = write_direction_dir(tmp_path / "input", "en-zh")
+    input_zh_en = write_direction_dir(tmp_path / "input", "zh-en")
+
+    metadata_path = input_zh_en / "metadata.json"
+    metadata = json.loads(metadata_path.read_text())
+    metadata["source_language"] = "zh-Hans"
+    metadata_path.write_text(json.dumps(metadata))
+
+    with pytest.raises(ValueError, match=r"'zh-Hans'.*registry-normalized.*'zh'"):
+        bundle.main(
+            input_dirs=[input_en_zh, input_zh_en],
+            output_dir=tmp_path / "output",
+            bidirectional=True,
+        )
+
+
 def test_bundle_rejects_direction_with_missing_files(tmp_path: Path) -> None:
     input_en_es = write_direction_dir(tmp_path / "input", "en-es", missing=("model",))
     input_es_en = write_direction_dir(tmp_path / "input", "es-en")
