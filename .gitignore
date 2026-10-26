@@ -200,6 +200,6 @@ cython_debug/
 */cache
 */results
 
-# Translation eval: pinned corpus payloads are fetched on demand (see
-# translation/evals/README.md); only the corpora.json manifest is checked in.
-/translation/evals/corpora/
+# Translation eval: only manifests/docs are checked in under evals/. Corpus
+# payloads are fetched on demand into translation/output/ (already ignored
+# via */output); see translation/evals/corpora/README.md.

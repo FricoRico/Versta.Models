@@ -1,49 +1,22 @@
 """
 TypedDict contracts for the values versta.eval reads and writes.
 
-Two documents cross the module boundary:
+One document crosses the module boundary:
 
-  * the corpus manifest (``evals/corpora.json``, schema
-    ``versta.eval-corpora/1``) — produced by the corpus pinning task
-    (NEU-49), consumed read-only here;
   * the eval result JSON (schema ``versta.eval-result/1``) — written once
     per evaluated direction, consumed by the release gate and the
     ``evals/`` ledger (NEU-52), so the shape is additive-only.
+
+The corpus manifest the harness reads (``evals/corpora/flores200-dev.json``,
+schema ``versta/corpus-manifest@1``) is typed in
+``versta.eval.corpora.typing`` — the corpus package owns its contract, the
+harness consumes it read-only.
 
 Keep both fully typed and in sync with the checked-in schema
 documentation in ``evals/README.md``.
 """
 
 from typing import Dict, Optional, TypedDict
-
-# Corpus manifest (input, produced by the corpus pinning task).
-
-CORPORA_SCHEMA = "versta.eval-corpora/1"
-
-
-class CorpusFile(TypedDict):
-    path: str
-    sha256: str
-
-
-class CorpusDirection(TypedDict):
-    flores_source: str
-    flores_target: str
-    sentences: int
-    source: CorpusFile
-    target: CorpusFile
-
-
-class CorpusManifest(TypedDict):
-    schema: str
-    corpus: str
-    revision: str
-    split: str
-    license: str
-    directions: Dict[str, CorpusDirection]
-
-
-# Eval result (output, consumed by the release gate and ledger).
 
 EVAL_RESULT_SCHEMA = "versta.eval-result/1"
 

@@ -62,6 +62,28 @@ uv run python -m versta.batch --input_file models.json --output_dir ./output/exp
 - **Publish gate (NEU-60)**: before any catalog write, every produced bundle must have a passing scorecard for its exact bytes inside the pinned golden bands (loads, direction/chrF sanity, digit preservation 100%, chrF ≥ golden − `chrf_max_drop`); any failure refuses the run without touching catalogs. Implementation: `versta/batch/publish_gate.py`; ops: `PACK-ACCEPTANCE-RUNBOOK.md`. The gate's data shapes are manifest-adjacent and owned jointly with the pipeline pair (NEU-38).
 - Output: one tarball per pair plus a deployable `models.json` catalog; the input file is updated in place (with `.bak` backup) so the checked-in `models.json` stays in sync with what was actually exported.
 
+### `versta.eval.corpora`
+
+Builds and fetches the hash-pinned evaluation reference corpora
+(`evals/corpora/` holds the checked-in manifests; full provenance and the
+update procedure live in `evals/corpora/README.md`):
+
+```bash
+uv run python -m versta.eval.corpora fetch             # download + verify into output/corpora/
+uv run python -m versta.eval.corpora verify --corpus_dir output/corpora/flores200-dev-r1
+uv run python -m versta.eval.corpora build --upstream_tarball ... --revision 2
+```
+
+- `fetch` is the reproducibility boundary: the artifact hash from the manifest
+  is verified before extraction, and every extracted file is re-hashed and
+  line-counted after; any mismatch aborts. Mirrors are tried in order.
+- `build` derives the covered directions from the checked-in `models.json`
+  (bidirectional groups from their mirrored fields; single-direction entries
+  from `base_model` — the legacy `en-lv` group's fields are unreliable) and
+  packs the snapshot deterministically: same inputs, same artifact SHA-256.
+- Manifests are fail-fast validated on load (`versta/eval/corpora/manifest.py`);
+  schema is `versta/corpus-manifest@1`. Extend additively.
+
 ### `versta.eval`
 
 The quality harness (NEU-44/NEU-51): translates the pinned FLORES-200
@@ -69,13 +91,14 @@ snapshot for one direction through the reference runtime and scores
 sacreBLEU + chrF, writing a versioned result JSON:
 
 ```bash
+uv run python -m versta.eval.corpora fetch   # once per machine (or --check to re-verify)
 uv run python -m versta.eval --source en --target es --bundle output/en-es-bundle.tar.gz
 # or, before bundling:
 uv run python -m versta.eval --source en --target es --direction_dir output/en-es
 ```
 
 - One command, one direction, one result JSON (schema `versta.eval-result/1`): scores, corpus revision, engine version + fixed decode settings, artifact checksums. The release gate and the `evals/` ledger (NEU-52) consume it; both contracts are documented in `evals/README.md`.
-- The corpus is the pinned snapshot in `evals/` (`corpora.json` + payloads), verified by hash before any engine time is spent.
+- The corpus is the checked-in manifest in `evals/corpora/` plus the fetched snapshot under `output/corpora/` (`--corpus_manifest` / `--corpus_dir` override both locations). Payload hashes are re-verified before any engine time is spent.
 - The engine is a black-box CLI — no engine code lands in this repo. v1 runtime is upstream `bergamot-translator` via `--bergamot_bin` or `--bergamot_image` (env: `VERSTA_BERGAMOT_BIN` / `VERSTA_BERGAMOT_IMAGE`), with decode settings fixed to the production Firefox values in `versta/eval/config.py`. `--engine leanmt` is reserved for the LeanMT batch CLI (NEU-50).
 - Output must stay line-aligned with input; misalignment fails the run instead of scoring garbage.
 - `--comet` adds release-tier COMET-22 (optional `unbabel-comet` dependency, cached weights — never required on the PR path).
