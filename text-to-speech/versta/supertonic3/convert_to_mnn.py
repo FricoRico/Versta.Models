@@ -9,7 +9,9 @@ record per run.
 
 MNNConvert flags mirror what the spike validated: ``--fp16`` for the fp16
 reference set and ``--weightQuantBits 8`` for the shipped int8 set
-(weight-only int8; no calibration data required).
+(weight-only int8; no calibration data required). Each converted file's
+random converter-stamped ``mnn_uuid`` is canonicalized to the nil UUID so
+output bytes are reproducible run-to-run.
 """
 
 import argparse
@@ -17,6 +19,7 @@ import hashlib
 import json
 import os
 import platform
+import re
 import subprocess
 
 from argparse import ArgumentParser
@@ -62,6 +65,40 @@ ALL_UPSTREAM_PATTERNS: List[str] = [
 
 class PinVerificationError(RuntimeError):
     """An upstream file does not match its recorded sha256."""
+
+
+#: MNNConvert stamps a random uuid4 into the Net's ``mnn_uuid``
+#: (vendor/mnn AddUUID.cpp) on every run. It is the only non-deterministic
+#: content in the output — same-size, 36 differing bytes — and would make
+#: bundle hashes unreproducible, so the pipeline rewrites it to the nil UUID.
+UUID4_PATTERN = re.compile(
+    rb"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}"
+)
+NIL_UUID = b"00000000-0000-0000-0000-000000000000"
+
+
+def canonicalize_mnn_uuid(model_path: Path) -> None:
+    """
+    Rewrites the converter-stamped random ``mnn_uuid`` to the nil UUID,
+    in place and length-preserving (flatbuffer layout is untouched).
+
+    Raises:
+        RuntimeError: If the file does not carry exactly one uuid4 (or one
+            already-canonical nil UUID), so unexpected layout changes fail
+            closed instead of silently corrupting a graph.
+    """
+    data = model_path.read_bytes()
+    matches = list(UUID4_PATTERN.finditer(data))
+    if len(matches) == 1 and NIL_UUID not in data:
+        (match,) = matches
+        model_path.write_bytes(data[: match.start()] + NIL_UUID + data[match.end() :])
+        return
+    if len(matches) == 0 and data.count(NIL_UUID) == 1:
+        return
+    raise RuntimeError(
+        f"{model_path}: expected exactly one mnn_uuid "
+        f"(found {len(matches)} uuid4, {data.count(NIL_UUID)} nil)"
+    )
 
 
 def sha256_file(path: Path) -> str:
@@ -225,6 +262,7 @@ def convert_stage(
     out = output_dir / precision / f"{stage}.mnn"
     if not out.exists():
         raise RuntimeError(f"MNNConvert did not produce {out}")
+    canonicalize_mnn_uuid(out)
     return ArtifactRecord(
         path=str(out.relative_to(output_dir)),
         sha256=sha256_file(out),
