@@ -1,0 +1,707 @@
+{
+  "schema": "versta.pack-bands/1",
+  "bands_version": 1,
+  "corpus": "traveler-v1",
+  "chrf_max_drop": 3.0,
+  "digit_preservation_required": 1.0,
+  "metrics": {
+    "sacrebleu_version": "2.6.0",
+    "chrf_signature": "nrefs:1|case:mixed|eff:yes|nc:6|nw:0|space:no|version:2.6.0"
+  },
+  "directions": {
+    "ar-en": {
+      "golden_chrf": 69.78,
+      "chrf_min": 66.78,
+      "chrf_floor": 31.4,
+      "baseline": {
+        "scorecard": "scorecards/ar-en.json",
+        "bundle_sha256": "c3ffbd2b7faeadeac82fa25a2c64084447e7ffac68d6515bc1c6534e84adcec5",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "bg-en": {
+      "golden_chrf": 85.0,
+      "chrf_min": 82.0,
+      "chrf_floor": 38.2,
+      "baseline": {
+        "scorecard": "scorecards/bg-en.json",
+        "bundle_sha256": "072d86111e1bf0c5bfb57de1882dc78fef91d18b435e05c8578724ca1c46ef6e",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "ca-en": {
+      "golden_chrf": 79.9,
+      "chrf_min": 76.9,
+      "chrf_floor": 36.0,
+      "baseline": {
+        "scorecard": "scorecards/ca-en.json",
+        "bundle_sha256": "7b312a1c3c89255895563c546867247e3e555d184929cadece39fa5a17637d79",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "cs-en": {
+      "golden_chrf": 82.97,
+      "chrf_min": 79.97,
+      "chrf_floor": 37.3,
+      "baseline": {
+        "scorecard": "scorecards/cs-en.json",
+        "bundle_sha256": "32127fbed78bd0535517a31b559748fb8163d989d3241c4c9291e1cbda0952b9",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "da-en": {
+      "golden_chrf": 80.58,
+      "chrf_min": 77.58,
+      "chrf_floor": 36.3,
+      "baseline": {
+        "scorecard": "scorecards/da-en.json",
+        "bundle_sha256": "84c9bf2dbf399dac6eff326653e9c2e4327f3718d9139bea61925ace9363aaa0",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "de-en": {
+      "golden_chrf": 83.04,
+      "chrf_min": 80.04,
+      "chrf_floor": 37.4,
+      "baseline": {
+        "scorecard": "scorecards/de-en.json",
+        "bundle_sha256": "d1a4088b48745e823ff200625cbc3047dedf12bf0eb2d518a1edd2dc769f4547",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "el-en": {
+      "golden_chrf": 81.58,
+      "chrf_min": 78.58,
+      "chrf_floor": 36.7,
+      "baseline": {
+        "scorecard": "scorecards/el-en.json",
+        "bundle_sha256": "4a0eb1df20c8dd5c62a6df1c30e58461fd43d86a7d8bcf9dd00aa633ee04a1b0",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-ar": {
+      "golden_chrf": 66.49,
+      "chrf_min": 63.49,
+      "chrf_floor": 29.9,
+      "baseline": {
+        "scorecard": "scorecards/ar-en.json",
+        "bundle_sha256": "c3ffbd2b7faeadeac82fa25a2c64084447e7ffac68d6515bc1c6534e84adcec5",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-bg": {
+      "golden_chrf": 76.44,
+      "chrf_min": 73.44,
+      "chrf_floor": 34.4,
+      "baseline": {
+        "scorecard": "scorecards/bg-en.json",
+        "bundle_sha256": "072d86111e1bf0c5bfb57de1882dc78fef91d18b435e05c8578724ca1c46ef6e",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-ca": {
+      "golden_chrf": 76.24,
+      "chrf_min": 73.24,
+      "chrf_floor": 34.3,
+      "baseline": {
+        "scorecard": "scorecards/ca-en.json",
+        "bundle_sha256": "7b312a1c3c89255895563c546867247e3e555d184929cadece39fa5a17637d79",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-cs": {
+      "golden_chrf": 79.32,
+      "chrf_min": 76.32,
+      "chrf_floor": 35.7,
+      "baseline": {
+        "scorecard": "scorecards/cs-en.json",
+        "bundle_sha256": "32127fbed78bd0535517a31b559748fb8163d989d3241c4c9291e1cbda0952b9",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-da": {
+      "golden_chrf": 76.65,
+      "chrf_min": 73.65,
+      "chrf_floor": 34.5,
+      "baseline": {
+        "scorecard": "scorecards/da-en.json",
+        "bundle_sha256": "84c9bf2dbf399dac6eff326653e9c2e4327f3718d9139bea61925ace9363aaa0",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-de": {
+      "golden_chrf": 78.77,
+      "chrf_min": 75.77,
+      "chrf_floor": 35.4,
+      "baseline": {
+        "scorecard": "scorecards/de-en.json",
+        "bundle_sha256": "d1a4088b48745e823ff200625cbc3047dedf12bf0eb2d518a1edd2dc769f4547",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-el": {
+      "golden_chrf": 81.55,
+      "chrf_min": 78.55,
+      "chrf_floor": 36.7,
+      "baseline": {
+        "scorecard": "scorecards/el-en.json",
+        "bundle_sha256": "4a0eb1df20c8dd5c62a6df1c30e58461fd43d86a7d8bcf9dd00aa633ee04a1b0",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-es": {
+      "golden_chrf": 81.02,
+      "chrf_min": 78.02,
+      "chrf_floor": 36.5,
+      "baseline": {
+        "scorecard": "scorecards/en-es.json",
+        "bundle_sha256": "fd32e01b973f8634b9ab94d38d83f4e805be562ea805bf6e099d3154307720d0",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-et": {
+      "golden_chrf": 76.85,
+      "chrf_min": 73.85,
+      "chrf_floor": 34.6,
+      "baseline": {
+        "scorecard": "scorecards/en-et.json",
+        "bundle_sha256": "cd7b3aaef01873842983dc01dd32f82cca83d5fa64592ba5295b4b9e9b8a723a",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-fa": {
+      "golden_chrf": 59.54,
+      "chrf_min": 56.54,
+      "chrf_floor": 26.8,
+      "baseline": {
+        "scorecard": "scorecards/en-fa.json",
+        "bundle_sha256": "300ec5175b3867d0cb3a1472a6f60bca07b1dd0e82710f6834306bd1c6736426",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-fi": {
+      "golden_chrf": 70.64,
+      "chrf_min": 67.64,
+      "chrf_floor": 31.8,
+      "baseline": {
+        "scorecard": "scorecards/en-fi.json",
+        "bundle_sha256": "87fb5578db620a953cca9fd45607d3320de728a7fedd52cda531795921eaa6db",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-fr": {
+      "golden_chrf": 87.41,
+      "chrf_min": 84.41,
+      "chrf_floor": 39.3,
+      "baseline": {
+        "scorecard": "scorecards/en-fr.json",
+        "bundle_sha256": "93e90b06cbe773b376b532b205e9b0282ee31b9f67437d7bb6011e24739f6053",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-he": {
+      "golden_chrf": 73.89,
+      "chrf_min": 70.89,
+      "chrf_floor": 33.3,
+      "baseline": {
+        "scorecard": "scorecards/en-he.json",
+        "bundle_sha256": "703f2257acc132ffa9fe35f16c42b7b6d54425ae2294ec1c2ab6e39412bd4e61",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-hr": {
+      "golden_chrf": 78.12,
+      "chrf_min": 75.12,
+      "chrf_floor": 35.2,
+      "baseline": {
+        "scorecard": "scorecards/en-hr.json",
+        "bundle_sha256": "45d654fc0dfd6b87da00358a498852fc18efcddbad934429805266fcc76c76d4",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-hu": {
+      "golden_chrf": 71.65,
+      "chrf_min": 68.65,
+      "chrf_floor": 32.2,
+      "baseline": {
+        "scorecard": "scorecards/en-hu.json",
+        "bundle_sha256": "7f516a61d235c3b05311f4f4057b04c7eeaab7ab181ac5b85414b91af7497bc3",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-id": {
+      "golden_chrf": 76.21,
+      "chrf_min": 73.21,
+      "chrf_floor": 34.3,
+      "baseline": {
+        "scorecard": "scorecards/en-id.json",
+        "bundle_sha256": "b7d7dae30956aadea3bd38aa9661a7c4db7dc795c9cc84fce4a249b4790c5569",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-it": {
+      "golden_chrf": 84.89,
+      "chrf_min": 81.89,
+      "chrf_floor": 38.2,
+      "baseline": {
+        "scorecard": "scorecards/en-it.json",
+        "bundle_sha256": "d8e6b9a6322dfd063f2b25c3c6f95e7c3c19a70dd845bc3d3a2401c9993c9f9e",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-ja": {
+      "golden_chrf": 53.3,
+      "chrf_min": 50.3,
+      "chrf_floor": 24.0,
+      "baseline": {
+        "scorecard": "scorecards/en-ja.json",
+        "bundle_sha256": "5eea582b05a658e091868dc1d2f1d0125fcc53424496da05c35802ba46cc9b22",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-ko": {
+      "golden_chrf": 48.22,
+      "chrf_min": 45.22,
+      "chrf_floor": 21.7,
+      "baseline": {
+        "scorecard": "scorecards/en-ko.json",
+        "bundle_sha256": "d4a5ea8cd8dd7c2ce83030e9a2eae74049440d21ab75c140b4b1c6d4f507b76d",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-nl": {
+      "golden_chrf": 79.87,
+      "chrf_min": 76.87,
+      "chrf_floor": 35.9,
+      "baseline": {
+        "scorecard": "scorecards/en-nl.json",
+        "bundle_sha256": "14768ef9685a3c902955fd3a9ac9905c2e434fd8afd3e76fb0880353c1616510",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-pl": {
+      "golden_chrf": 81.22,
+      "chrf_min": 78.22,
+      "chrf_floor": 36.5,
+      "baseline": {
+        "scorecard": "scorecards/en-pl.json",
+        "bundle_sha256": "ef7e26ebda48aacff41e47ebb4e73a39f365971fc180d25d0f13de8c5c42fe2d",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-pt": {
+      "golden_chrf": 83.22,
+      "chrf_min": 80.22,
+      "chrf_floor": 37.4,
+      "baseline": {
+        "scorecard": "scorecards/en-pt.json",
+        "bundle_sha256": "c199b7ffc9c2848b5e58cf189361e0976c64287369fe276d24738ef52db88bd2",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-ro": {
+      "golden_chrf": 77.59,
+      "chrf_min": 74.59,
+      "chrf_floor": 34.9,
+      "baseline": {
+        "scorecard": "scorecards/en-ro.json",
+        "bundle_sha256": "24080c841135ca390decd1f1844b67a5bfbfd8df0cef05b90a506858d58f27aa",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-ru": {
+      "golden_chrf": 70.47,
+      "chrf_min": 67.47,
+      "chrf_floor": 31.7,
+      "baseline": {
+        "scorecard": "scorecards/en-ru.json",
+        "bundle_sha256": "623518a59d6aa587d8739c31a0b705635c142f30a3489a354fd5a9e35891f2d7",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-sk": {
+      "golden_chrf": 80.02,
+      "chrf_min": 77.02,
+      "chrf_floor": 36.0,
+      "baseline": {
+        "scorecard": "scorecards/en-sk.json",
+        "bundle_sha256": "6dbc50a13f731ddcade85e18508e9e1400930a35acbb2d179d34b85a2ded5fde",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-sl": {
+      "golden_chrf": 72.73,
+      "chrf_min": 69.73,
+      "chrf_floor": 32.7,
+      "baseline": {
+        "scorecard": "scorecards/en-sl.json",
+        "bundle_sha256": "c1e48e2892c066c6490621b9d27a81a7fc27eb832307eda9db340750dc8ae730",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-sv": {
+      "golden_chrf": 78.89,
+      "chrf_min": 75.89,
+      "chrf_floor": 35.5,
+      "baseline": {
+        "scorecard": "scorecards/en-sv.json",
+        "bundle_sha256": "900a0d5bd592c7df814774be0e122d7d7d7f6b5a947999a56f84d6839987308d",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-tr": {
+      "golden_chrf": 67.43,
+      "chrf_min": 64.43,
+      "chrf_floor": 30.3,
+      "baseline": {
+        "scorecard": "scorecards/en-tr.json",
+        "bundle_sha256": "2c89abb54e9cd82767d2d3340f9acf4db8e90c5ee259d03f7d13024c8fc67829",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-uk": {
+      "golden_chrf": 65.4,
+      "chrf_min": 62.4,
+      "chrf_floor": 29.4,
+      "baseline": {
+        "scorecard": "scorecards/en-uk.json",
+        "bundle_sha256": "1d0c4ed7283b1bedc1d150301dbbeb18654619876e24129fd5fa2e0e77d4f6e6",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-vi": {
+      "golden_chrf": 79.81,
+      "chrf_min": 76.81,
+      "chrf_floor": 35.9,
+      "baseline": {
+        "scorecard": "scorecards/en-vi.json",
+        "bundle_sha256": "4d485c3455e50ac1b4dae8e372bc5e56ce68437867e08086ad00eb550fcfd968",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "en-zh": {
+      "golden_chrf": 34.47,
+      "chrf_min": 31.47,
+      "chrf_floor": 15.0,
+      "baseline": {
+        "scorecard": "scorecards/en-zh.json",
+        "bundle_sha256": "13681fa7924551daac6c74dd222a7e3229634d17fcb633e81d0c2f3b8dd8a9ff",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "es-en": {
+      "golden_chrf": 82.91,
+      "chrf_min": 79.91,
+      "chrf_floor": 37.3,
+      "baseline": {
+        "scorecard": "scorecards/en-es.json",
+        "bundle_sha256": "fd32e01b973f8634b9ab94d38d83f4e805be562ea805bf6e099d3154307720d0",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "et-en": {
+      "golden_chrf": 77.52,
+      "chrf_min": 74.52,
+      "chrf_floor": 34.9,
+      "baseline": {
+        "scorecard": "scorecards/en-et.json",
+        "bundle_sha256": "cd7b3aaef01873842983dc01dd32f82cca83d5fa64592ba5295b4b9e9b8a723a",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "fa-en": {
+      "golden_chrf": 66.76,
+      "chrf_min": 63.76,
+      "chrf_floor": 30.0,
+      "baseline": {
+        "scorecard": "scorecards/en-fa.json",
+        "bundle_sha256": "300ec5175b3867d0cb3a1472a6f60bca07b1dd0e82710f6834306bd1c6736426",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "fi-en": {
+      "golden_chrf": 80.3,
+      "chrf_min": 77.3,
+      "chrf_floor": 36.1,
+      "baseline": {
+        "scorecard": "scorecards/en-fi.json",
+        "bundle_sha256": "87fb5578db620a953cca9fd45607d3320de728a7fedd52cda531795921eaa6db",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "fr-en": {
+      "golden_chrf": 84.33,
+      "chrf_min": 81.33,
+      "chrf_floor": 37.9,
+      "baseline": {
+        "scorecard": "scorecards/en-fr.json",
+        "bundle_sha256": "93e90b06cbe773b376b532b205e9b0282ee31b9f67437d7bb6011e24739f6053",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "he-en": {
+      "golden_chrf": 76.76,
+      "chrf_min": 73.76,
+      "chrf_floor": 34.5,
+      "baseline": {
+        "scorecard": "scorecards/en-he.json",
+        "bundle_sha256": "703f2257acc132ffa9fe35f16c42b7b6d54425ae2294ec1c2ab6e39412bd4e61",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "hr-en": {
+      "golden_chrf": 81.85,
+      "chrf_min": 78.85,
+      "chrf_floor": 36.8,
+      "baseline": {
+        "scorecard": "scorecards/en-hr.json",
+        "bundle_sha256": "45d654fc0dfd6b87da00358a498852fc18efcddbad934429805266fcc76c76d4",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "hu-en": {
+      "golden_chrf": 71.22,
+      "chrf_min": 68.22,
+      "chrf_floor": 32.0,
+      "baseline": {
+        "scorecard": "scorecards/en-hu.json",
+        "bundle_sha256": "7f516a61d235c3b05311f4f4057b04c7eeaab7ab181ac5b85414b91af7497bc3",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "id-en": {
+      "golden_chrf": 74.19,
+      "chrf_min": 71.19,
+      "chrf_floor": 33.4,
+      "baseline": {
+        "scorecard": "scorecards/en-id.json",
+        "bundle_sha256": "b7d7dae30956aadea3bd38aa9661a7c4db7dc795c9cc84fce4a249b4790c5569",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "it-en": {
+      "golden_chrf": 83.38,
+      "chrf_min": 80.38,
+      "chrf_floor": 37.5,
+      "baseline": {
+        "scorecard": "scorecards/en-it.json",
+        "bundle_sha256": "d8e6b9a6322dfd063f2b25c3c6f95e7c3c19a70dd845bc3d3a2401c9993c9f9e",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "ja-en": {
+      "golden_chrf": 63.82,
+      "chrf_min": 60.82,
+      "chrf_floor": 28.7,
+      "baseline": {
+        "scorecard": "scorecards/en-ja.json",
+        "bundle_sha256": "5eea582b05a658e091868dc1d2f1d0125fcc53424496da05c35802ba46cc9b22",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "ko-en": {
+      "golden_chrf": 60.05,
+      "chrf_min": 57.05,
+      "chrf_floor": 27.0,
+      "baseline": {
+        "scorecard": "scorecards/en-ko.json",
+        "bundle_sha256": "d4a5ea8cd8dd7c2ce83030e9a2eae74049440d21ab75c140b4b1c6d4f507b76d",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "lv-en": {
+      "golden_chrf": 73.33,
+      "chrf_min": 70.33,
+      "chrf_floor": 33.0,
+      "baseline": {
+        "scorecard": "scorecards/en-lv.json",
+        "bundle_sha256": "41e94af93cbcfaaa47c2619ac4620399bbf1c1475ce3ebd3cb0623d03d50171b",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "nl-en": {
+      "golden_chrf": 83.34,
+      "chrf_min": 80.34,
+      "chrf_floor": 37.5,
+      "baseline": {
+        "scorecard": "scorecards/en-nl.json",
+        "bundle_sha256": "14768ef9685a3c902955fd3a9ac9905c2e434fd8afd3e76fb0880353c1616510",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "pl-en": {
+      "golden_chrf": 83.99,
+      "chrf_min": 80.99,
+      "chrf_floor": 37.8,
+      "baseline": {
+        "scorecard": "scorecards/en-pl.json",
+        "bundle_sha256": "ef7e26ebda48aacff41e47ebb4e73a39f365971fc180d25d0f13de8c5c42fe2d",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "pt-en": {
+      "golden_chrf": 83.8,
+      "chrf_min": 80.8,
+      "chrf_floor": 37.7,
+      "baseline": {
+        "scorecard": "scorecards/en-pt.json",
+        "bundle_sha256": "c199b7ffc9c2848b5e58cf189361e0976c64287369fe276d24738ef52db88bd2",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "ro-en": {
+      "golden_chrf": 84.47,
+      "chrf_min": 81.47,
+      "chrf_floor": 38.0,
+      "baseline": {
+        "scorecard": "scorecards/en-ro.json",
+        "bundle_sha256": "24080c841135ca390decd1f1844b67a5bfbfd8df0cef05b90a506858d58f27aa",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "ru-en": {
+      "golden_chrf": 72.61,
+      "chrf_min": 69.61,
+      "chrf_floor": 32.7,
+      "baseline": {
+        "scorecard": "scorecards/en-ru.json",
+        "bundle_sha256": "623518a59d6aa587d8739c31a0b705635c142f30a3489a354fd5a9e35891f2d7",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "sk-en": {
+      "golden_chrf": 81.22,
+      "chrf_min": 78.22,
+      "chrf_floor": 36.5,
+      "baseline": {
+        "scorecard": "scorecards/en-sk.json",
+        "bundle_sha256": "6dbc50a13f731ddcade85e18508e9e1400930a35acbb2d179d34b85a2ded5fde",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "sl-en": {
+      "golden_chrf": 82.29,
+      "chrf_min": 79.29,
+      "chrf_floor": 37.0,
+      "baseline": {
+        "scorecard": "scorecards/en-sl.json",
+        "bundle_sha256": "c1e48e2892c066c6490621b9d27a81a7fc27eb832307eda9db340750dc8ae730",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "sv-en": {
+      "golden_chrf": 82.26,
+      "chrf_min": 79.26,
+      "chrf_floor": 37.0,
+      "baseline": {
+        "scorecard": "scorecards/en-sv.json",
+        "bundle_sha256": "900a0d5bd592c7df814774be0e122d7d7d7f6b5a947999a56f84d6839987308d",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "tr-en": {
+      "golden_chrf": 73.36,
+      "chrf_min": 70.36,
+      "chrf_floor": 33.0,
+      "baseline": {
+        "scorecard": "scorecards/en-tr.json",
+        "bundle_sha256": "2c89abb54e9cd82767d2d3340f9acf4db8e90c5ee259d03f7d13024c8fc67829",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "uk-en": {
+      "golden_chrf": 75.59,
+      "chrf_min": 72.59,
+      "chrf_floor": 34.0,
+      "baseline": {
+        "scorecard": "scorecards/en-uk.json",
+        "bundle_sha256": "1d0c4ed7283b1bedc1d150301dbbeb18654619876e24129fd5fa2e0e77d4f6e6",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "vi-en": {
+      "golden_chrf": 72.79,
+      "chrf_min": 69.79,
+      "chrf_floor": 32.8,
+      "baseline": {
+        "scorecard": "scorecards/en-vi.json",
+        "bundle_sha256": "4d485c3455e50ac1b4dae8e372bc5e56ce68437867e08086ad00eb550fcfd968",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    },
+    "zh-en": {
+      "golden_chrf": 66.3,
+      "chrf_min": 63.3,
+      "chrf_floor": 29.8,
+      "baseline": {
+        "scorecard": "scorecards/en-zh.json",
+        "bundle_sha256": "13681fa7924551daac6c74dd222a7e3229634d17fcb633e81d0c2f3b8dd8a9ff",
+        "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+        "measured_on": "workspace-x86_64 (x86_64)"
+      }
+    }
+  },
+  "note": "Derived from the committed baseline scorecards by 'python -m versta.probe.bands'. Bands move only in dedicated re-pin commits with the measured scorecard diff attached (NEU-16/22/23 discipline); see PACK-ACCEPTANCE-RUNBOOK.md."
+}
