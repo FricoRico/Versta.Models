@@ -1,0 +1,1726 @@
+{
+  "schema": "versta.pack-sweep/1",
+  "bundles_total": 32,
+  "bundles_passing": 32,
+  "bundles_hard_failing": 0,
+  "bundles": [
+    {
+      "slug": "ar-en",
+      "published_file": "ar-en-bundle.tar.gz",
+      "published_sha256": "59b28cb0dee8ff9adca3732a2e9ea8cc67d7c5e44bf6bdbe53e397b2cdab0fd5",
+      "repacked_sha256": "c3ffbd2b7faeadeac82fa25a2c64084447e7ffac68d6515bc1c6534e84adcec5",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "ar-en",
+          "load_ok": true,
+          "chrf": 69.78,
+          "chrf_floor": 31.4,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 12.344,
+            "p50_ms": 21.227,
+            "p95_ms": 27.279,
+            "max_ms": 60.373
+          },
+          "rss_peak_kib": 97600
+        },
+        {
+          "direction": "en-ar",
+          "load_ok": true,
+          "chrf": 66.49,
+          "chrf_floor": 29.9,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 37,
+            "total": 40,
+            "failing_ids": [
+              "num-02",
+              "time-04",
+              "time-05"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 14.452,
+            "p50_ms": 21.393,
+            "p95_ms": 31.796,
+            "max_ms": 75.97
+          },
+          "rss_peak_kib": 101408
+        }
+      ]
+    },
+    {
+      "slug": "bg-en",
+      "published_file": "bg-en-bundle.tar.gz",
+      "published_sha256": "29d66db6cd52615e830ab4eb56fbc596a95d6a9831c7deddf99226e2cd961b6f",
+      "repacked_sha256": "072d86111e1bf0c5bfb57de1882dc78fef91d18b435e05c8578724ca1c46ef6e",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "bg-en",
+          "load_ok": true,
+          "chrf": 85.0,
+          "chrf_floor": 38.2,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 16.759,
+            "p50_ms": 21.4,
+            "p95_ms": 28.001,
+            "max_ms": 29.889
+          },
+          "rss_peak_kib": 96196
+        },
+        {
+          "direction": "en-bg",
+          "load_ok": true,
+          "chrf": 76.44,
+          "chrf_floor": 34.4,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 16.088,
+            "p50_ms": 21.528,
+            "p95_ms": 30.121,
+            "max_ms": 85.04
+          },
+          "rss_peak_kib": 101172
+        }
+      ]
+    },
+    {
+      "slug": "ca-en",
+      "published_file": "ca-en-bundle.tar.gz",
+      "published_sha256": "99852b62ea1630e8b4688712f5381513634f02003957c0bdca7351d05512d4f1",
+      "repacked_sha256": "7b312a1c3c89255895563c546867247e3e555d184929cadece39fa5a17637d79",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "ca-en",
+          "load_ok": true,
+          "chrf": 79.9,
+          "chrf_floor": 36.0,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 15.658,
+            "p50_ms": 21.31,
+            "p95_ms": 27.882,
+            "max_ms": 33.277
+          },
+          "rss_peak_kib": 95696
+        },
+        {
+          "direction": "en-ca",
+          "load_ok": true,
+          "chrf": 76.24,
+          "chrf_floor": 34.3,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 34,
+            "total": 40,
+            "failing_ids": [
+              "num-02",
+              "num-05",
+              "time-03",
+              "time-04",
+              "price-01",
+              "price-06"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 7.065,
+            "p50_ms": 9.9,
+            "p95_ms": 12.934,
+            "max_ms": 15.513
+          },
+          "rss_peak_kib": 54392
+        }
+      ]
+    },
+    {
+      "slug": "cs-en",
+      "published_file": "cs-en-bundle.tar.gz",
+      "published_sha256": "20c3a320a0d29d72bd104bb3f11c3160d1f7e19b116a1fd30c96df95a531d9a0",
+      "repacked_sha256": "32127fbed78bd0535517a31b559748fb8163d989d3241c4c9291e1cbda0952b9",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "cs-en",
+          "load_ok": true,
+          "chrf": 82.97,
+          "chrf_floor": 37.3,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-02"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 5.35,
+            "p50_ms": 9.644,
+            "p95_ms": 12.412,
+            "max_ms": 12.952
+          },
+          "rss_peak_kib": 56180
+        },
+        {
+          "direction": "en-cs",
+          "load_ok": true,
+          "chrf": 79.32,
+          "chrf_floor": 35.7,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 5.58,
+            "p50_ms": 9.754,
+            "p95_ms": 13.128,
+            "max_ms": 28.484
+          },
+          "rss_peak_kib": 54836
+        }
+      ]
+    },
+    {
+      "slug": "da-en",
+      "published_file": "da-en-bundle.tar.gz",
+      "published_sha256": "2035f16458f2460c0cefa7c00a518c06203d9c46efaebd7d29cb6b9dc68dee3b",
+      "repacked_sha256": "84c9bf2dbf399dac6eff326653e9c2e4327f3718d9139bea61925ace9363aaa0",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "da-en",
+          "load_ok": true,
+          "chrf": 80.58,
+          "chrf_floor": 36.3,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 6.358,
+            "p50_ms": 9.903,
+            "p95_ms": 12.485,
+            "max_ms": 21.028
+          },
+          "rss_peak_kib": 55372
+        },
+        {
+          "direction": "en-da",
+          "load_ok": true,
+          "chrf": 76.65,
+          "chrf_floor": 34.5,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-03"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 5.571,
+            "p50_ms": 8.912,
+            "p95_ms": 11.485,
+            "max_ms": 12.184
+          },
+          "rss_peak_kib": 54500
+        }
+      ]
+    },
+    {
+      "slug": "de-en",
+      "published_file": "de-en-bundle.tar.gz",
+      "published_sha256": "6ec1778d2cf9fa08483eb24de75bf3866d004baa21bbbe7d98a92c66aa5045d8",
+      "repacked_sha256": "d1a4088b48745e823ff200625cbc3047dedf12bf0eb2d518a1edd2dc769f4547",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "de-en",
+          "load_ok": true,
+          "chrf": 83.04,
+          "chrf_floor": 37.4,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 13.72,
+            "p50_ms": 21.111,
+            "p95_ms": 28.418,
+            "max_ms": 32.723
+          },
+          "rss_peak_kib": 96076
+        },
+        {
+          "direction": "en-de",
+          "load_ok": true,
+          "chrf": 78.77,
+          "chrf_floor": 35.4,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 12.303,
+            "p50_ms": 20.487,
+            "p95_ms": 28.336,
+            "max_ms": 32.463
+          },
+          "rss_peak_kib": 94672
+        }
+      ]
+    },
+    {
+      "slug": "el-en",
+      "published_file": "el-en-bundle.tar.gz",
+      "published_sha256": "b8fb452795e58f5db708ea16682f2f04bbdd5232f659f6b94d69ccad163e98d0",
+      "repacked_sha256": "4a0eb1df20c8dd5c62a6df1c30e58461fd43d86a7d8bcf9dd00aa633ee04a1b0",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "el-en",
+          "load_ok": true,
+          "chrf": 81.58,
+          "chrf_floor": 36.7,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 6.619,
+            "p50_ms": 9.478,
+            "p95_ms": 11.958,
+            "max_ms": 12.817
+          },
+          "rss_peak_kib": 55456
+        },
+        {
+          "direction": "en-el",
+          "load_ok": true,
+          "chrf": 81.55,
+          "chrf_floor": 36.7,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 6.614,
+            "p50_ms": 8.679,
+            "p95_ms": 10.982,
+            "max_ms": 18.866
+          },
+          "rss_peak_kib": 54432
+        }
+      ]
+    },
+    {
+      "slug": "en-es",
+      "published_file": "en-es-bundle.tar.gz",
+      "published_sha256": "a946fd01f292d123776f191b857da0185b3ce494fce252c65715d99da1ecbd28",
+      "repacked_sha256": "fd32e01b973f8634b9ab94d38d83f4e805be562ea805bf6e099d3154307720d0",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-es",
+          "load_ok": true,
+          "chrf": 81.02,
+          "chrf_floor": 36.5,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 14.84,
+            "p50_ms": 22.518,
+            "p95_ms": 26.888,
+            "max_ms": 34.0
+          },
+          "rss_peak_kib": 94608
+        },
+        {
+          "direction": "es-en",
+          "load_ok": true,
+          "chrf": 82.91,
+          "chrf_floor": 37.3,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 14.441,
+            "p50_ms": 21.176,
+            "p95_ms": 30.783,
+            "max_ms": 36.0
+          },
+          "rss_peak_kib": 95692
+        }
+      ]
+    },
+    {
+      "slug": "en-et",
+      "published_file": "en-et-bundle.tar.gz",
+      "published_sha256": "d02686ea692a0becab8e816686866829eeafc2080712738b5b691062853c2ba1",
+      "repacked_sha256": "cd7b3aaef01873842983dc01dd32f82cca83d5fa64592ba5295b4b9e9b8a723a",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-et",
+          "load_ok": true,
+          "chrf": 76.85,
+          "chrf_floor": 34.6,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 37,
+            "total": 40,
+            "failing_ids": [
+              "time-02",
+              "time-03",
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 14.589,
+            "p50_ms": 20.73,
+            "p95_ms": 28.985,
+            "max_ms": 33.577
+          },
+          "rss_peak_kib": 94372
+        },
+        {
+          "direction": "et-en",
+          "load_ok": true,
+          "chrf": 77.52,
+          "chrf_floor": 34.9,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 14.327,
+            "p50_ms": 19.82,
+            "p95_ms": 30.692,
+            "max_ms": 54.812
+          },
+          "rss_peak_kib": 99696
+        }
+      ]
+    },
+    {
+      "slug": "en-fa",
+      "published_file": "en-fa-bundle.tar.gz",
+      "published_sha256": "9c671b544c338ac41eed252d9bcc2b0be87f614ac49417057625b7f6b29e2a28",
+      "repacked_sha256": "300ec5175b3867d0cb3a1472a6f60bca07b1dd0e82710f6834306bd1c6736426",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-fa",
+          "load_ok": true,
+          "chrf": 59.54,
+          "chrf_floor": 26.8,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 34,
+            "total": 40,
+            "failing_ids": [
+              "time-04",
+              "time-06",
+              "price-04",
+              "price-05",
+              "dir-02",
+              "dir-07"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 4.521,
+            "p50_ms": 8.783,
+            "p95_ms": 14.727,
+            "max_ms": 17.829
+          },
+          "rss_peak_kib": 55404
+        },
+        {
+          "direction": "fa-en",
+          "load_ok": true,
+          "chrf": 66.76,
+          "chrf_floor": 30.0,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 15,
+            "total": 40,
+            "failing_ids": [
+              "num-01",
+              "num-02",
+              "num-04",
+              "num-05",
+              "num-06",
+              "time-02",
+              "time-04",
+              "time-05",
+              "time-06",
+              "price-01",
+              "price-02",
+              "price-03",
+              "price-05",
+              "price-06",
+              "price-07",
+              "addr-01",
+              "addr-02",
+              "addr-03",
+              "addr-04",
+              "addr-05",
+              "addr-06",
+              "dir-02",
+              "dir-04",
+              "dir-07",
+              "emerg-05"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 7.076,
+            "p50_ms": 9.787,
+            "p95_ms": 18.941,
+            "max_ms": 29.776
+          },
+          "rss_peak_kib": 56708
+        }
+      ]
+    },
+    {
+      "slug": "en-fi",
+      "published_file": "en-fi-bundle.tar.gz",
+      "published_sha256": "0f8a836782bfd02c3073fa05bd53ac2b332369fb1cf46d9cdf4db5783bb24b42",
+      "repacked_sha256": "87fb5578db620a953cca9fd45607d3320de728a7fedd52cda531795921eaa6db",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-fi",
+          "load_ok": true,
+          "chrf": 70.64,
+          "chrf_floor": 31.8,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 35,
+            "total": 40,
+            "failing_ids": [
+              "time-03",
+              "time-04",
+              "time-05",
+              "time-06",
+              "time-07"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 5.242,
+            "p50_ms": 8.054,
+            "p95_ms": 11.188,
+            "max_ms": 19.602
+          },
+          "rss_peak_kib": 53912
+        },
+        {
+          "direction": "fi-en",
+          "load_ok": true,
+          "chrf": 80.3,
+          "chrf_floor": 36.1,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 12.626,
+            "p50_ms": 20.95,
+            "p95_ms": 28.388,
+            "max_ms": 43.164
+          },
+          "rss_peak_kib": 95384
+        }
+      ]
+    },
+    {
+      "slug": "en-fr",
+      "published_file": "en-fr-bundle.tar.gz",
+      "published_sha256": "c69bd1145857a2e66d30f0d818da536a1e2a73b138e86de50ae592150e38dab8",
+      "repacked_sha256": "93e90b06cbe773b376b532b205e9b0282ee31b9f67437d7bb6011e24739f6053",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-fr",
+          "load_ok": true,
+          "chrf": 87.41,
+          "chrf_floor": 39.3,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 17.047,
+            "p50_ms": 22.91,
+            "p95_ms": 28.497,
+            "max_ms": 29.056
+          },
+          "rss_peak_kib": 94504
+        },
+        {
+          "direction": "fr-en",
+          "load_ok": true,
+          "chrf": 84.33,
+          "chrf_floor": 37.9,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 37,
+            "total": 40,
+            "failing_ids": [
+              "time-03",
+              "time-04",
+              "time-06"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 14.081,
+            "p50_ms": 20.758,
+            "p95_ms": 28.418,
+            "max_ms": 32.638
+          },
+          "rss_peak_kib": 95336
+        }
+      ]
+    },
+    {
+      "slug": "en-he",
+      "published_file": "en-he-bundle.tar.gz",
+      "published_sha256": "3df650c48b476575e53211df565e178d9f1a6bba8911baaeb2db47e8f72ee160",
+      "repacked_sha256": "703f2257acc132ffa9fe35f16c42b7b6d54425ae2294ec1c2ab6e39412bd4e61",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-he",
+          "load_ok": true,
+          "chrf": 73.89,
+          "chrf_floor": 33.3,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 38,
+            "total": 40,
+            "failing_ids": [
+              "time-04",
+              "price-03"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 5.633,
+            "p50_ms": 8.691,
+            "p95_ms": 13.618,
+            "max_ms": 15.726
+          },
+          "rss_peak_kib": 54600
+        },
+        {
+          "direction": "he-en",
+          "load_ok": true,
+          "chrf": 76.76,
+          "chrf_floor": 34.5,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 5.665,
+            "p50_ms": 8.385,
+            "p95_ms": 13.367,
+            "max_ms": 17.735
+          },
+          "rss_peak_kib": 56184
+        }
+      ]
+    },
+    {
+      "slug": "en-hr",
+      "published_file": "en-hr-bundle.tar.gz",
+      "published_sha256": "0f09727c8dc80cc6dd453982b83d4b112763c17be5f4641b6d96e025d6c7d441",
+      "repacked_sha256": "45d654fc0dfd6b87da00358a498852fc18efcddbad934429805266fcc76c76d4",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-hr",
+          "load_ok": true,
+          "chrf": 78.12,
+          "chrf_floor": 35.2,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 5.892,
+            "p50_ms": 8.242,
+            "p95_ms": 11.651,
+            "max_ms": 14.993
+          },
+          "rss_peak_kib": 54184
+        },
+        {
+          "direction": "hr-en",
+          "load_ok": true,
+          "chrf": 81.85,
+          "chrf_floor": 36.8,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 6.117,
+            "p50_ms": 8.591,
+            "p95_ms": 12.567,
+            "max_ms": 14.327
+          },
+          "rss_peak_kib": 55548
+        }
+      ]
+    },
+    {
+      "slug": "en-hu",
+      "published_file": "en-hu-bundle.tar.gz",
+      "published_sha256": "f4d939c9905ad5982bc07fe4dd4b2f895ab8db01bc0f75fccf12be42c3898b3e",
+      "repacked_sha256": "7f516a61d235c3b05311f4f4057b04c7eeaab7ab181ac5b85414b91af7497bc3",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-hu",
+          "load_ok": true,
+          "chrf": 71.65,
+          "chrf_floor": 32.2,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 37,
+            "total": 40,
+            "failing_ids": [
+              "num-02",
+              "time-03",
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 4.954,
+            "p50_ms": 8.994,
+            "p95_ms": 12.434,
+            "max_ms": 21.161
+          },
+          "rss_peak_kib": 54532
+        },
+        {
+          "direction": "hu-en",
+          "load_ok": true,
+          "chrf": 71.22,
+          "chrf_floor": 32.0,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 5.917,
+            "p50_ms": 7.963,
+            "p95_ms": 14.589,
+            "max_ms": 20.861
+          },
+          "rss_peak_kib": 56764
+        }
+      ]
+    },
+    {
+      "slug": "en-id",
+      "published_file": "en-id-bundle.tar.gz",
+      "published_sha256": "a7fbe0130804cbd3e1e8abfe6d2e533de86b71837d52155fd3d46e48811036e1",
+      "repacked_sha256": "b7d7dae30956aadea3bd38aa9661a7c4db7dc795c9cc84fce4a249b4790c5569",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-id",
+          "load_ok": true,
+          "chrf": 76.21,
+          "chrf_floor": 34.3,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 4.982,
+            "p50_ms": 8.436,
+            "p95_ms": 10.836,
+            "max_ms": 12.46
+          },
+          "rss_peak_kib": 53360
+        },
+        {
+          "direction": "id-en",
+          "load_ok": true,
+          "chrf": 74.19,
+          "chrf_floor": 33.4,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 5.408,
+            "p50_ms": 8.394,
+            "p95_ms": 11.338,
+            "max_ms": 11.738
+          },
+          "rss_peak_kib": 53724
+        }
+      ]
+    },
+    {
+      "slug": "en-it",
+      "published_file": "en-it-bundle.tar.gz",
+      "published_sha256": "02edd65a172daf1c0adf08ab5a2c307f0b65f75dd72920d89bfd24cccce7467b",
+      "repacked_sha256": "d8e6b9a6322dfd063f2b25c3c6f95e7c3c19a70dd845bc3d3a2401c9993c9f9e",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-it",
+          "load_ok": true,
+          "chrf": 84.89,
+          "chrf_floor": 38.2,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 16.275,
+            "p50_ms": 21.085,
+            "p95_ms": 29.857,
+            "max_ms": 37.774
+          },
+          "rss_peak_kib": 94844
+        },
+        {
+          "direction": "it-en",
+          "load_ok": true,
+          "chrf": 83.38,
+          "chrf_floor": 37.5,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 13.373,
+            "p50_ms": 21.053,
+            "p95_ms": 28.666,
+            "max_ms": 30.234
+          },
+          "rss_peak_kib": 95852
+        }
+      ]
+    },
+    {
+      "slug": "en-ja",
+      "published_file": "en-ja-bundle.tar.gz",
+      "published_sha256": "10deae7395c84ff489819b4714c2d851149c6f9c83ae4de763b5534737bbb45d",
+      "repacked_sha256": "5eea582b05a658e091868dc1d2f1d0125fcc53424496da05c35802ba46cc9b22",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-ja",
+          "load_ok": true,
+          "chrf": 53.3,
+          "chrf_floor": 24.0,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 11.691,
+            "p50_ms": 20.954,
+            "p95_ms": 50.386,
+            "max_ms": 63.273
+          },
+          "rss_peak_kib": 109544
+        },
+        {
+          "direction": "ja-en",
+          "load_ok": true,
+          "chrf": 63.82,
+          "chrf_floor": 28.7,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 36,
+            "total": 40,
+            "failing_ids": [
+              "num-06",
+              "time-06",
+              "time-07",
+              "price-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 4.934,
+            "p50_ms": 8.348,
+            "p95_ms": 11.476,
+            "max_ms": 27.349
+          },
+          "rss_peak_kib": 72336
+        }
+      ]
+    },
+    {
+      "slug": "en-ko",
+      "published_file": "en-ko-bundle.tar.gz",
+      "published_sha256": "a41577db001638de431fd7dcc90365e9a71ea283652dacd25a845c8c7a272145",
+      "repacked_sha256": "d4a5ea8cd8dd7c2ce83030e9a2eae74049440d21ab75c140b4b1c6d4f507b76d",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-ko",
+          "load_ok": true,
+          "chrf": 48.22,
+          "chrf_floor": 21.7,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 35,
+            "total": 40,
+            "failing_ids": [
+              "time-02",
+              "time-03",
+              "time-04",
+              "time-06",
+              "time-07"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 13.508,
+            "p50_ms": 20.559,
+            "p95_ms": 38.35,
+            "max_ms": 53.522
+          },
+          "rss_peak_kib": 107480
+        },
+        {
+          "direction": "ko-en",
+          "load_ok": true,
+          "chrf": 60.05,
+          "chrf_floor": 27.0,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 37,
+            "total": 40,
+            "failing_ids": [
+              "num-04",
+              "price-04",
+              "emerg-05"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 4.92,
+            "p50_ms": 8.808,
+            "p95_ms": 14.185,
+            "max_ms": 18.069
+          },
+          "rss_peak_kib": 71440
+        }
+      ]
+    },
+    {
+      "slug": "en-lv",
+      "published_file": "en-lv-bundle.tar.gz",
+      "published_sha256": "9a741bc89fe6f4d5c33ebdabaf9ef107938e56e67c8b6431f4d64ef654668777",
+      "repacked_sha256": "41e94af93cbcfaaa47c2619ac4620399bbf1c1475ce3ebd3cb0623d03d50171b",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "lv-en",
+          "load_ok": true,
+          "chrf": 73.33,
+          "chrf_floor": 33.0,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 6.156,
+            "p50_ms": 10.067,
+            "p95_ms": 15.71,
+            "max_ms": 21.318
+          },
+          "rss_peak_kib": 56696
+        }
+      ]
+    },
+    {
+      "slug": "en-nl",
+      "published_file": "en-nl-bundle.tar.gz",
+      "published_sha256": "7a9cfd4236f8437ef0cc0e5f93834e499a91f7ee6e1413691faed4026ddfda56",
+      "repacked_sha256": "14768ef9685a3c902955fd3a9ac9905c2e434fd8afd3e76fb0880353c1616510",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-nl",
+          "load_ok": true,
+          "chrf": 79.87,
+          "chrf_floor": 35.9,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 38,
+            "total": 40,
+            "failing_ids": [
+              "time-03",
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 12.488,
+            "p50_ms": 21.655,
+            "p95_ms": 29.527,
+            "max_ms": 34.572
+          },
+          "rss_peak_kib": 94184
+        },
+        {
+          "direction": "nl-en",
+          "load_ok": true,
+          "chrf": 83.34,
+          "chrf_floor": 37.5,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 16.925,
+            "p50_ms": 24.457,
+            "p95_ms": 32.202,
+            "max_ms": 55.473
+          },
+          "rss_peak_kib": 95360
+        }
+      ]
+    },
+    {
+      "slug": "en-pl",
+      "published_file": "en-pl-bundle.tar.gz",
+      "published_sha256": "421b4267dc1b1212d945a628111fdee4f2c23934c528ec5c66d6864060cd5202",
+      "repacked_sha256": "ef7e26ebda48aacff41e47ebb4e73a39f365971fc180d25d0f13de8c5c42fe2d",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-pl",
+          "load_ok": true,
+          "chrf": 81.22,
+          "chrf_floor": 36.5,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 15.078,
+            "p50_ms": 20.912,
+            "p95_ms": 30.585,
+            "max_ms": 50.051
+          },
+          "rss_peak_kib": 96020
+        },
+        {
+          "direction": "pl-en",
+          "load_ok": true,
+          "chrf": 83.99,
+          "chrf_floor": 37.8,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 14.17,
+            "p50_ms": 22.192,
+            "p95_ms": 27.936,
+            "max_ms": 50.057
+          },
+          "rss_peak_kib": 96212
+        }
+      ]
+    },
+    {
+      "slug": "en-pt",
+      "published_file": "en-pt-bundle.tar.gz",
+      "published_sha256": "3b146bc487aa3bf513ee43e10f08f6dc74d76cfbf326c4636b80f89882501eb4",
+      "repacked_sha256": "c199b7ffc9c2848b5e58cf189361e0976c64287369fe276d24738ef52db88bd2",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-pt",
+          "load_ok": true,
+          "chrf": 83.22,
+          "chrf_floor": 37.4,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 14.964,
+            "p50_ms": 19.217,
+            "p95_ms": 28.337,
+            "max_ms": 30.543
+          },
+          "rss_peak_kib": 94436
+        },
+        {
+          "direction": "pt-en",
+          "load_ok": true,
+          "chrf": 83.8,
+          "chrf_floor": 37.7,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 15.683,
+            "p50_ms": 21.772,
+            "p95_ms": 29.53,
+            "max_ms": 49.954
+          },
+          "rss_peak_kib": 96424
+        }
+      ]
+    },
+    {
+      "slug": "en-ro",
+      "published_file": "en-ro-bundle.tar.gz",
+      "published_sha256": "101f2347d7bd1064ecec0ba5c33970cb4cc314c9060c0d4f7a3ad051bf625f08",
+      "repacked_sha256": "24080c841135ca390decd1f1844b67a5bfbfd8df0cef05b90a506858d58f27aa",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-ro",
+          "load_ok": true,
+          "chrf": 77.59,
+          "chrf_floor": 34.9,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 7.286,
+            "p50_ms": 8.873,
+            "p95_ms": 11.858,
+            "max_ms": 26.547
+          },
+          "rss_peak_kib": 54840
+        },
+        {
+          "direction": "ro-en",
+          "load_ok": true,
+          "chrf": 84.47,
+          "chrf_floor": 38.0,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 6.489,
+            "p50_ms": 8.529,
+            "p95_ms": 11.489,
+            "max_ms": 11.736
+          },
+          "rss_peak_kib": 55552
+        }
+      ]
+    },
+    {
+      "slug": "en-ru",
+      "published_file": "en-ru-bundle.tar.gz",
+      "published_sha256": "a66ca5b0cd5f6e6ea6108db95f006030409a6d8af537d3c833e81aa7920e6ba9",
+      "repacked_sha256": "623518a59d6aa587d8739c31a0b705635c142f30a3489a354fd5a9e35891f2d7",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-ru",
+          "load_ok": true,
+          "chrf": 70.47,
+          "chrf_floor": 31.7,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 6.358,
+            "p50_ms": 9.371,
+            "p95_ms": 17.476,
+            "max_ms": 28.943
+          },
+          "rss_peak_kib": 55796
+        },
+        {
+          "direction": "ru-en",
+          "load_ok": true,
+          "chrf": 72.61,
+          "chrf_floor": 32.7,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 7.182,
+            "p50_ms": 9.603,
+            "p95_ms": 29.692,
+            "max_ms": 36.941
+          },
+          "rss_peak_kib": 56788
+        }
+      ]
+    },
+    {
+      "slug": "en-sk",
+      "published_file": "en-sk-bundle.tar.gz",
+      "published_sha256": "6f3452512789bbfef200b2f3fe328dfc3676059c1ffdd1e5908114e94c36f813",
+      "repacked_sha256": "6dbc50a13f731ddcade85e18508e9e1400930a35acbb2d179d34b85a2ded5fde",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-sk",
+          "load_ok": true,
+          "chrf": 80.02,
+          "chrf_floor": 36.0,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 6.144,
+            "p50_ms": 8.493,
+            "p95_ms": 11.229,
+            "max_ms": 29.244
+          },
+          "rss_peak_kib": 55672
+        },
+        {
+          "direction": "sk-en",
+          "load_ok": true,
+          "chrf": 81.22,
+          "chrf_floor": 36.5,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 5.75,
+            "p50_ms": 8.669,
+            "p95_ms": 12.441,
+            "max_ms": 16.269
+          },
+          "rss_peak_kib": 56556
+        }
+      ]
+    },
+    {
+      "slug": "en-sl",
+      "published_file": "en-sl-bundle.tar.gz",
+      "published_sha256": "3b4f4225ce2b68d2cffff0daab2270e9972209a224e41bea7c7e5f9ef097b8c0",
+      "repacked_sha256": "c1e48e2892c066c6490621b9d27a81a7fc27eb832307eda9db340750dc8ae730",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-sl",
+          "load_ok": true,
+          "chrf": 72.73,
+          "chrf_floor": 32.7,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 38,
+            "total": 40,
+            "failing_ids": [
+              "time-04",
+              "time-07"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 6.612,
+            "p50_ms": 8.7,
+            "p95_ms": 13.09,
+            "max_ms": 16.868
+          },
+          "rss_peak_kib": 54496
+        },
+        {
+          "direction": "sl-en",
+          "load_ok": true,
+          "chrf": 82.29,
+          "chrf_floor": 37.0,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 6.197,
+            "p50_ms": 8.531,
+            "p95_ms": 10.64,
+            "max_ms": 12.727
+          },
+          "rss_peak_kib": 56556
+        }
+      ]
+    },
+    {
+      "slug": "en-sv",
+      "published_file": "en-sv-bundle.tar.gz",
+      "published_sha256": "b98088c63a060b2179be0bf6ff8b2f3b75f699648b38c7bcb13a337ba243ac47",
+      "repacked_sha256": "900a0d5bd592c7df814774be0e122d7d7d7f6b5a947999a56f84d6839987308d",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-sv",
+          "load_ok": true,
+          "chrf": 78.89,
+          "chrf_floor": 35.5,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-06"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 6.568,
+            "p50_ms": 8.512,
+            "p95_ms": 11.617,
+            "max_ms": 14.018
+          },
+          "rss_peak_kib": 54408
+        },
+        {
+          "direction": "sv-en",
+          "load_ok": true,
+          "chrf": 82.26,
+          "chrf_floor": 37.0,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 5.113,
+            "p50_ms": 8.273,
+            "p95_ms": 11.606,
+            "max_ms": 13.463
+          },
+          "rss_peak_kib": 55208
+        }
+      ]
+    },
+    {
+      "slug": "en-tr",
+      "published_file": "en-tr-bundle.tar.gz",
+      "published_sha256": "422482e87c1651e0ce0f64b64155c53facc77e0df0cb9ed6669fcc86a6e95622",
+      "repacked_sha256": "2c89abb54e9cd82767d2d3340f9acf4db8e90c5ee259d03f7d13024c8fc67829",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-tr",
+          "load_ok": true,
+          "chrf": 67.43,
+          "chrf_floor": 30.3,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 37,
+            "total": 40,
+            "failing_ids": [
+              "time-02",
+              "time-03",
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 5.549,
+            "p50_ms": 8.358,
+            "p95_ms": 12.043,
+            "max_ms": 20.572
+          },
+          "rss_peak_kib": 54392
+        },
+        {
+          "direction": "tr-en",
+          "load_ok": true,
+          "chrf": 73.36,
+          "chrf_floor": 33.0,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 5.737,
+            "p50_ms": 8.543,
+            "p95_ms": 12.975,
+            "max_ms": 13.37
+          },
+          "rss_peak_kib": 55412
+        }
+      ]
+    },
+    {
+      "slug": "en-uk",
+      "published_file": "en-uk-bundle.tar.gz",
+      "published_sha256": "501ce3a19e69017695a39b1f9884ad5af5034f8258b4e34c78763e256138e3b2",
+      "repacked_sha256": "1d0c4ed7283b1bedc1d150301dbbeb18654619876e24129fd5fa2e0e77d4f6e6",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-uk",
+          "load_ok": true,
+          "chrf": 65.4,
+          "chrf_floor": 29.4,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 6.483,
+            "p50_ms": 8.986,
+            "p95_ms": 15.923,
+            "max_ms": 18.891
+          },
+          "rss_peak_kib": 54880
+        },
+        {
+          "direction": "uk-en",
+          "load_ok": true,
+          "chrf": 75.59,
+          "chrf_floor": 34.0,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 6.466,
+            "p50_ms": 9.262,
+            "p95_ms": 13.058,
+            "max_ms": 14.206
+          },
+          "rss_peak_kib": 55788
+        }
+      ]
+    },
+    {
+      "slug": "en-vi",
+      "published_file": "en-vi-bundle.tar.gz",
+      "published_sha256": "edb31f09c0c4bda82eaaeb00dd9338e39fc8e28ca53453b0b493a68e9f6b65d4",
+      "repacked_sha256": "4d485c3455e50ac1b4dae8e372bc5e56ce68437867e08086ad00eb550fcfd968",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-vi",
+          "load_ok": true,
+          "chrf": 79.81,
+          "chrf_floor": 35.9,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "time-04"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 17.546,
+            "p50_ms": 22.309,
+            "p95_ms": 31.97,
+            "max_ms": 32.824
+          },
+          "rss_peak_kib": 91508
+        },
+        {
+          "direction": "vi-en",
+          "load_ok": true,
+          "chrf": 72.79,
+          "chrf_floor": 32.8,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 40,
+            "total": 40,
+            "failing_ids": []
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 5.791,
+            "p50_ms": 8.898,
+            "p95_ms": 11.888,
+            "max_ms": 15.583
+          },
+          "rss_peak_kib": 52412
+        }
+      ]
+    },
+    {
+      "slug": "en-zh",
+      "published_file": "en-zh-bundle.tar.gz",
+      "published_sha256": "2c1761325acb93297ff3d9f9bb9d1df60224704db078dacf6cb4a53aa22655ee",
+      "repacked_sha256": "13681fa7924551daac6c74dd222a7e3229634d17fcb633e81d0c2f3b8dd8a9ff",
+      "acceptance": "pass",
+      "expectation_met": true,
+      "directions": [
+        {
+          "direction": "en-zh",
+          "load_ok": true,
+          "chrf": 34.47,
+          "chrf_floor": 15.0,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 31,
+            "total": 40,
+            "failing_ids": [
+              "num-01",
+              "num-02",
+              "time-02",
+              "time-03",
+              "time-04",
+              "time-06",
+              "time-07",
+              "price-01",
+              "price-06"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 11.391,
+            "p50_ms": 21.585,
+            "p95_ms": 39.784,
+            "max_ms": 69.25
+          },
+          "rss_peak_kib": 108912
+        },
+        {
+          "direction": "zh-en",
+          "load_ok": true,
+          "chrf": 66.3,
+          "chrf_floor": 29.8,
+          "direction_check": "pass",
+          "digit_preservation": {
+            "passed": 39,
+            "total": 40,
+            "failing_ids": [
+              "price-06"
+            ]
+          },
+          "latency_ms": {
+            "n": 40,
+            "min_ms": 4.928,
+            "p50_ms": 7.822,
+            "p95_ms": 12.03,
+            "max_ms": 14.118
+          },
+          "rss_peak_kib": 71228
+        }
+      ]
+    }
+  ]
+}

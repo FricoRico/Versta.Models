@@ -1,0 +1,341 @@
+{
+  "name": "traveler-v1",
+  "source_language": "en",
+  "target_language": "de",
+  "version": 1,
+  "chrf_floor": 35.4,
+  "chrf_floor_note": "Calibrated from the NEU-61 kickoff sweep: measured corpus chrF 78.8 on the published v2.0.0 pack; floor = max(15.0, min(0.45 * chrF, chrF - 20)). A direction-mislabeled pack collapses far below this value (see the es-en adversarial control).",
+  "entries": [
+    {
+      "id": "num-01",
+      "tags": [
+        "numbers"
+      ],
+      "source": "I need 3 tickets for tomorrow morning.",
+      "reference": "Ich brauche 3 Fahrkarten für morgen früh."
+    },
+    {
+      "id": "num-02",
+      "tags": [
+        "numbers"
+      ],
+      "source": "There are 5 of us, including 2 children.",
+      "reference": "Wir sind 5 Personen, darunter 2 Kinder."
+    },
+    {
+      "id": "num-03",
+      "tags": [
+        "numbers"
+      ],
+      "source": "My phone number is 0044 7788 123456.",
+      "reference": "Meine Telefonnummer ist 0044 7788 123456."
+    },
+    {
+      "id": "num-04",
+      "tags": [
+        "numbers"
+      ],
+      "source": "The flight takes 9 hours and 25 minutes.",
+      "reference": "Der Flug dauert 9 Stunden und 25 Minuten."
+    },
+    {
+      "id": "num-05",
+      "tags": [
+        "numbers"
+      ],
+      "source": "We are 4 people and we have 6 suitcases.",
+      "reference": "Wir sind 4 Personen und haben 6 Koffer."
+    },
+    {
+      "id": "num-06",
+      "tags": [
+        "numbers",
+        "addresses"
+      ],
+      "source": "Room 214 is on the second floor.",
+      "reference": "Zimmer 214 ist im zweiten Stock."
+    },
+    {
+      "id": "num-07",
+      "tags": [
+        "numbers",
+        "times"
+      ],
+      "source": "I arrived on October 3 and I leave on October 9.",
+      "reference": "Ich bin am 3. Oktober angekommen und reise am 9. Oktober ab."
+    },
+    {
+      "id": "time-01",
+      "tags": [
+        "times"
+      ],
+      "source": "What time does the museum open on Sundays?",
+      "reference": "Um wie viel Uhr öffnet das Museum sonntags?"
+    },
+    {
+      "id": "time-02",
+      "tags": [
+        "times"
+      ],
+      "source": "My train leaves at 18:45 from platform 7.",
+      "reference": "Mein Zug fährt um 18:45 Uhr von Gleis 7 ab."
+    },
+    {
+      "id": "time-03",
+      "tags": [
+        "times"
+      ],
+      "source": "The last bus leaves at 23:30 tonight.",
+      "reference": "Der letzte Bus fährt heute Abend um 23:30 Uhr."
+    },
+    {
+      "id": "time-04",
+      "tags": [
+        "times"
+      ],
+      "source": "I have a reservation at 8 pm for 2 people.",
+      "reference": "Ich habe eine Reservierung um 20 Uhr für 2 Personen."
+    },
+    {
+      "id": "time-05",
+      "tags": [
+        "times"
+      ],
+      "source": "Does the pharmacy open before 9 in the morning?",
+      "reference": "Öffnet die Apotheke vor 9 Uhr morgens?"
+    },
+    {
+      "id": "time-06",
+      "tags": [
+        "times",
+        "numbers"
+      ],
+      "source": "The tour starts at 14:15 and lasts 3 hours.",
+      "reference": "Die Führung beginnt um 14:15 Uhr und dauert 3 Stunden."
+    },
+    {
+      "id": "time-07",
+      "tags": [
+        "times"
+      ],
+      "source": "Breakfast is served from 6:30 to 10:00.",
+      "reference": "Frühstück gibt es von 6:30 bis 10:00 Uhr."
+    },
+    {
+      "id": "price-01",
+      "tags": [
+        "prices",
+        "numbers"
+      ],
+      "source": "How much is a double room for 3 nights?",
+      "reference": "Was kostet ein Doppelzimmer für 3 Nächte?"
+    },
+    {
+      "id": "price-02",
+      "tags": [
+        "prices"
+      ],
+      "source": "This costs 45 euros, including tax.",
+      "reference": "Das kostet 45 Euro, inklusive Steuern."
+    },
+    {
+      "id": "price-03",
+      "tags": [
+        "prices",
+        "numbers"
+      ],
+      "source": "Is there a discount for 2 adults and 1 child?",
+      "reference": "Gibt es einen Rabatt für 2 Erwachsene und 1 Kind?"
+    },
+    {
+      "id": "price-04",
+      "tags": [
+        "prices"
+      ],
+      "source": "The ticket costs 12.50 euros per person.",
+      "reference": "Die Fahrkarte kostet 12,50 Euro pro Person."
+    },
+    {
+      "id": "price-05",
+      "tags": [
+        "prices"
+      ],
+      "source": "Can I pay the 78 euros by card?",
+      "reference": "Kann ich die 78 Euro mit Karte bezahlen?"
+    },
+    {
+      "id": "price-06",
+      "tags": [
+        "prices"
+      ],
+      "source": "How much is the airport shuttle for 2 people?",
+      "reference": "Was kostet der Flughafenshuttle für 2 Personen?"
+    },
+    {
+      "id": "price-07",
+      "tags": [
+        "prices"
+      ],
+      "source": "The menu of the day is 15 euros with a drink included.",
+      "reference": "Das Tagesmenü kostet 15 Euro, ein Getränk ist inbegriffen."
+    },
+    {
+      "id": "addr-01",
+      "tags": [
+        "addresses"
+      ],
+      "source": "The address is Calle Mayor 15, third floor.",
+      "reference": "Die Adresse ist Calle Mayor 15, dritter Stock."
+    },
+    {
+      "id": "addr-02",
+      "tags": [
+        "addresses"
+      ],
+      "source": "My hotel is at 28 Gran Vía, near the metro.",
+      "reference": "Mein Hotel ist in der Gran Vía 28, nahe der Metro."
+    },
+    {
+      "id": "addr-03",
+      "tags": [
+        "addresses"
+      ],
+      "source": "The embassy is at Paseo de la Castellana 259.",
+      "reference": "Die Botschaft ist am Paseo de la Castellana 259."
+    },
+    {
+      "id": "addr-04",
+      "tags": [
+        "addresses"
+      ],
+      "source": "Please write down the address: number 42, apartment 5B.",
+      "reference": "Bitte notieren Sie die Adresse: Nummer 42, Wohnung 5B."
+    },
+    {
+      "id": "addr-05",
+      "tags": [
+        "addresses"
+      ],
+      "source": "The meeting point is Plaza del Sol, gate 3.",
+      "reference": "Der Treffpunkt ist die Plaza del Sol, Tor 3."
+    },
+    {
+      "id": "addr-06",
+      "tags": [
+        "addresses",
+        "directions"
+      ],
+      "source": "Is this the way to Carrer de Balmes 112?",
+      "reference": "Ist das der Weg zum Carrer de Balmes 112?"
+    },
+    {
+      "id": "dir-01",
+      "tags": [
+        "directions"
+      ],
+      "source": "Where is the nearest bus stop?",
+      "reference": "Wo ist die nächste Bushaltestelle?"
+    },
+    {
+      "id": "dir-02",
+      "tags": [
+        "directions",
+        "numbers"
+      ],
+      "source": "Turn left at the traffic lights, then go straight for 200 meters.",
+      "reference": "Biegen Sie an der Ampel links ab und gehen Sie dann 200 Meter geradeaus."
+    },
+    {
+      "id": "dir-03",
+      "tags": [
+        "directions"
+      ],
+      "source": "Is the station within walking distance of the hotel?",
+      "reference": "Kann man vom Bahnhof zum Hotel zu Fuß gehen?"
+    },
+    {
+      "id": "dir-04",
+      "tags": [
+        "directions",
+        "numbers"
+      ],
+      "source": "Which line goes to the airport, line 5 or line 8?",
+      "reference": "Welche Linie fährt zum Flughafen, die Linie 5 oder die Linie 8?"
+    },
+    {
+      "id": "dir-05",
+      "tags": [
+        "directions"
+      ],
+      "source": "Excuse me, is this seat 14A?",
+      "reference": "Entschuldigung, ist das der Platz 14A?"
+    },
+    {
+      "id": "dir-06",
+      "tags": [
+        "directions"
+      ],
+      "source": "How do I get to the old town from here?",
+      "reference": "Wie komme ich von hier in die Altstadt?"
+    },
+    {
+      "id": "dir-07",
+      "tags": [
+        "directions",
+        "times"
+      ],
+      "source": "The museum is about 15 minutes on foot from the square.",
+      "reference": "Das Museum ist etwa 15 Minuten zu Fuß vom Platz entfernt."
+    },
+    {
+      "id": "emerg-01",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Please call an ambulance, someone is unconscious.",
+      "reference": "Bitte rufen Sie einen Krankenwagen, jemand ist bewusstlos."
+    },
+    {
+      "id": "emerg-02",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "I have lost my passport and my wallet.",
+      "reference": "Ich habe meinen Reisepass und mein Portemonnaie verloren."
+    },
+    {
+      "id": "emerg-03",
+      "tags": [
+        "emergencies",
+        "directions"
+      ],
+      "source": "Where is the nearest hospital or clinic?",
+      "reference": "Wo ist das nächste Krankenhaus oder die nächste Klinik?"
+    },
+    {
+      "id": "emerg-04",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "I am allergic to peanuts; does this dish contain any?",
+      "reference": "Ich bin allergisch gegen Erdnüsse; enthält dieses Gericht welche?"
+    },
+    {
+      "id": "emerg-05",
+      "tags": [
+        "emergencies",
+        "prices"
+      ],
+      "source": "Someone stole my bag with 200 euros inside.",
+      "reference": "Jemand hat meine Tasche mit 200 Euro darin gestohlen."
+    },
+    {
+      "id": "emerg-06",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Call the police, please. There has been an accident.",
+      "reference": "Rufen Sie bitte die Polizei. Es gab einen Unfall."
+    }
+  ]
+}

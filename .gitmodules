@@ -1,3 +1,6 @@
 [submodule "object-character-recognition/vendor/mnn"]
 	path = object-character-recognition/vendor/mnn
 	url = https://github.com/alibaba/MNN
+[submodule "text-to-speech/vendor/mnn"]
+	path = text-to-speech/vendor/mnn
+	url = https://github.com/alibaba/MNN

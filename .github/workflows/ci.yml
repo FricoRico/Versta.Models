@@ -82,17 +82,22 @@ jobs:
       - run: uv sync
       - run: uv run mypy
 
-  # Unit tests + fully offline smoke export against a mocked Mozilla registry.
-  # Only `translation/` has a pytest suite today; other modules are verified
-  # by running their CLIs end-to-end (see the root AGENTS.md) until they get
-  # the same treatment.
+  # Unit tests: `translation/` (plus offline smoke export against a mocked
+  # Mozilla registry) and `text-to-speech/` (Supertonic 3 pipeline: metadata
+  # contract, feed, bundle lint, ledger). Other modules are still verified by
+  # running their CLIs end-to-end (see the root AGENTS.md) until they get the
+  # same treatment.
   test:
-    name: test
+    name: test (${{ matrix.module }})
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [translation, text-to-speech]
     defaults:
       run:
-        working-directory: translation
+        working-directory: ${{ matrix.module }}
     steps:
       - uses: actions/checkout@v4
 
@@ -102,3 +107,7 @@ jobs:
 
       - run: uv sync
       - run: uv run pytest -v
+      # NEU-60: the pinned golden bands must still derive from the committed
+      # baseline scorecards — a stale pin is never "fixed up" by moving bands;
+      # investigate, then re-pin deliberately (PACK-ACCEPTANCE-RUNBOOK.md).
+      - run: uv run python -m versta.probe.bands --check

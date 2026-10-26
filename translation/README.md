@@ -96,3 +96,76 @@ uv run mypy
 
 See `PIPELINE.md` for the pipeline architecture, the app contract and the
 reproducibility guarantees.
+
+## Pack acceptance probing (NEU-58)
+
+A bundle is not proven by passing the shape gates above — it is proven when
+it *loads and translates*. `versta.probe` is the pack acceptance runner:
+checksum → the same metadata/parse gate the app goes through
+(`versta/schema.py`) → loads each declared direction through `leanmt-probe`
+(the pinned Versta.Leanmt host binary, built with the exact
+`leanmt::Package`/`Model::Config` mapping the app's JNI bridge uses, with
+app-default decode) → translates the packaged traveler probe corpus
+(`versta/probe/corpora/`, 40 sentences per direction covering numbers, times,
+prices, addresses, directions, emergencies) → writes one scorecard JSON per
+bundle to `scorecards/`.
+
+```bash
+uv run python -m versta.probe \
+    --bundle output/en-es-bundle.tar.gz \
+    --probe_bin <path-to-leanmt-probe> \
+    --output_dir output/probe \
+    --expect pass            # '--expect direction-fail' for the adversarial control
+```
+
+Exit 0 iff the outcome matches `--expect`. The v1 gates are load and the
+chrF direction floor (the NEU-19 mislabeled-direction class); digit
+preservation (NEU-30), p50/p95 latency and peak RSS are measured and
+published on every scorecard and become publish gates in NEU-60 once bands
+are calibrated from the first full sweep.
+
+## Full-catalog sweep (NEU-61)
+
+`versta.probe.sweep` probes every bundle the published catalog serves: it
+downloads each `<slug>-bundle.tar.gz` from `models.versta.app`, verifies the
+served checksums against `pack-acceptance/pins.json` (`published` section),
+re-packs each payload through the production `versta.bundle` path (published
+v2.0.0 manifests predate the NEU-25 `leanmt_binary_version` handshake; payload
+bytes are unchanged by re-packing), and probes every declared direction —
+63 directions across 32 bundles. One scorecard per bundle plus an aggregate
+`sweep-summary.json` (schema `versta.pack-sweep/1`) are written; a single
+bundle's failure never aborts the sweep, because "no bundle ships unproven"
+needs the whole defect list in one pass.
+
+```bash
+uv run python -m versta.probe.sweep \
+    --bundles_dir output/published \
+    --probe_bin <path-to-leanmt-probe> \
+    --output_dir output/sweep
+```
+
+The per-direction chrF floors in the corpora are calibrated from the measured
+sweep — not static guesses (language distance varies): `versta.probe.calibrate`
+sets each floor from the sweep summary with
+`floor = max(15.0, min(0.45 * chrf, chrf - 20))`. Floors therefore separate a
+healthy pack from a direction-mislabeled one (the adversarial control
+collapses to chrF ~22, below every calibrated floor) without flapping on
+honest engine jitter. Re-calibration is a dedicated re-baseline commit with
+the sweep summary attached, same discipline as the bench baselines.
+
+The adversarial negative control is built from a real payload with swapped
+direction claims:
+
+```bash
+uv run python -m versta.probe.adversarial --model_dir output/en-es --output_dir output/adversarial
+```
+
+on the `ubuntu-24.04-arm` CI runner this all runs end to end on every commit
+(`.github/workflows/pack-acceptance.yml`), against served-artifact contents
+pinned in `pack-acceptance/pins.json` (content SHA-256s, bench-baseline
+re-pinning discipline). The committed first-sweep baseline lives in
+`scorecards/`: one card per published bundle (32 pairs) plus the
+`es-en.adversarial` negative control and the `sweep-summary.json` aggregate;
+the card schema is `versta.pack-scorecard/1` (field guide:
+`scorecards/README.md`), dispatching on the named schema string and joining
+the eval ledger on `bundle.sha256`.

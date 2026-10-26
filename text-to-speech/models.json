@@ -67,8 +67,272 @@
         "language": "fr"
       }
     ],
-    "architectures": ["StyleTTS2"],
+    "architectures": [
+      "StyleTTS2"
+    ],
     "bundle": "https://models.versta.app/text-to-speech/v1.2.0/kokoro-bundle.tar.gz",
     "checksum": "https://models.versta.app/text-to-speech/v1.2.0/kokoro-bundle.tar.sha256"
+  },
+  {
+    "id": "supertonic3",
+    "name": "Supertonic 3",
+    "base_model": "Supertone/supertonic-3",
+    "size": 99840842,
+    "version": "v2.0.0",
+    "voices": [
+      {
+        "gender": "male",
+        "language": "ar"
+      },
+      {
+        "gender": "female",
+        "language": "ar"
+      },
+      {
+        "gender": "male",
+        "language": "bg"
+      },
+      {
+        "gender": "female",
+        "language": "bg"
+      },
+      {
+        "gender": "male",
+        "language": "cs"
+      },
+      {
+        "gender": "female",
+        "language": "cs"
+      },
+      {
+        "gender": "male",
+        "language": "da"
+      },
+      {
+        "gender": "female",
+        "language": "da"
+      },
+      {
+        "gender": "male",
+        "language": "de"
+      },
+      {
+        "gender": "female",
+        "language": "de"
+      },
+      {
+        "gender": "male",
+        "language": "el"
+      },
+      {
+        "gender": "female",
+        "language": "el"
+      },
+      {
+        "gender": "male",
+        "language": "en"
+      },
+      {
+        "gender": "female",
+        "language": "en"
+      },
+      {
+        "gender": "male",
+        "language": "es"
+      },
+      {
+        "gender": "female",
+        "language": "es"
+      },
+      {
+        "gender": "male",
+        "language": "et"
+      },
+      {
+        "gender": "female",
+        "language": "et"
+      },
+      {
+        "gender": "male",
+        "language": "fi"
+      },
+      {
+        "gender": "female",
+        "language": "fi"
+      },
+      {
+        "gender": "male",
+        "language": "fr"
+      },
+      {
+        "gender": "female",
+        "language": "fr"
+      },
+      {
+        "gender": "male",
+        "language": "hi"
+      },
+      {
+        "gender": "female",
+        "language": "hi"
+      },
+      {
+        "gender": "male",
+        "language": "hr"
+      },
+      {
+        "gender": "female",
+        "language": "hr"
+      },
+      {
+        "gender": "male",
+        "language": "hu"
+      },
+      {
+        "gender": "female",
+        "language": "hu"
+      },
+      {
+        "gender": "male",
+        "language": "id"
+      },
+      {
+        "gender": "female",
+        "language": "id"
+      },
+      {
+        "gender": "male",
+        "language": "it"
+      },
+      {
+        "gender": "female",
+        "language": "it"
+      },
+      {
+        "gender": "male",
+        "language": "ja"
+      },
+      {
+        "gender": "female",
+        "language": "ja"
+      },
+      {
+        "gender": "male",
+        "language": "ko"
+      },
+      {
+        "gender": "female",
+        "language": "ko"
+      },
+      {
+        "gender": "male",
+        "language": "lt"
+      },
+      {
+        "gender": "female",
+        "language": "lt"
+      },
+      {
+        "gender": "male",
+        "language": "lv"
+      },
+      {
+        "gender": "female",
+        "language": "lv"
+      },
+      {
+        "gender": "male",
+        "language": "nl"
+      },
+      {
+        "gender": "female",
+        "language": "nl"
+      },
+      {
+        "gender": "male",
+        "language": "pl"
+      },
+      {
+        "gender": "female",
+        "language": "pl"
+      },
+      {
+        "gender": "male",
+        "language": "pt"
+      },
+      {
+        "gender": "female",
+        "language": "pt"
+      },
+      {
+        "gender": "male",
+        "language": "ro"
+      },
+      {
+        "gender": "female",
+        "language": "ro"
+      },
+      {
+        "gender": "male",
+        "language": "ru"
+      },
+      {
+        "gender": "female",
+        "language": "ru"
+      },
+      {
+        "gender": "male",
+        "language": "sk"
+      },
+      {
+        "gender": "female",
+        "language": "sk"
+      },
+      {
+        "gender": "male",
+        "language": "sl"
+      },
+      {
+        "gender": "female",
+        "language": "sl"
+      },
+      {
+        "gender": "male",
+        "language": "sv"
+      },
+      {
+        "gender": "female",
+        "language": "sv"
+      },
+      {
+        "gender": "male",
+        "language": "tr"
+      },
+      {
+        "gender": "female",
+        "language": "tr"
+      },
+      {
+        "gender": "male",
+        "language": "uk"
+      },
+      {
+        "gender": "female",
+        "language": "uk"
+      },
+      {
+        "gender": "male",
+        "language": "vi"
+      },
+      {
+        "gender": "female",
+        "language": "vi"
+      }
+    ],
+    "architectures": [
+      "Supertonic3"
+    ],
+    "bundle": "https://models.versta.app/text-to-speech/v2.0.0/supertonic3-bundle.tar.gz",
+    "checksum": "https://models.versta.app/text-to-speech/v2.0.0/supertonic3-bundle.tar.sha256"
   }
 ]

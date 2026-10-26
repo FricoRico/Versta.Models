@@ -35,7 +35,11 @@ Mozilla GCS bucket                      Versta.Models                    models.
                                   ┌──────────────────────────┐      deploy (manual)
                                   │ versta.batch             │      │ tarball + .sha256 │
                                   │  • loop pairs            │      │ catalog models.json│
-                                  │  • generated catalog     │      └───────────────┘
+                                  │  • publish gate (NEU-60):│      └───────────────┘
+                                  │    no passing scorecard  │
+                                  │    in golden bands → no  │
+                                  │    catalog written       │
+                                  │  • generated catalog     │
                                   │  • sync checked-in       │
                                   │    models.json in place  │
                                   │  ⇒ validate both         │
@@ -74,6 +78,20 @@ downloads + bundles each group, writes a generated `models.json` (validated),
 then syncs computed fields (`size`, `bundle`, `checksum`, `score` ×100,
 `version`) back into the input catalog in place (with a `.bak` backup) and
 validates the updated catalog.
+
+**Publish gate (NEU-60):** before any catalog write, every produced bundle
+must be backed by a pass-rated pack-acceptance scorecard
+(`versta.pack-scorecard/1`) covering its exact bytes (`bundle.file` +
+`bundle.sha256`), with every direction loading, clearing the direction/chrF
+sanity floor, at 100% digit preservation, and inside the pinned golden band
+(`pack-acceptance/bands.json`, schema `versta.pack-bands/1`) vs. the
+previously published bundle. Any failure refuses the run (non-zero exit, no
+`models.json` written, input catalog untouched). `--skip_publish_gate` is
+for development/dry-run exports only. Standalone check: `uv run python -m
+versta.batch.publish_gate --bundle <tar>`. Thresholds, the re-pin procedure
+and the failure taxonomy live in `PACK-ACCEPTANCE-RUNBOOK.md`. The scorecard
+and bands shapes are manifest-adjacent: landed jointly with the pipeline
+pair (NEU-38).
 
 ## Evaluation corpora (pinned)
 
@@ -183,6 +201,45 @@ they only ship when `--architecture base` is requested explicitly. The
 architecture preference (`tiny` → `base-memory` → `base`) keeps unattended
 batch exports on the current generation.
 
+## leanmt translate CLI (`versta.engine-cli/1`, NEU-50)
+
+The quality harness scores the *shipped* engine against the *shipped*
+bundle by driving leanmt's bench/translate binary as a black-box CLI. The
+engine side of that contract is `leanmt-bench translate` (Versta.Leanmt,
+`bench/bench_translate.cc`; full semantics in its README "Batch translation
+(file → file)"); this repo pins the contract version as
+`LEANMT_CLI_SPEC = "versta.engine-cli/1"` in `versta/leanmt.py` — same
+handshake style as `leanmt_binary_version` above. The harness must refuse
+to run against a binary whose `--version` does not report the pinned spec
+identifier; a spec bump is a deliberate, coordinated event that makes
+old/new scores non-comparable by construction.
+
+```bash
+leanmt-bench translate \
+    --model model.bin --vocab vocab.src.spm [--target-vocab vocab.trg.spm] \
+    --shortlist lex.bin \
+    --input input.txt --output output.txt \
+    [--threads N] [--beam N] [--batch N]
+```
+
+Contract summary (the engine README is normative):
+
+- `--input` holds UTF-8 sentences, one per line; `--output` receives exactly
+  one translation per input line, in order, each `\n`-terminated. Blank
+  input lines abort with the line number (matches the corpus rule "no blank
+  lines; output must stay line-aligned"); a translation containing a raw
+  newline aborts the run rather than corrupting alignment.
+- Exit codes: `0` success, `1` runtime failure (unreadable input,
+  model-load error including the NEU-25/NEU-26 fail-fasts, decode failure,
+  unwritable output), `2` usage error.
+- Deterministic for a fixed model + decode settings: bit-identical across
+  reruns, thread counts and `--batch` values; the translation cache is off
+  in this mode. `--threads`, `--beam` (default 3, `1` = greedy) pin the
+  decode; the effective settings are echoed to stderr and `--version`
+  reports engine + spec versions for the result JSON's `engine` block.
+- Split-Wemb pairs (NEU-26) pass `--target-vocab`, mirroring the bundle's
+  `files.target_vocabulary`.
+
 ## Reproducibility contract
 
 Identical inputs must produce byte-identical bundles:
@@ -207,8 +264,16 @@ uv run python -m versta.download --source en --target es --architecture tiny --o
 uv run python -m versta.download --source es --target en --architecture tiny --output_dir ./output
 uv run python -m versta.bundle --input_dir ./output/en-es ./output/es-en --output_dir ./output
 
-# Many pairs from a catalog:
+# Many pairs from a catalog (publishes only with passing scorecards; use
+# --skip_publish_gate for a development/dry-run export):
 uv run python -m versta.batch --input_file models.json --output_dir ./output/export
+
+# Is this bundle publishable yet? (exit 0 publishable / 2 refused):
+uv run python -m versta.batch.publish_gate --bundle output/en-es-bundle.tar.gz
+
+# Golden bands: verify the committed pin against the committed scorecards,
+# or re-pin (dedicated commit only — see PACK-ACCEPTANCE-RUNBOOK.md):
+uv run python -m versta.probe.bands --check
 
 # Quality gates (what CI runs):
 uv run ruff check . && uv run ruff format --check .
@@ -225,5 +290,14 @@ Artifacts land in the gitignored `output/` tree. Deploying to
 `.github/workflows/ci.yml` runs on pushes to `main` and PRs touching
 `translation/`: ruff lint + format check, mypy on the `versta` package, and
 the pytest suite — including `tests/test_smoke_export.py`, a full batch export
-driven against a mocked Mozilla registry (hermetic, no network). A real-model
+driven against a mocked Mozilla registry (hermetic, no network) with the
+publish gate's refuse/pass paths, plus `versta.probe.bands --check` locking
+the pinned golden bands to the committed scorecards. A real-model
 export is validated manually per release (see README's verification section).
+
+`.github/workflows/pack-acceptance.yml` sweeps every published bundle on
+arm64 per commit (probe + adversarial negative control + publish-gate
+demonstration: the deliberately mislabeled control pack must be refused, a
+proven bundle must pass). `.github/workflows/pack-sweep-weekly.yml` runs the
+same sweep on Mondays and files one deduped GitHub issue per regressed
+bundle (label `pack-acceptance`); see `PACK-ACCEPTANCE-RUNBOOK.md`.

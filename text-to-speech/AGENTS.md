@@ -1,18 +1,23 @@
 # text-to-speech/
 
-Kokoro and Piper text-to-speech models for the Versta app. Read the root
+Supertonic 3 and Piper text-to-speech models for the Versta app. Read the root
 `/AGENTS.md` first; it defines the shared Python, typing and CLI conventions
 this module follows.
 
 ## Module purpose
 
-This module converts TTS models from Hugging Face into the runtime formats the
-Versta app needs (ONNX → quantized ONNX → ORT for on-device inference via
-onnxruntime), and bundles them for side-loading.
+This module ships two paths:
 
-- Two model families are supported: **Kokoro** (e.g. `hexgrad/Kokoro-82M`) and **Piper** voices (`rhasspy/piper-voices`). Format-specific code lives in `export/convert_kokoro_to_onnx.py` / `convert_piper_to_onnx.py` and `quantize_kokoro.py` / `quantize_piper.py`, dispatched through the format-agnostic `convert_onnx.py` / `quantize.py`.
-- The export ships more than weights: tokenizer files and voice metadata are saved into the output so the bundle is fully self-contained for offline TTS.
-- Heavy dependencies: `onnxruntime` + `onnxruntime-tools`, `optimum[exporters]`, `transformers`, `kokoro==0.8.4` (exactly pinned), `huggingface_hub`, `pycountry`. Pin style stays `>=,<` per the root conventions; Kokoro is the deliberate exception.
+- **Supertonic 3 → MNN int8** (`versta/supertonic3/`, bundle v2.0.0): the current
+  shipped voice bundle — 4-stage MNN conversion, seeded numerics verification,
+  OpenRAIL-compliant bundling, feed entry, conversion ledger. Usage and gates:
+  `README.md`.
+- **Piper → ONNX/ORT legacy** (`versta/export|bundle|batch/`), unchanged. Kokoro
+  is archived in `versta/export/_archive/` (NEU-68; `convert_onnx.py` /
+  `quantize.py` fail closed with a pointer for `--model_format kokoro`).
+
+- Heavy dependencies: `onnxruntime` + `onnxruntime-tools`, `optimum[exporters]`, `transformers`, `huggingface_hub`, `pycountry`, `numpy`. Pin style stays `>=,<` per the root conventions.
+- `vendor/mnn` pins MNN at tag 3.6.1 (the NEU-64-validated version) and provides the MNNConvert build the Supertonic 3 converter drives.
 
 ## Tools
 
@@ -67,8 +72,13 @@ deployable `models.json` catalog in the same shape as the checked-in one
 
 ## Verification
 
-No test suite. Smoke-check a change with a Piper voice (smallest download) or
-Kokoro, and confirm the ORT files, tokenizer files and `metadata.json`:
+- `tests/` carries a pytest suite (`uv run pytest tests/`) covering the
+  Supertonic 3 metadata contract, feed row order, bundle lint/tarball and
+  ledger behavior. Extend it with any schema touch.
+- The Supertonic 3 numerics gate (`versta.supertonic3 verify`) is the
+  behavioral check for conversion changes; it runs seeded and fails closed.
+- Piper smoke-check stays CLI-level (smallest download), confirming the ORT
+  files, tokenizer files and `metadata.json`:
 
 ```bash
 uv run python -m versta.export --model rhasspy/piper-voices --model_format piper --voice nl/nl_NL/mls/medium --keep_intermediates

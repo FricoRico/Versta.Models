@@ -6,7 +6,7 @@ Each top-level directory is a self-contained [uv](https://docs.astral.sh/uv/) pr
 - [translation/](translation) — Firefox (Bergamot) translation models, downloaded and bundled per language pair.
 - [object-character-recognition/](object-character-recognition) — PaddleOCR PP-OCRv6 models converted to MNN int8, bundled as OCR packs (detector, recognizers, script classifier, textline orientation).
 - [speech-recognition/](speech-recognition) — whisper.cpp (ggml) speech recognition models.
-- [text-to-speech/](text-to-speech) — Kokoro/Piper TTS models converted to ONNX/ORT.
+- [text-to-speech/](text-to-speech) — Supertonic 3 converted to MNN int8 (current voice bundle), plus the legacy Piper ONNX/ORT path.
 - [data/](data) — shared runtime data bundles (espeak-ng, open-jtalk).
 
 Module-specific usage lives in each module's README.md.
