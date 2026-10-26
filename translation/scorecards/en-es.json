@@ -1,7 +1,7 @@
 {
   "schema": "versta.pack-scorecard/1",
   "scorecard_version": 1,
-  "generated_at": "2026-10-14T21:09:14+00:00",
+  "generated_at": "2026-10-26T07:59:55+00:00",
   "slug": "en-es",
   "bundle": {
     "file": "en-es-bundle.tar.gz",
@@ -10,14 +10,14 @@
     "bundle_version": "v2.1.0"
   },
   "environment": {
-    "host_arch": "aarch64",
-    "probe_arch": "aarch64",
+    "host_arch": "x86_64",
+    "probe_arch": "x86_64",
     "threads": 2,
-    "runner": "ubuntu-24.04-arm",
-    "leanmt_commit": "f26e42621fc76b485c55fc2c886a123dc515d436",
+    "runner": "workspace-x86_64",
+    "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
     "corpus": "traveler-v1",
     "corpus_entries": 80,
-    "corpus_sha256": "0c4e165f801932bde5e7bfc4bad268a57fadb83031bfccfc5a52a96dd88dd490"
+    "corpus_sha256": "e129112dca43f750abe788821120e09717a089719145713c8b58ae3ab0542b44"
   },
   "metrics": {
     "sacrebleu_version": "2.6.0",
@@ -27,10 +27,10 @@
     {
       "direction": "en-es",
       "load_ok": true,
-      "model_load_ms": 39.911,
-      "rss_after_load_kib": 54920,
-      "chrf": 81.15,
-      "chrf_floor": 20.0,
+      "model_load_ms": 54.249,
+      "rss_after_load_kib": 55628,
+      "chrf": 81.02,
+      "chrf_floor": 36.5,
       "direction_check": "pass",
       "digit_preservation": {
         "passed": 40,
@@ -39,22 +39,22 @@
       },
       "latency_ms": {
         "n": 40,
-        "min_ms": 4.297,
-        "p50_ms": 5.518,
-        "p95_ms": 7.033,
-        "max_ms": 8.719
+        "min_ms": 14.84,
+        "p50_ms": 22.518,
+        "p95_ms": 26.888,
+        "max_ms": 34.0
       },
-      "rss_peak_kib": 85640,
+      "rss_peak_kib": 94608,
       "sentences": 40,
       "translation_failures": 0
     },
     {
       "direction": "es-en",
       "load_ok": true,
-      "model_load_ms": 39.445,
-      "rss_after_load_kib": 54944,
+      "model_load_ms": 51.714,
+      "rss_after_load_kib": 55544,
       "chrf": 82.91,
-      "chrf_floor": 30.0,
+      "chrf_floor": 37.3,
       "direction_check": "pass",
       "digit_preservation": {
         "passed": 40,
@@ -63,12 +63,12 @@
       },
       "latency_ms": {
         "n": 40,
-        "min_ms": 3.686,
-        "p50_ms": 5.456,
-        "p95_ms": 7.526,
-        "max_ms": 8.846
+        "min_ms": 14.441,
+        "p50_ms": 21.176,
+        "p95_ms": 30.783,
+        "max_ms": 36.0
       },
-      "rss_peak_kib": 87004,
+      "rss_peak_kib": 95692,
       "sentences": 40,
       "translation_failures": 0
     }

@@ -1,0 +1,341 @@
+{
+  "name": "traveler-v1",
+  "source_language": "he",
+  "target_language": "en",
+  "version": 1,
+  "chrf_floor": 34.5,
+  "chrf_floor_note": "Calibrated from the NEU-61 kickoff sweep: measured corpus chrF 76.8 on the published v2.0.0 pack; floor = max(15.0, min(0.45 * chrF, chrF - 20)). A direction-mislabeled pack collapses far below this value (see the es-en adversarial control).",
+  "entries": [
+    {
+      "id": "num-01",
+      "tags": [
+        "numbers"
+      ],
+      "source": "אני צריך 3 כרטיסים למחר בבוקר.",
+      "reference": "I need 3 tickets for tomorrow morning."
+    },
+    {
+      "id": "num-02",
+      "tags": [
+        "numbers"
+      ],
+      "source": "אנחנו 5 אנשים, כולל 2 ילדים.",
+      "reference": "There are 5 of us, including 2 children."
+    },
+    {
+      "id": "num-03",
+      "tags": [
+        "numbers"
+      ],
+      "source": "מספר הטלפון שלי הוא 0044 7788 123456.",
+      "reference": "My phone number is 0044 7788 123456."
+    },
+    {
+      "id": "num-04",
+      "tags": [
+        "numbers"
+      ],
+      "source": "הטיסה נמשכת 9 שעות ו-25 דקות.",
+      "reference": "The flight takes 9 hours and 25 minutes."
+    },
+    {
+      "id": "num-05",
+      "tags": [
+        "numbers"
+      ],
+      "source": "אנחנו 4 אנשים ויש לנו 6 מזוודות.",
+      "reference": "We are 4 people and we have 6 suitcases."
+    },
+    {
+      "id": "num-06",
+      "tags": [
+        "numbers",
+        "addresses"
+      ],
+      "source": "חדר 214 נמצא בקומה השנייה.",
+      "reference": "Room 214 is on the second floor."
+    },
+    {
+      "id": "num-07",
+      "tags": [
+        "numbers",
+        "times"
+      ],
+      "source": "הגעתי ב-3 באוקטובר ואני עוזב ב-9 באוקטובר.",
+      "reference": "I arrived on October 3 and I leave on October 9."
+    },
+    {
+      "id": "time-01",
+      "tags": [
+        "times"
+      ],
+      "source": "באיזו שעה המוזיאון נפתח בימי ראשון?",
+      "reference": "What time does the museum open on Sundays?"
+    },
+    {
+      "id": "time-02",
+      "tags": [
+        "times"
+      ],
+      "source": "הרכבת שלי יוצאת ב-18:45 מרציף 7.",
+      "reference": "My train leaves at 18:45 from platform 7."
+    },
+    {
+      "id": "time-03",
+      "tags": [
+        "times"
+      ],
+      "source": "האוטובוס האחרון יוצא ב-23:30 הלילה.",
+      "reference": "The last bus leaves at 23:30 tonight."
+    },
+    {
+      "id": "time-04",
+      "tags": [
+        "times"
+      ],
+      "source": "יש לי הזמנה לשעה 20:00 ל-2 אנשים.",
+      "reference": "I have a reservation at 8 pm for 2 people."
+    },
+    {
+      "id": "time-05",
+      "tags": [
+        "times"
+      ],
+      "source": "האם בית המרקחת נפתח לפני 9 בבוקר?",
+      "reference": "Does the pharmacy open before 9 in the morning?"
+    },
+    {
+      "id": "time-06",
+      "tags": [
+        "times",
+        "numbers"
+      ],
+      "source": "הסיור מתחיל ב-14:15 ונמשך 3 שעות.",
+      "reference": "The tour starts at 14:15 and lasts 3 hours."
+    },
+    {
+      "id": "time-07",
+      "tags": [
+        "times"
+      ],
+      "source": "ארוחת בוקר מוגשת מ-6:30 עד 10:00.",
+      "reference": "Breakfast is served from 6:30 to 10:00."
+    },
+    {
+      "id": "price-01",
+      "tags": [
+        "prices",
+        "numbers"
+      ],
+      "source": "כמה עולה חדר זוגי ל-3 לילות?",
+      "reference": "How much is a double room for 3 nights?"
+    },
+    {
+      "id": "price-02",
+      "tags": [
+        "prices"
+      ],
+      "source": "זה עולה 45 יורו, כולל מס.",
+      "reference": "This costs 45 euros, including tax."
+    },
+    {
+      "id": "price-03",
+      "tags": [
+        "prices",
+        "numbers"
+      ],
+      "source": "האם יש הנחה ל-2 מבוגרים וילד 1?",
+      "reference": "Is there a discount for 2 adults and 1 child?"
+    },
+    {
+      "id": "price-04",
+      "tags": [
+        "prices"
+      ],
+      "source": "הכרטיס עולה 12.50 יורו לאדם.",
+      "reference": "The ticket costs 12.50 euros per person."
+    },
+    {
+      "id": "price-05",
+      "tags": [
+        "prices"
+      ],
+      "source": "האם אוכל לשלם 78 יורו בכרטיס?",
+      "reference": "Can I pay the 78 euros by card?"
+    },
+    {
+      "id": "price-06",
+      "tags": [
+        "prices"
+      ],
+      "source": "כמה עולה הסעה לשדה התעופה ל-2 אנשים?",
+      "reference": "How much is the airport shuttle for 2 people?"
+    },
+    {
+      "id": "price-07",
+      "tags": [
+        "prices"
+      ],
+      "source": "תפריט היום עולה 15 יורו כולל משקה.",
+      "reference": "The menu of the day is 15 euros with a drink included."
+    },
+    {
+      "id": "addr-01",
+      "tags": [
+        "addresses"
+      ],
+      "source": "הכתובת היא Calle Mayor 15, קומה שלישית.",
+      "reference": "The address is Calle Mayor 15, third floor."
+    },
+    {
+      "id": "addr-02",
+      "tags": [
+        "addresses"
+      ],
+      "source": "המלון שלי נמצא ב-Gran Vía 28, ליד המטרו.",
+      "reference": "My hotel is at 28 Gran Vía, near the metro."
+    },
+    {
+      "id": "addr-03",
+      "tags": [
+        "addresses"
+      ],
+      "source": "השגרירות נמצאת ב-Paseo de la Castellana 259.",
+      "reference": "The embassy is at Paseo de la Castellana 259."
+    },
+    {
+      "id": "addr-04",
+      "tags": [
+        "addresses"
+      ],
+      "source": "בבקשה רשמו את הכתובת: מספר 42, דירה 5B.",
+      "reference": "Please write down the address: number 42, apartment 5B."
+    },
+    {
+      "id": "addr-05",
+      "tags": [
+        "addresses"
+      ],
+      "source": "נקודת המפגש היא Plaza del Sol, שער 3.",
+      "reference": "The meeting point is Plaza del Sol, gate 3."
+    },
+    {
+      "id": "addr-06",
+      "tags": [
+        "addresses",
+        "directions"
+      ],
+      "source": "האם זו הדרך ל-Carrer de Balmes 112?",
+      "reference": "Is this the way to Carrer de Balmes 112?"
+    },
+    {
+      "id": "dir-01",
+      "tags": [
+        "directions"
+      ],
+      "source": "איפה תחנת האוטובוס הקרובה ביותר?",
+      "reference": "Where is the nearest bus stop?"
+    },
+    {
+      "id": "dir-02",
+      "tags": [
+        "directions",
+        "numbers"
+      ],
+      "source": "פנו שמאלה ברמזור ואז המשיכו ישר 200 מטר.",
+      "reference": "Turn left at the traffic lights, then go straight for 200 meters."
+    },
+    {
+      "id": "dir-03",
+      "tags": [
+        "directions"
+      ],
+      "source": "האם אפשר ללכת ברגל מהתחנה למלון?",
+      "reference": "Is the station within walking distance of the hotel?"
+    },
+    {
+      "id": "dir-04",
+      "tags": [
+        "directions",
+        "numbers"
+      ],
+      "source": "איזה קו נוסע לשדה התעופה, קו 5 או קו 8?",
+      "reference": "Which line goes to the airport, line 5 or line 8?"
+    },
+    {
+      "id": "dir-05",
+      "tags": [
+        "directions"
+      ],
+      "source": "סליחה, האם זהו מושב 14A?",
+      "reference": "Excuse me, is this seat 14A?"
+    },
+    {
+      "id": "dir-06",
+      "tags": [
+        "directions"
+      ],
+      "source": "איך מגיעים מכאן לעיר העתיקה?",
+      "reference": "How do I get to the old town from here?"
+    },
+    {
+      "id": "dir-07",
+      "tags": [
+        "directions",
+        "times"
+      ],
+      "source": "המוזיאון נמצא כ-15 דקות הליכה מהכיכר.",
+      "reference": "The museum is about 15 minutes on foot from the square."
+    },
+    {
+      "id": "emerg-01",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "בבקשה תזמינו אמבולנס, מישהו מחוסר הכרה.",
+      "reference": "Please call an ambulance, someone is unconscious."
+    },
+    {
+      "id": "emerg-02",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "איבדתי את הדרכון ואת הארנק שלי.",
+      "reference": "I have lost my passport and my wallet."
+    },
+    {
+      "id": "emerg-03",
+      "tags": [
+        "emergencies",
+        "directions"
+      ],
+      "source": "איפה בית החולים או המרפאה הקרובים ביותר?",
+      "reference": "Where is the nearest hospital or clinic?"
+    },
+    {
+      "id": "emerg-04",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "אני אלרגי לבוטנים; האם המנה הזו מכילה אותם?",
+      "reference": "I am allergic to peanuts; does this dish contain any?"
+    },
+    {
+      "id": "emerg-05",
+      "tags": [
+        "emergencies",
+        "prices"
+      ],
+      "source": "מישהו גנב את התיק שלי עם 200 יורו בפנים.",
+      "reference": "Someone stole my bag with 200 euros inside."
+    },
+    {
+      "id": "emerg-06",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "הזמינו את המשטרה, בבקשה. הייתה תאונה.",
+      "reference": "Call the police, please. There has been an accident."
+    }
+  ]
+}

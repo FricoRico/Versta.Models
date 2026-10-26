@@ -1,0 +1,92 @@
+{
+  "schema": "versta.pack-scorecard/1",
+  "scorecard_version": 1,
+  "generated_at": "2026-10-26T07:59:13+00:00",
+  "slug": "ca-en",
+  "bundle": {
+    "file": "ca-en-bundle.tar.gz",
+    "sha256": "7b312a1c3c89255895563c546867247e3e555d184929cadece39fa5a17637d79",
+    "leanmt_binary_version": 1,
+    "bundle_version": "v2.1.0"
+  },
+  "environment": {
+    "host_arch": "x86_64",
+    "probe_arch": "x86_64",
+    "threads": 2,
+    "runner": "workspace-x86_64",
+    "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+    "corpus": "traveler-v1",
+    "corpus_entries": 80,
+    "corpus_sha256": "ef2e18f810c476edf31fafa3d6519fd59ef1086e7797cff34cf18c43979107a6"
+  },
+  "metrics": {
+    "sacrebleu_version": "2.6.0",
+    "chrf_signature": "nrefs:1|case:mixed|eff:yes|nc:6|nw:0|space:no|version:2.6.0"
+  },
+  "directions": [
+    {
+      "direction": "ca-en",
+      "load_ok": true,
+      "model_load_ms": 51.223,
+      "rss_after_load_kib": 55636,
+      "chrf": 79.9,
+      "chrf_floor": 36.0,
+      "direction_check": "pass",
+      "digit_preservation": {
+        "passed": 40,
+        "total": 40,
+        "failing_ids": []
+      },
+      "latency_ms": {
+        "n": 40,
+        "min_ms": 15.658,
+        "p50_ms": 21.31,
+        "p95_ms": 27.882,
+        "max_ms": 33.277
+      },
+      "rss_peak_kib": 95696,
+      "sentences": 40,
+      "translation_failures": 0
+    },
+    {
+      "direction": "en-ca",
+      "load_ok": true,
+      "model_load_ms": 41.874,
+      "rss_after_load_kib": 31488,
+      "chrf": 76.24,
+      "chrf_floor": 34.3,
+      "direction_check": "pass",
+      "digit_preservation": {
+        "passed": 34,
+        "total": 40,
+        "failing_ids": [
+          "num-02",
+          "num-05",
+          "time-03",
+          "time-04",
+          "price-01",
+          "price-06"
+        ]
+      },
+      "latency_ms": {
+        "n": 40,
+        "min_ms": 7.065,
+        "p50_ms": 9.9,
+        "p95_ms": 12.934,
+        "max_ms": 15.513
+      },
+      "rss_peak_kib": 54392,
+      "sentences": 40,
+      "translation_failures": 0
+    }
+  ],
+  "gates": {
+    "load": true,
+    "direction_chrf_floor": true,
+    "digit_preservation": false,
+    "latency_rss": false
+  },
+  "acceptance": "pass",
+  "expectation": "pass",
+  "expectation_met": true
+}

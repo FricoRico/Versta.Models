@@ -1,0 +1,89 @@
+{
+  "schema": "versta.pack-scorecard/1",
+  "scorecard_version": 1,
+  "generated_at": "2026-10-26T07:59:38+00:00",
+  "slug": "de-en",
+  "bundle": {
+    "file": "de-en-bundle.tar.gz",
+    "sha256": "d1a4088b48745e823ff200625cbc3047dedf12bf0eb2d518a1edd2dc769f4547",
+    "leanmt_binary_version": 1,
+    "bundle_version": "v2.1.0"
+  },
+  "environment": {
+    "host_arch": "x86_64",
+    "probe_arch": "x86_64",
+    "threads": 2,
+    "runner": "workspace-x86_64",
+    "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+    "corpus": "traveler-v1",
+    "corpus_entries": 80,
+    "corpus_sha256": "23dcbac101d33cf7a62ddd2b155251c79a9c6257c156d4e0b07eca5727ebedf9"
+  },
+  "metrics": {
+    "sacrebleu_version": "2.6.0",
+    "chrf_signature": "nrefs:1|case:mixed|eff:yes|nc:6|nw:0|space:no|version:2.6.0"
+  },
+  "directions": [
+    {
+      "direction": "de-en",
+      "load_ok": true,
+      "model_load_ms": 57.02,
+      "rss_after_load_kib": 55672,
+      "chrf": 83.04,
+      "chrf_floor": 37.4,
+      "direction_check": "pass",
+      "digit_preservation": {
+        "passed": 39,
+        "total": 40,
+        "failing_ids": [
+          "time-04"
+        ]
+      },
+      "latency_ms": {
+        "n": 40,
+        "min_ms": 13.72,
+        "p50_ms": 21.111,
+        "p95_ms": 28.418,
+        "max_ms": 32.723
+      },
+      "rss_peak_kib": 96076,
+      "sentences": 40,
+      "translation_failures": 0
+    },
+    {
+      "direction": "en-de",
+      "load_ok": true,
+      "model_load_ms": 62.301,
+      "rss_after_load_kib": 55768,
+      "chrf": 78.77,
+      "chrf_floor": 35.4,
+      "direction_check": "pass",
+      "digit_preservation": {
+        "passed": 39,
+        "total": 40,
+        "failing_ids": [
+          "time-04"
+        ]
+      },
+      "latency_ms": {
+        "n": 40,
+        "min_ms": 12.303,
+        "p50_ms": 20.487,
+        "p95_ms": 28.336,
+        "max_ms": 32.463
+      },
+      "rss_peak_kib": 94672,
+      "sentences": 40,
+      "translation_failures": 0
+    }
+  ],
+  "gates": {
+    "load": true,
+    "direction_chrf_floor": true,
+    "digit_preservation": false,
+    "latency_rss": false
+  },
+  "acceptance": "pass",
+  "expectation": "pass",
+  "expectation_met": true
+}

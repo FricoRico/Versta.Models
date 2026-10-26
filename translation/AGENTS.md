@@ -78,7 +78,7 @@ uv run python -m versta.eval --source en --target es --direction_dir output/en-e
 - `--comet` adds release-tier COMET-22 (optional `unbabel-comet` dependency, cached weights — never required on the PR path).
 - `sacrebleu` is the harness's one runtime dependency; the rest of the module keeps its zero-dependency footprint.
 
-### `versta.probe` (pack acceptance, NEU-60)
+### `versta.probe` (pack acceptance, NEU-58)
 
 Headless acceptance runner for produced bundles: installs a bundle artifact
 through the same checksum + metadata/parse gates the app uses
@@ -96,10 +96,11 @@ uv run python -m versta.probe.adversarial --model_dir output/en-es      # direct
 uv run python -m versta.probe.pins --downloads_dir output               # verify downloads vs pack-acceptance/pins.json
 ```
 
-- Corpus lives as package data in `versta/probe/corpora/traveler-v1` files (`<src>-<tgt>.json`); the name bumps deliberately when the probe set changes — never mix chrF across corpus versions.
-- v1 acceptance gates: load + chrF direction floor (per-direction floor travels in the corpus file as `chrf_floor`). Digit preservation / latency / RSS are measured and published from the first sweep and become gates in NEU-62 after calibration.
+- Corpus lives as package data in `versta/probe/corpora/traveler-v1` files (`<src>-<tgt>.json`); the name bumps deliberately when the probe set changes — never mix chrF across corpus versions. As of the NEU-61 full sweep the corpus covers all 63 published directions (40 sentences each; en-lv is one-way, lv-en only).
+- v1 acceptance gates: load + chrF direction floor (per-direction floor travels in the corpus file as `chrf_floor`). Digit preservation / latency / RSS are measured and published from the first sweep and become gates in NEU-60 after calibration. Floors are **not static guesses**: `versta.probe.calibrate` re-derives every floor from a measured sweep summary (`floor = max(15.0, min(0.45 * chrf, chrf - 20))`); re-calibration is a dedicated commit with the sweep summary attached.
 - chrF is re-implemented in stdlib (`versta/probe/metrics.py`), behavior-identical to sacreBLEU defaults (pinned-value vectors plus a live parity check against the installed sacrebleu in `tests/test_probe.py`); do not change the formula without re-deriving the vectors. Every scorecard records the installed library's verbatim `CHRF.get_signature()` + version under `metrics`.
-- Scorecards commit to `scorecards/` (schema `versta.pack-scorecard/1`, documented in `scorecards/README.md`; first sweep: en-es, en-ja, es-en.adversarial); re-generation happens via the CI workflow and moves pins/scorecards only in dedicated commits. The scorecard schema is manifest-adjacent: reviewed with the pipeline pair (Nikhil), and the JNI-surface parity of `versta/probe/bridge.py` with the app pair (Maya Lindqvist).
+- The full-catalog sweep is `versta.probe.sweep`: it downloads every published bundle, verifies it against `pack-acceptance/pins.json` (`published` section — served tar checksums plus per-file payload pins), re-packs payloads through the production `versta.bundle` path (the v2.0.0 manifests predate the NEU-25 `leanmt_binary_version` handshake), and probes every direction, writing one scorecard per bundle plus a `sweep-summary.json` (schema `versta.pack-sweep/1`). Single-bundle failures are collected, never fatal to the sweep — "no bundle ships unproven" needs the full failure list, and the epic escalation threshold is counted from the summary.
+- Scorecards commit to `scorecards/` (schema `versta.pack-scorecard/1`, documented in `scorecards/README.md`; the pinned baseline is the full 32-bundle sweep, one card per bundle plus `es-en.adversarial.json` and `sweep-summary.json`); re-generation happens via the CI workflow and moves pins/scorecards only in dedicated commits. The scorecard schema is manifest-adjacent: reviewed with the pipeline pair (Nikhil), and the JNI-surface parity of `versta/probe/bridge.py` with the app pair (Maya Lindqvist).
 
 ## Conventions specific to this module
 

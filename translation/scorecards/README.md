@@ -6,10 +6,13 @@ run. Cards here are the committed first-sweep baselines; the CI workflow
 overwrites them only via dedicated re-pin commits, so git history keeps the
 full re-baseline trail even though the tree always holds the latest card.
 
-Consumers (NEU-62 publish gate; the NEU-52 quality ledger when it wants
+Consumers (NEU-60 publish gate; the NEU-52 quality ledger when it wants
 pack evidence) should dispatch on the top-level `schema` string and join
 against eval results (`versta.eval-result/1`) on `bundle.sha256` — lowercase
-hex on both sides.
+hex on both sides. The aggregate `sweep-summary.json` (schema
+`versta.pack-sweep/1`, written by `versta.probe.sweep`) pins the whole sweep:
+per-bundle verdicts, chrF vs floor, digit preservation, latency and RSS in
+one artifact — the epic thread's defect census is counted from it.
 
 ## Field guide
 
@@ -33,7 +36,7 @@ hex on both sides.
   preservation, p50/p95 latency, peak RSS, sentence/failure counts.
 - `gates` — which measurements gate this card's `acceptance` (v1: `load` +
   `direction_chrf_floor`; digit preservation and latency/RSS are measured
-  and published from the first sweep, and gate from NEU-62 on calibrated
+  and published from the first sweep, and gate from NEU-60 on calibrated
   per-pair bands).
 - `acceptance` / `expectation` / `expectation_met` — the v1 verdict, the
   run's declared expectation (`pass`, or `direction-fail` for the

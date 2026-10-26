@@ -1,0 +1,341 @@
+{
+  "name": "traveler-v1",
+  "source_language": "lv",
+  "target_language": "en",
+  "version": 1,
+  "chrf_floor": 33.0,
+  "chrf_floor_note": "Calibrated from the NEU-61 kickoff sweep: measured corpus chrF 73.3 on the published v2.0.0 pack; floor = max(15.0, min(0.45 * chrF, chrF - 20)). A direction-mislabeled pack collapses far below this value (see the es-en adversarial control).",
+  "entries": [
+    {
+      "id": "num-01",
+      "tags": [
+        "numbers"
+      ],
+      "source": "Man vajadzīgas 3 biļetes uz rītdienu rītu.",
+      "reference": "I need 3 tickets for tomorrow morning."
+    },
+    {
+      "id": "num-02",
+      "tags": [
+        "numbers"
+      ],
+      "source": "Mūs ir 5 cilvēki, tostarp 2 bērni.",
+      "reference": "There are 5 of us, including 2 children."
+    },
+    {
+      "id": "num-03",
+      "tags": [
+        "numbers"
+      ],
+      "source": "Mans tālruņa numurs ir 0044 7788 123456.",
+      "reference": "My phone number is 0044 7788 123456."
+    },
+    {
+      "id": "num-04",
+      "tags": [
+        "numbers"
+      ],
+      "source": "Lidojums ilgst 9 stundas un 25 minūtes.",
+      "reference": "The flight takes 9 hours and 25 minutes."
+    },
+    {
+      "id": "num-05",
+      "tags": [
+        "numbers"
+      ],
+      "source": "Mūs ir 4 cilvēki un mums ir 6 koferi.",
+      "reference": "We are 4 people and we have 6 suitcases."
+    },
+    {
+      "id": "num-06",
+      "tags": [
+        "numbers",
+        "addresses"
+      ],
+      "source": "Numurs 214 atrodas otrajā stāvā.",
+      "reference": "Room 214 is on the second floor."
+    },
+    {
+      "id": "num-07",
+      "tags": [
+        "numbers",
+        "times"
+      ],
+      "source": "Es ierados 3. oktobrī un izbraucu 9. oktobrī.",
+      "reference": "I arrived on October 3 and I leave on October 9."
+    },
+    {
+      "id": "time-01",
+      "tags": [
+        "times"
+      ],
+      "source": "Cikos muzejs atveras svētdienās?",
+      "reference": "What time does the museum open on Sundays?"
+    },
+    {
+      "id": "time-02",
+      "tags": [
+        "times"
+      ],
+      "source": "Mans vilciens izbrauc 18:45 no 7. perona.",
+      "reference": "My train leaves at 18:45 from platform 7."
+    },
+    {
+      "id": "time-03",
+      "tags": [
+        "times"
+      ],
+      "source": "Pēdējais autobuss izbrauc 23:30 šovakar.",
+      "reference": "The last bus leaves at 23:30 tonight."
+    },
+    {
+      "id": "time-04",
+      "tags": [
+        "times"
+      ],
+      "source": "Man ir rezervācija pulksten 20:00 2 personām.",
+      "reference": "I have a reservation at 8 pm for 2 people."
+    },
+    {
+      "id": "time-05",
+      "tags": [
+        "times"
+      ],
+      "source": "Vai aptieka atveras pirms 9 no rīta?",
+      "reference": "Does the pharmacy open before 9 in the morning?"
+    },
+    {
+      "id": "time-06",
+      "tags": [
+        "times",
+        "numbers"
+      ],
+      "source": "Ekskursija sākas 14:15 un ilgst 3 stundas.",
+      "reference": "The tour starts at 14:15 and lasts 3 hours."
+    },
+    {
+      "id": "time-07",
+      "tags": [
+        "times"
+      ],
+      "source": "Brokastis pasniedz no 6:30 līdz 10:00.",
+      "reference": "Breakfast is served from 6:30 to 10:00."
+    },
+    {
+      "id": "price-01",
+      "tags": [
+        "prices",
+        "numbers"
+      ],
+      "source": "Cik maksā divvietīgs numurs uz 3 naktīm?",
+      "reference": "How much is a double room for 3 nights?"
+    },
+    {
+      "id": "price-02",
+      "tags": [
+        "prices"
+      ],
+      "source": "Tas maksā 45 eiro, ieskaitot nodokļus.",
+      "reference": "This costs 45 euros, including tax."
+    },
+    {
+      "id": "price-03",
+      "tags": [
+        "prices",
+        "numbers"
+      ],
+      "source": "Vai ir atlaide 2 pieaugušajiem un 1 bērnam?",
+      "reference": "Is there a discount for 2 adults and 1 child?"
+    },
+    {
+      "id": "price-04",
+      "tags": [
+        "prices"
+      ],
+      "source": "Biļete maksā 12,50 eiro par personu.",
+      "reference": "The ticket costs 12.50 euros per person."
+    },
+    {
+      "id": "price-05",
+      "tags": [
+        "prices"
+      ],
+      "source": "Vai varu samaksāt 78 eiro ar karti?",
+      "reference": "Can I pay the 78 euros by card?"
+    },
+    {
+      "id": "price-06",
+      "tags": [
+        "prices"
+      ],
+      "source": "Cik maksā autobuss uz lidostu 2 personām?",
+      "reference": "How much is the airport shuttle for 2 people?"
+    },
+    {
+      "id": "price-07",
+      "tags": [
+        "prices"
+      ],
+      "source": "Dienas ēdienkarte maksā 15 eiro ar dzērienu komplektā.",
+      "reference": "The menu of the day is 15 euros with a drink included."
+    },
+    {
+      "id": "addr-01",
+      "tags": [
+        "addresses"
+      ],
+      "source": "Adrese ir Calle Mayor 15, trešais stāvs.",
+      "reference": "The address is Calle Mayor 15, third floor."
+    },
+    {
+      "id": "addr-02",
+      "tags": [
+        "addresses"
+      ],
+      "source": "Mana viesnīca atrodas Gran Vía 28, netālu no metro.",
+      "reference": "My hotel is at 28 Gran Vía, near the metro."
+    },
+    {
+      "id": "addr-03",
+      "tags": [
+        "addresses"
+      ],
+      "source": "Vēstniecība atrodas Paseo de la Castellana 259.",
+      "reference": "The embassy is at Paseo de la Castellana 259."
+    },
+    {
+      "id": "addr-04",
+      "tags": [
+        "addresses"
+      ],
+      "source": "Lūdzu, pierakstiet adresi: numurs 42, dzīvoklis 5B.",
+      "reference": "Please write down the address: number 42, apartment 5B."
+    },
+    {
+      "id": "addr-05",
+      "tags": [
+        "addresses"
+      ],
+      "source": "Tikšanās vieta ir Plaza del Sol, 3. vārti.",
+      "reference": "The meeting point is Plaza del Sol, gate 3."
+    },
+    {
+      "id": "addr-06",
+      "tags": [
+        "addresses",
+        "directions"
+      ],
+      "source": "Vai šis ir ceļš uz Carrer de Balmes 112?",
+      "reference": "Is this the way to Carrer de Balmes 112?"
+    },
+    {
+      "id": "dir-01",
+      "tags": [
+        "directions"
+      ],
+      "source": "Kur ir tuvākā autobusa pietura?",
+      "reference": "Where is the nearest bus stop?"
+    },
+    {
+      "id": "dir-02",
+      "tags": [
+        "directions",
+        "numbers"
+      ],
+      "source": "Pie luksofora pagriezieties pa kreisi un tad ejiet taisni 200 metrus.",
+      "reference": "Turn left at the traffic lights, then go straight for 200 meters."
+    },
+    {
+      "id": "dir-03",
+      "tags": [
+        "directions"
+      ],
+      "source": "Vai no stacijas līdz viesnīcai var nokļūt kājām?",
+      "reference": "Is the station within walking distance of the hotel?"
+    },
+    {
+      "id": "dir-04",
+      "tags": [
+        "directions",
+        "numbers"
+      ],
+      "source": "Kura līnija brauc uz lidostu, 5. vai 8. līnija?",
+      "reference": "Which line goes to the airport, line 5 or line 8?"
+    },
+    {
+      "id": "dir-05",
+      "tags": [
+        "directions"
+      ],
+      "source": "Atvainojiet, vai šī ir vieta 14A?",
+      "reference": "Excuse me, is this seat 14A?"
+    },
+    {
+      "id": "dir-06",
+      "tags": [
+        "directions"
+      ],
+      "source": "Kā no šejienes nokļūt vecajā pilsētā?",
+      "reference": "How do I get to the old town from here?"
+    },
+    {
+      "id": "dir-07",
+      "tags": [
+        "directions",
+        "times"
+      ],
+      "source": "Muzejs ir apmēram 15 minūšu gājiena attālumā no laukuma.",
+      "reference": "The museum is about 15 minutes on foot from the square."
+    },
+    {
+      "id": "emerg-01",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Lūdzu, izsauciet ātro palīdzību, kāds ir bezsamaņā.",
+      "reference": "Please call an ambulance, someone is unconscious."
+    },
+    {
+      "id": "emerg-02",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Esmu pazaudējis pasi un maku.",
+      "reference": "I have lost my passport and my wallet."
+    },
+    {
+      "id": "emerg-03",
+      "tags": [
+        "emergencies",
+        "directions"
+      ],
+      "source": "Kur ir tuvākā slimnīca vai klīnika?",
+      "reference": "Where is the nearest hospital or clinic?"
+    },
+    {
+      "id": "emerg-04",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Man ir alerģija pret zemesriekstiem; vai šis ēdiens tos satur?",
+      "reference": "I am allergic to peanuts; does this dish contain any?"
+    },
+    {
+      "id": "emerg-05",
+      "tags": [
+        "emergencies",
+        "prices"
+      ],
+      "source": "Kāds nozaga manu somu, kurā bija 200 eiro.",
+      "reference": "Someone stole my bag with 200 euros inside."
+    },
+    {
+      "id": "emerg-06",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Lūdzu, zvaniet policijai. Noticis negadījums.",
+      "reference": "Call the police, please. There has been an accident."
+    }
+  ]
+}
