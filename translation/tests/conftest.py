@@ -9,6 +9,7 @@ from typing import Dict, List, Optional, Tuple
 import pytest
 
 from versta.leanmt import LEANMT_BINARY_VERSION
+from versta.eval.typing import EvalResult
 
 
 class FakeResponse:
@@ -438,3 +439,70 @@ def eval_corpus(tmp_path: Path) -> Tuple[Path, Path]:
 def fake_bergamot(tmp_path: Path) -> Path:
     """An executable fake bergamot CLI translating the fixture corpus."""
     return write_fake_bergamot(tmp_path / "bergamot")
+
+
+# --- versta.eval.gate fixtures: synthetic result/ledger documents ---
+
+
+def make_eval_result(
+    direction: str = "en-es",
+    version: str = "v2.0.0",
+    bleu: float = 41.25,
+    chrf: float = 60.1,
+    comet22: Optional[float] = None,
+    corpus_revision: str = "tests/fixture@0001",
+    engine_version: str = "bergamot-fake 0.0.0-test",
+    size_bytes: int = 24_000_000,
+    started_utc: str = "2026-10-13T12:00:00Z",
+) -> EvalResult:
+    """
+    Builds a schema-valid versta.eval-result/1 document with deterministic
+    hashes, so gate/ledger tests need no engine, corpus payloads or network.
+    Defaults model the en-es tiny direction at the shipped v2.0.0.
+    """
+    source, target = direction.split("-")
+    digest = sha256(f"{direction}:{version}".encode("utf-8")).hexdigest()
+    model = {
+        "base_model": f"{direction}:tiny",
+        "version": version,
+        "architecture": "tiny",
+        "model_sha256": digest,
+        "metadata_sha256": sha256(f"metadata:{digest}".encode()).hexdigest(),
+        "bundle_file": f"{direction}-bundle.tar.gz",
+        "bundle_sha256": sha256(f"bundle:{digest}".encode()).hexdigest(),
+        "size_bytes": size_bytes,
+    }
+    return EvalResult(
+        schema="versta.eval-result/1",
+        direction=direction,
+        source_language=source,
+        target_language=target,
+        model=model,
+        corpus={
+            "corpus": "flores-200",
+            "split": "dev",
+            "revision": corpus_revision,
+            "sentences": len(EVAL_PAIRS),
+            "source_sha256": sha256(f"src:{corpus_revision}".encode()).hexdigest(),
+            "target_sha256": sha256(f"tgt:{corpus_revision}".encode()).hexdigest(),
+        },
+        engine={
+            "name": "bergamot-translator",
+            "variant": "local",
+            "version": engine_version,
+            "decode": {"beam_size": 1},
+            "config_sha256": sha256(b"decode-config").hexdigest(),
+        },
+        metrics={
+            "sacrebleu_version": "2.5.1",
+            "bleu_signature": "nrefs:1|case:mixed|eff:no|tok:13a|smooth:exp|version:2.5.1",
+            "chrf_signature": "nrefs:1|case:mixed|eff:yes|nc:6|nw:0|space:no|version:2.5.1",
+            "comet22_model": "Unbabel/wmt22-comet-da" if comet22 is not None else None,
+        },
+        scores={"bleu": bleu, "chrf": chrf, "comet22": comet22},
+        run={
+            "started_utc": started_utc,
+            "duration_seconds": 1.5,
+            "hypothesis_sha256": sha256(f"hyp:{digest}".encode()).hexdigest(),
+        },
+    )

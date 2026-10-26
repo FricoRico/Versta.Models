@@ -42,6 +42,16 @@ class DecodeConfig:
 
 DEFAULT_DECODE_CONFIG = DecodeConfig()
 
+# Release-gate threshold: a refresh fails when its corpus chrF regresses by
+# more than this many points against its predecessor in the evals/ ledger.
+# 1.0 is deliberately conservative (NEU-44 proposal): run-to-run noise on a
+# pinned corpus with fixed decode settings is far below one point, so only
+# real quality movement trips the gate. Overrides ship, but only with a
+# written reason recorded in the ledger entry and the generated eval
+# summary. Deliberate recalibration is a code-reviewed change to this
+# constant; per-run tuning uses `versta.eval.gate --threshold`.
+DEFAULT_CHRF_REGRESSION_THRESHOLD = 1.0
+
 # Model archive name suffix -> bergamot gemm-precision, mirroring the
 # selection rule in Mozilla's eval harness (translators/bergamot.sh):
 # models trained with intgemm alphas need the alpha-shifted int8 paths.
