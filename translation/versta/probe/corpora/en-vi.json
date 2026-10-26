@@ -1,0 +1,341 @@
+{
+  "name": "traveler-v1",
+  "source_language": "en",
+  "target_language": "vi",
+  "version": 1,
+  "chrf_floor": 35.9,
+  "chrf_floor_note": "Calibrated from the NEU-61 kickoff sweep: measured corpus chrF 79.8 on the published v2.0.0 pack; floor = max(15.0, min(0.45 * chrF, chrF - 20)). A direction-mislabeled pack collapses far below this value (see the es-en adversarial control).",
+  "entries": [
+    {
+      "id": "num-01",
+      "tags": [
+        "numbers"
+      ],
+      "source": "I need 3 tickets for tomorrow morning.",
+      "reference": "Tôi cần 3 vé cho sáng mai."
+    },
+    {
+      "id": "num-02",
+      "tags": [
+        "numbers"
+      ],
+      "source": "There are 5 of us, including 2 children.",
+      "reference": "Có 5 người chúng tôi, kể cả 2 trẻ em."
+    },
+    {
+      "id": "num-03",
+      "tags": [
+        "numbers"
+      ],
+      "source": "My phone number is 0044 7788 123456.",
+      "reference": "Số điện thoại của tôi là 0044 7788 123456."
+    },
+    {
+      "id": "num-04",
+      "tags": [
+        "numbers"
+      ],
+      "source": "The flight takes 9 hours and 25 minutes.",
+      "reference": "Chuyến bay mất 9 giờ 25 phút."
+    },
+    {
+      "id": "num-05",
+      "tags": [
+        "numbers"
+      ],
+      "source": "We are 4 people and we have 6 suitcases.",
+      "reference": "Chúng tôi có 4 người và 6 vali."
+    },
+    {
+      "id": "num-06",
+      "tags": [
+        "numbers",
+        "addresses"
+      ],
+      "source": "Room 214 is on the second floor.",
+      "reference": "Phòng 214 ở tầng hai."
+    },
+    {
+      "id": "num-07",
+      "tags": [
+        "numbers",
+        "times"
+      ],
+      "source": "I arrived on October 3 and I leave on October 9.",
+      "reference": "Tôi đến vào ngày 3 tháng 10 và rời đi vào ngày 9 tháng 10."
+    },
+    {
+      "id": "time-01",
+      "tags": [
+        "times"
+      ],
+      "source": "What time does the museum open on Sundays?",
+      "reference": "Bảo tàng mở cửa lúc mấy giờ vào Chủ nhật?"
+    },
+    {
+      "id": "time-02",
+      "tags": [
+        "times"
+      ],
+      "source": "My train leaves at 18:45 from platform 7.",
+      "reference": "Tàu của tôi khởi hành lúc 18:45 từ sân ga 7."
+    },
+    {
+      "id": "time-03",
+      "tags": [
+        "times"
+      ],
+      "source": "The last bus leaves at 23:30 tonight.",
+      "reference": "Chuyến xe buýt cuối cùng khởi hành lúc 23:30 tối nay."
+    },
+    {
+      "id": "time-04",
+      "tags": [
+        "times"
+      ],
+      "source": "I have a reservation at 8 pm for 2 people.",
+      "reference": "Tôi có đặt chỗ lúc 8 giờ tối cho 2 người."
+    },
+    {
+      "id": "time-05",
+      "tags": [
+        "times"
+      ],
+      "source": "Does the pharmacy open before 9 in the morning?",
+      "reference": "Nhà thuốc có mở cửa trước 9 giờ sáng không?"
+    },
+    {
+      "id": "time-06",
+      "tags": [
+        "times",
+        "numbers"
+      ],
+      "source": "The tour starts at 14:15 and lasts 3 hours.",
+      "reference": "Chuyến tham quan bắt đầu lúc 14:15 và kéo dài 3 giờ."
+    },
+    {
+      "id": "time-07",
+      "tags": [
+        "times"
+      ],
+      "source": "Breakfast is served from 6:30 to 10:00.",
+      "reference": "Bữa sáng được phục vụ từ 6:30 đến 10:00."
+    },
+    {
+      "id": "price-01",
+      "tags": [
+        "prices",
+        "numbers"
+      ],
+      "source": "How much is a double room for 3 nights?",
+      "reference": "Phòng đôi cho 3 đêm giá bao nhiêu?"
+    },
+    {
+      "id": "price-02",
+      "tags": [
+        "prices"
+      ],
+      "source": "This costs 45 euros, including tax.",
+      "reference": "Cái này giá 45 euro, đã bao gồm thuế."
+    },
+    {
+      "id": "price-03",
+      "tags": [
+        "prices",
+        "numbers"
+      ],
+      "source": "Is there a discount for 2 adults and 1 child?",
+      "reference": "Có giảm giá cho 2 người lớn và 1 trẻ em không?"
+    },
+    {
+      "id": "price-04",
+      "tags": [
+        "prices"
+      ],
+      "source": "The ticket costs 12.50 euros per person.",
+      "reference": "Vé giá 12,50 euro mỗi người."
+    },
+    {
+      "id": "price-05",
+      "tags": [
+        "prices"
+      ],
+      "source": "Can I pay the 78 euros by card?",
+      "reference": "Tôi có thể trả 78 euro bằng thẻ không?"
+    },
+    {
+      "id": "price-06",
+      "tags": [
+        "prices"
+      ],
+      "source": "How much is the airport shuttle for 2 people?",
+      "reference": "Xe đưa đón sân bay cho 2 người giá bao nhiêu?"
+    },
+    {
+      "id": "price-07",
+      "tags": [
+        "prices"
+      ],
+      "source": "The menu of the day is 15 euros with a drink included.",
+      "reference": "Thực đơn hôm nay giá 15 euro đã bao gồm đồ uống."
+    },
+    {
+      "id": "addr-01",
+      "tags": [
+        "addresses"
+      ],
+      "source": "The address is Calle Mayor 15, third floor.",
+      "reference": "Địa chỉ là Calle Mayor 15, tầng ba."
+    },
+    {
+      "id": "addr-02",
+      "tags": [
+        "addresses"
+      ],
+      "source": "My hotel is at 28 Gran Vía, near the metro.",
+      "reference": "Khách sạn của tôi ở Gran Vía 28, gần ga metro."
+    },
+    {
+      "id": "addr-03",
+      "tags": [
+        "addresses"
+      ],
+      "source": "The embassy is at Paseo de la Castellana 259.",
+      "reference": "Đại sứ quán ở Paseo de la Castellana 259."
+    },
+    {
+      "id": "addr-04",
+      "tags": [
+        "addresses"
+      ],
+      "source": "Please write down the address: number 42, apartment 5B.",
+      "reference": "Làm ơn ghi lại địa chỉ: số 42, căn hộ 5B."
+    },
+    {
+      "id": "addr-05",
+      "tags": [
+        "addresses"
+      ],
+      "source": "The meeting point is Plaza del Sol, gate 3.",
+      "reference": "Điểm hẹn là Plaza del Sol, cổng 3."
+    },
+    {
+      "id": "addr-06",
+      "tags": [
+        "addresses",
+        "directions"
+      ],
+      "source": "Is this the way to Carrer de Balmes 112?",
+      "reference": "Đây có phải là đường đến Carrer de Balmes 112 không?"
+    },
+    {
+      "id": "dir-01",
+      "tags": [
+        "directions"
+      ],
+      "source": "Where is the nearest bus stop?",
+      "reference": "Trạm xe buýt gần nhất ở đâu?"
+    },
+    {
+      "id": "dir-02",
+      "tags": [
+        "directions",
+        "numbers"
+      ],
+      "source": "Turn left at the traffic lights, then go straight for 200 meters.",
+      "reference": "Rẽ trái ở đèn giao thông, sau đó đi thẳng 200 mét."
+    },
+    {
+      "id": "dir-03",
+      "tags": [
+        "directions"
+      ],
+      "source": "Is the station within walking distance of the hotel?",
+      "reference": "Có thể đi bộ từ ga đến khách sạn không?"
+    },
+    {
+      "id": "dir-04",
+      "tags": [
+        "directions",
+        "numbers"
+      ],
+      "source": "Which line goes to the airport, line 5 or line 8?",
+      "reference": "Tuyến nào đi đến sân bay, tuyến 5 hay tuyến 8?"
+    },
+    {
+      "id": "dir-05",
+      "tags": [
+        "directions"
+      ],
+      "source": "Excuse me, is this seat 14A?",
+      "reference": "Xin lỗi, đây có phải là ghế 14A không?"
+    },
+    {
+      "id": "dir-06",
+      "tags": [
+        "directions"
+      ],
+      "source": "How do I get to the old town from here?",
+      "reference": "Làm sao để đến khu phố cổ từ đây?"
+    },
+    {
+      "id": "dir-07",
+      "tags": [
+        "directions",
+        "times"
+      ],
+      "source": "The museum is about 15 minutes on foot from the square.",
+      "reference": "Bảo tàng cách quảng trường khoảng 15 phút đi bộ."
+    },
+    {
+      "id": "emerg-01",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Please call an ambulance, someone is unconscious.",
+      "reference": "Làm ơn gọi xe cứu thương, có người bất tỉnh."
+    },
+    {
+      "id": "emerg-02",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "I have lost my passport and my wallet.",
+      "reference": "Tôi đã mất hộ chiếu và ví tiền."
+    },
+    {
+      "id": "emerg-03",
+      "tags": [
+        "emergencies",
+        "directions"
+      ],
+      "source": "Where is the nearest hospital or clinic?",
+      "reference": "Bệnh viện hoặc phòng khám gần nhất ở đâu?"
+    },
+    {
+      "id": "emerg-04",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "I am allergic to peanuts; does this dish contain any?",
+      "reference": "Tôi bị dị ứng đậu phộng; món này có chứa không?"
+    },
+    {
+      "id": "emerg-05",
+      "tags": [
+        "emergencies",
+        "prices"
+      ],
+      "source": "Someone stole my bag with 200 euros inside.",
+      "reference": "Có người đã trộm túi của tôi với 200 euro bên trong."
+    },
+    {
+      "id": "emerg-06",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Call the police, please. There has been an accident.",
+      "reference": "Làm ơn gọi cảnh sát. Đã xảy ra tai nạn."
+    }
+  ]
+}

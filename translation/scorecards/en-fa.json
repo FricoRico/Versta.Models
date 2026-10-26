@@ -1,0 +1,118 @@
+{
+  "schema": "versta.pack-scorecard/1",
+  "scorecard_version": 1,
+  "generated_at": "2026-10-26T08:00:13+00:00",
+  "slug": "en-fa",
+  "bundle": {
+    "file": "en-fa-bundle.tar.gz",
+    "sha256": "300ec5175b3867d0cb3a1472a6f60bca07b1dd0e82710f6834306bd1c6736426",
+    "leanmt_binary_version": 1,
+    "bundle_version": "v2.1.0"
+  },
+  "environment": {
+    "host_arch": "x86_64",
+    "probe_arch": "x86_64",
+    "threads": 2,
+    "runner": "workspace-x86_64",
+    "leanmt_commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+    "corpus": "traveler-v1",
+    "corpus_entries": 80,
+    "corpus_sha256": "9237697c9b63b33cd4f42b21588dd035e29a1d68884514d5121caaee4cde2b34"
+  },
+  "metrics": {
+    "sacrebleu_version": "2.6.0",
+    "chrf_signature": "nrefs:1|case:mixed|eff:yes|nc:6|nw:0|space:no|version:2.6.0"
+  },
+  "directions": [
+    {
+      "direction": "en-fa",
+      "load_ok": true,
+      "model_load_ms": 48.321,
+      "rss_after_load_kib": 31768,
+      "chrf": 59.54,
+      "chrf_floor": 26.8,
+      "direction_check": "pass",
+      "digit_preservation": {
+        "passed": 34,
+        "total": 40,
+        "failing_ids": [
+          "time-04",
+          "time-06",
+          "price-04",
+          "price-05",
+          "dir-02",
+          "dir-07"
+        ]
+      },
+      "latency_ms": {
+        "n": 40,
+        "min_ms": 4.521,
+        "p50_ms": 8.783,
+        "p95_ms": 14.727,
+        "max_ms": 17.829
+      },
+      "rss_peak_kib": 55404,
+      "sentences": 40,
+      "translation_failures": 0
+    },
+    {
+      "direction": "fa-en",
+      "load_ok": true,
+      "model_load_ms": 51.815,
+      "rss_after_load_kib": 31792,
+      "chrf": 66.76,
+      "chrf_floor": 30.0,
+      "direction_check": "pass",
+      "digit_preservation": {
+        "passed": 15,
+        "total": 40,
+        "failing_ids": [
+          "num-01",
+          "num-02",
+          "num-04",
+          "num-05",
+          "num-06",
+          "time-02",
+          "time-04",
+          "time-05",
+          "time-06",
+          "price-01",
+          "price-02",
+          "price-03",
+          "price-05",
+          "price-06",
+          "price-07",
+          "addr-01",
+          "addr-02",
+          "addr-03",
+          "addr-04",
+          "addr-05",
+          "addr-06",
+          "dir-02",
+          "dir-04",
+          "dir-07",
+          "emerg-05"
+        ]
+      },
+      "latency_ms": {
+        "n": 40,
+        "min_ms": 7.076,
+        "p50_ms": 9.787,
+        "p95_ms": 18.941,
+        "max_ms": 29.776
+      },
+      "rss_peak_kib": 56708,
+      "sentences": 40,
+      "translation_failures": 0
+    }
+  ],
+  "gates": {
+    "load": true,
+    "direction_chrf_floor": true,
+    "digit_preservation": false,
+    "latency_rss": false
+  },
+  "acceptance": "pass",
+  "expectation": "pass",
+  "expectation_met": true
+}

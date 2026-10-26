@@ -1,0 +1,341 @@
+{
+  "name": "traveler-v1",
+  "source_language": "en",
+  "target_language": "fa",
+  "version": 1,
+  "chrf_floor": 26.8,
+  "chrf_floor_note": "Calibrated from the NEU-61 kickoff sweep: measured corpus chrF 59.5 on the published v2.0.0 pack; floor = max(15.0, min(0.45 * chrF, chrF - 20)). A direction-mislabeled pack collapses far below this value (see the es-en adversarial control).",
+  "entries": [
+    {
+      "id": "num-01",
+      "tags": [
+        "numbers"
+      ],
+      "source": "I need 3 tickets for tomorrow morning.",
+      "reference": "به ۳ بلیت برای فردا صبح نیاز دارم."
+    },
+    {
+      "id": "num-02",
+      "tags": [
+        "numbers"
+      ],
+      "source": "There are 5 of us, including 2 children.",
+      "reference": "ما ۵ نفر هستیم، از جمله ۲ کودک."
+    },
+    {
+      "id": "num-03",
+      "tags": [
+        "numbers"
+      ],
+      "source": "My phone number is 0044 7788 123456.",
+      "reference": "شماره تلفن من 0044 7788 123456 است."
+    },
+    {
+      "id": "num-04",
+      "tags": [
+        "numbers"
+      ],
+      "source": "The flight takes 9 hours and 25 minutes.",
+      "reference": "پرواز ۹ ساعت و ۲۵ دقیقه طول می‌کشد."
+    },
+    {
+      "id": "num-05",
+      "tags": [
+        "numbers"
+      ],
+      "source": "We are 4 people and we have 6 suitcases.",
+      "reference": "ما ۴ نفر هستیم و ۶ چمدان داریم."
+    },
+    {
+      "id": "num-06",
+      "tags": [
+        "numbers",
+        "addresses"
+      ],
+      "source": "Room 214 is on the second floor.",
+      "reference": "اتاق ۲۱۴ در طبقه دوم است."
+    },
+    {
+      "id": "num-07",
+      "tags": [
+        "numbers",
+        "times"
+      ],
+      "source": "I arrived on October 3 and I leave on October 9.",
+      "reference": "من سوم اکتبر رسیدم و نهم اکتبر می‌روم."
+    },
+    {
+      "id": "time-01",
+      "tags": [
+        "times"
+      ],
+      "source": "What time does the museum open on Sundays?",
+      "reference": "موزه یکشنبه‌ها چه ساعتی باز می‌شود؟"
+    },
+    {
+      "id": "time-02",
+      "tags": [
+        "times"
+      ],
+      "source": "My train leaves at 18:45 from platform 7.",
+      "reference": "قطار من ساعت ۱۸:۴۵ از سکوی ۷ حرکت می‌کند."
+    },
+    {
+      "id": "time-03",
+      "tags": [
+        "times"
+      ],
+      "source": "The last bus leaves at 23:30 tonight.",
+      "reference": "آخرین اتوبوس امشب ساعت ۲۳:۳۰ حرکت می‌کند."
+    },
+    {
+      "id": "time-04",
+      "tags": [
+        "times"
+      ],
+      "source": "I have a reservation at 8 pm for 2 people.",
+      "reference": "من برای ۲ نفر ساعت ۸ شب رزرو دارم."
+    },
+    {
+      "id": "time-05",
+      "tags": [
+        "times"
+      ],
+      "source": "Does the pharmacy open before 9 in the morning?",
+      "reference": "آیا داروخانه قبل از ساعت ۹ صبح باز می‌شود؟"
+    },
+    {
+      "id": "time-06",
+      "tags": [
+        "times",
+        "numbers"
+      ],
+      "source": "The tour starts at 14:15 and lasts 3 hours.",
+      "reference": "تور ساعت ۱۴:۱۵ شروع می‌شود و ۳ ساعت طول می‌کشد."
+    },
+    {
+      "id": "time-07",
+      "tags": [
+        "times"
+      ],
+      "source": "Breakfast is served from 6:30 to 10:00.",
+      "reference": "صبحانه از ساعت ۶:۳۰ تا ۱۰:۰۰ سرو می‌شود."
+    },
+    {
+      "id": "price-01",
+      "tags": [
+        "prices",
+        "numbers"
+      ],
+      "source": "How much is a double room for 3 nights?",
+      "reference": "اتاق دوتخته برای ۳ شب چقدر است؟"
+    },
+    {
+      "id": "price-02",
+      "tags": [
+        "prices"
+      ],
+      "source": "This costs 45 euros, including tax.",
+      "reference": "این ۴۵ یورو است، شامل مالیات."
+    },
+    {
+      "id": "price-03",
+      "tags": [
+        "prices",
+        "numbers"
+      ],
+      "source": "Is there a discount for 2 adults and 1 child?",
+      "reference": "آیا برای ۲ بزرگسال و ۱ کودک تخفیف وجود دارد؟"
+    },
+    {
+      "id": "price-04",
+      "tags": [
+        "prices"
+      ],
+      "source": "The ticket costs 12.50 euros per person.",
+      "reference": "بلیت برای هر نفر ۱۲٫۵۰ یورو است."
+    },
+    {
+      "id": "price-05",
+      "tags": [
+        "prices"
+      ],
+      "source": "Can I pay the 78 euros by card?",
+      "reference": "می‌توانم ۷۸ یورو را با کارت بپردازم؟"
+    },
+    {
+      "id": "price-06",
+      "tags": [
+        "prices"
+      ],
+      "source": "How much is the airport shuttle for 2 people?",
+      "reference": "اتوبوس فرودگاه برای ۲ نفر چقدر است؟"
+    },
+    {
+      "id": "price-07",
+      "tags": [
+        "prices"
+      ],
+      "source": "The menu of the day is 15 euros with a drink included.",
+      "reference": "منوی روز ۱۵ یورو است و شامل نوشیدنی می‌شود."
+    },
+    {
+      "id": "addr-01",
+      "tags": [
+        "addresses"
+      ],
+      "source": "The address is Calle Mayor 15, third floor.",
+      "reference": "آدرس: کاله مایور ۱۵، طبقه سوم."
+    },
+    {
+      "id": "addr-02",
+      "tags": [
+        "addresses"
+      ],
+      "source": "My hotel is at 28 Gran Vía, near the metro.",
+      "reference": "هتل من در گران ویا ۲۸، نزدیک مترو است."
+    },
+    {
+      "id": "addr-03",
+      "tags": [
+        "addresses"
+      ],
+      "source": "The embassy is at Paseo de la Castellana 259.",
+      "reference": "سفارت در پاسئو د لا کاستلانا ۲۵۹ است."
+    },
+    {
+      "id": "addr-04",
+      "tags": [
+        "addresses"
+      ],
+      "source": "Please write down the address: number 42, apartment 5B.",
+      "reference": "لطفاً آدرس را یادداشت کنید: شماره ۴۲، آپارتمان 5B."
+    },
+    {
+      "id": "addr-05",
+      "tags": [
+        "addresses"
+      ],
+      "source": "The meeting point is Plaza del Sol, gate 3.",
+      "reference": "محل ملاقات پلاسا دل سول، دروازه ۳ است."
+    },
+    {
+      "id": "addr-06",
+      "tags": [
+        "addresses",
+        "directions"
+      ],
+      "source": "Is this the way to Carrer de Balmes 112?",
+      "reference": "آیا این راه به کارر د بالمس ۱۱۲ است؟"
+    },
+    {
+      "id": "dir-01",
+      "tags": [
+        "directions"
+      ],
+      "source": "Where is the nearest bus stop?",
+      "reference": "نزدیک‌ترین ایستگاه اتوبوس کجاست؟"
+    },
+    {
+      "id": "dir-02",
+      "tags": [
+        "directions",
+        "numbers"
+      ],
+      "source": "Turn left at the traffic lights, then go straight for 200 meters.",
+      "reference": "از چراغ قرمز به چپ بپیچید و سپس ۲۰۰ متر مستقیم بروید."
+    },
+    {
+      "id": "dir-03",
+      "tags": [
+        "directions"
+      ],
+      "source": "Is the station within walking distance of the hotel?",
+      "reference": "آیا می‌توان از ایستگاه تا هتل پیاده رفت؟"
+    },
+    {
+      "id": "dir-04",
+      "tags": [
+        "directions",
+        "numbers"
+      ],
+      "source": "Which line goes to the airport, line 5 or line 8?",
+      "reference": "کدام خط به فرودگاه می‌رود، خط ۵ یا خط ۸؟"
+    },
+    {
+      "id": "dir-05",
+      "tags": [
+        "directions"
+      ],
+      "source": "Excuse me, is this seat 14A?",
+      "reference": "ببخشید، آیا این صندلی 14A است؟"
+    },
+    {
+      "id": "dir-06",
+      "tags": [
+        "directions"
+      ],
+      "source": "How do I get to the old town from here?",
+      "reference": "از اینجا چطور به شهر قدیمی بروم؟"
+    },
+    {
+      "id": "dir-07",
+      "tags": [
+        "directions",
+        "times"
+      ],
+      "source": "The museum is about 15 minutes on foot from the square.",
+      "reference": "موزه حدود ۱۵ دقیقه پیاده‌روی از میدان فاصله دارد."
+    },
+    {
+      "id": "emerg-01",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Please call an ambulance, someone is unconscious.",
+      "reference": "لطفاً آمبولانس خبر کنید، کسی بیهوش است."
+    },
+    {
+      "id": "emerg-02",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "I have lost my passport and my wallet.",
+      "reference": "پاسپورت و کیف پولم را گم کرده‌ام."
+    },
+    {
+      "id": "emerg-03",
+      "tags": [
+        "emergencies",
+        "directions"
+      ],
+      "source": "Where is the nearest hospital or clinic?",
+      "reference": "نزدیک‌ترین بیمارستان یا کلینیک کجاست؟"
+    },
+    {
+      "id": "emerg-04",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "I am allergic to peanuts; does this dish contain any?",
+      "reference": "من به بادام زمینی حساسیت دارم؛ آیا این غذا حاوی آن است؟"
+    },
+    {
+      "id": "emerg-05",
+      "tags": [
+        "emergencies",
+        "prices"
+      ],
+      "source": "Someone stole my bag with 200 euros inside.",
+      "reference": "کسی کیفم را با ۲۰۰ یورو داخلش دزدید."
+    },
+    {
+      "id": "emerg-06",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Call the police, please. There has been an accident.",
+      "reference": "لطفاً به پلیس خبر دهید. تصادفی رخ داده است."
+    }
+  ]
+}

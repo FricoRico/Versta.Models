@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "note": "Pack-acceptance content pins (NEU-60). Changes to this file are deliberate re-baselining: dedicated commit, measured scorecard diff attached. Downloads are verified against these content SHA-256 values by `uv run python -m versta.probe.pins` after the registry's own uncompressedHash gate; a mismatch here means upstream re-published without us noticing \u2014 investigate before re-pinning.",
+  "note": "Pack-acceptance content pins (NEU-60 kickoff; NEU-61 full sweep). 'directions' pins the registry-download payload bytes for the 4 phase-1 pairs; 'published' pins the v2.0.0 catalog artifacts actually shipped (payload file hashes measured on the published bundles plus each bundle tar's served sha256). Changes to either section are deliberate re-baselining: dedicated commit, measured scorecard diff attached. A mismatch in 'published' means the served packs changed underneath the catalog \u2014 investigate before re-pinning.",
   "registry_url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/db/models.json",
   "architecture": "base-memory",
   "leanmt": {
@@ -38,6 +38,460 @@
         "model": "3a603e20bfe1be86071913f9e23ab5129075bc0a8490151020ac4821e4f17302",
         "vocabulary": "5cb217758bae05877bb3f0c2f612e4e7c1e4cb03c10db11f4a47098d7ae62919",
         "shortlist": "525f412f0d210536c2933c78ae395fa0bf2b5ee6cc5dda61ebc2e79410ebaee4"
+      }
+    }
+  },
+  "published": {
+    "note": "First full-catalog sweep (NEU-61): sha256 of every file the probe loads, measured on the published v2.0.0 bundles, plus the served bundle tar checksums. The sweep re-packs payloads through versta.bundle because the v2.0.0 manifests predate the leanmt_binary_version handshake (NEU-25); payload bytes are unchanged by re-packing.",
+    "bundle_base_url": "https://models.versta.app/translation/v2.0.0/",
+    "directions": {
+      "ar-en": {
+        "model": "7b7af0282dc5f4d8805b9a298c2fa828967e3f09ca10f1942ebeea0b2cfc12fa",
+        "vocabulary": "51b4ee3f828d10015464523d0b4f5a6c086b0b2a9bde716a581001cf6c260366",
+        "shortlist": "4b45f14dbea40d368093a13563fc1ca48457ee70c1291c82b206f3baff210081"
+      },
+      "en-ar": {
+        "model": "ae659d7045fc2e5d6ba50583586a5d94ee4358d92c019847e37b57a0e627faa8",
+        "vocabulary": "8d93c54aa5e2044c416ec680b5ff9af0227bd698521666e8b1a1ea1b041fbae8",
+        "shortlist": "2b7194817c5dd9225ca90c0d908cc92e1d6d1f45625781a5feb037ac568d6a61"
+      },
+      "bg-en": {
+        "model": "78f7e6e1435cc2d4a29cf597f493187fe29ddb9ce9d3766c287e2e6d37052d01",
+        "vocabulary": "4bafad5fcc0e771ed82233d1e99d69dcb96487b430702f7e688615c8a61f3df4",
+        "shortlist": "e661dfdd88aa9ff9606f237a60c910d97c2e710960199589579f628c5d8aa899"
+      },
+      "en-bg": {
+        "model": "e2b30db98ac6706efc893067a74e51f36f015a8f820fe8a4f0f5052fa6a22f30",
+        "vocabulary": "4bafad5fcc0e771ed82233d1e99d69dcb96487b430702f7e688615c8a61f3df4",
+        "shortlist": "93d4ca4412db269cc4164cbfa04c08edd0f65690c8264d6215a0522d4a13ec1a"
+      },
+      "ca-en": {
+        "model": "b7f9c70823052f60c257eb1c4eff893abea3648aa9d1c23c8774e1e5ef061434",
+        "vocabulary": "6d22da90905873c2793d0805e34e5c27901b16e7e7a7a427696696f67dfe1f0e",
+        "shortlist": "74880047539925630601d61aa6c29a0672046236ca6cf33eeaf6f6f6690e914e"
+      },
+      "en-ca": {
+        "model": "e673c5d58ed4c98aa91b20ee14bc888116270ed2831f5509f5f5c867d5fda0e6",
+        "vocabulary": "4fbb317b58e31b330f642a8ecc4c4cb719e328b6ef412624f24e9705898cf72a",
+        "shortlist": "306eca0d5851cd0c5957e78b067a1fc723c8a71b3afd4da92edfa08d7d3f8ad2"
+      },
+      "cs-en": {
+        "model": "4ee5b7906f90ad2407232c077581a247b41ac3886d785be82c5d3657433106ae",
+        "vocabulary": "89c4f6f5cadbc72b25b30079fabf655b897a1bbeaf3eb8adf95d469e10ece265",
+        "shortlist": "4c302fa188e65ddc55d8191a632e08f66dde7a060cc93df55ef83f0629548385"
+      },
+      "en-cs": {
+        "model": "12ad256d589abf3ec351957c1749d7915c06a28debab0370b7a47a6b4bb19633",
+        "vocabulary": "3c894bbd9e75de0966ab9fe5a427178817216d1d07aa7fe27b9cb7dbb666d5ef",
+        "shortlist": "f34042e1446f1b892b2846eff4e96ef2554067d9f8af495036254a1f64a7c058"
+      },
+      "da-en": {
+        "model": "2c1ace24220c905404bbb1de14bfeda8a391ef8d6c56f3b193a9d3e340d99b12",
+        "vocabulary": "b9392fcd9c53b802628d33a160f6eb52ca3d25a07ec9e015ab93b6bd5c7e8033",
+        "shortlist": "e5f50fba646e0d3cedf2957575aa84c3bdca6798ce32ccd63c956fc043d774a3"
+      },
+      "en-da": {
+        "model": "0157ed1162dd5a7a0fc6a3cc86014ec21cb47a8febf77164df24d8921270bb29",
+        "vocabulary": "b06349522bf053e4a6f01efc4d1450e4fe35717a938a82831988c087229c9619",
+        "shortlist": "d183786cae59a5df06d5b00c58e3ec2a5791d302240a65540fc6a1da2b66eada"
+      },
+      "de-en": {
+        "model": "3e6f7c2c2425d10824797270b382bee718ff34af2cab9308841c82ca46dc6f20",
+        "vocabulary": "69f730becafa48e3bb2c244eab66456877c08959a02f2bd5519b5a3088b62f9c",
+        "shortlist": "113b98460468360cca68c042e1cddf49c4e1931cbb975ed04349c9a3bd607010"
+      },
+      "en-de": {
+        "model": "8df29d9494d19f47fd5d97c6a73474c6f657e9f81c1a607c431d02befdf3810f",
+        "vocabulary": "69f730becafa48e3bb2c244eab66456877c08959a02f2bd5519b5a3088b62f9c",
+        "shortlist": "7ed39f1cffbd68a27ddf05bbfe068de2060f1d7e69f1a20e27ae923551dd7393"
+      },
+      "el-en": {
+        "model": "0a43c3716156061494d995d0c88113e789f8d919e0c88a15bc1ad360e0482a8c",
+        "vocabulary": "e1a1298cc2cf3968f3d7cc3b36bc463a4e1bf154272e8fb2f15142b54edc4349",
+        "shortlist": "2c969b069b3d230feddd17db2d74eb658a9b33b960d2d40adbca5496c9784e85"
+      },
+      "en-el": {
+        "model": "724b358d399c6b23444de36d76e9e2630c7024c29d9e617323b820a11631535a",
+        "vocabulary": "0ffc5569d7f400f03539c5fc3e28ff35f1d0381eba0ec866c44aef0c26f3ce5e",
+        "shortlist": "c2acd9241eb8a1e5b13a43efa5723628839d6e3b3dc7b93e2f20990a6ab81e24"
+      },
+      "en-es": {
+        "model": "3b1c399511c01c84c36fae5c0524df44096288efdc8236e182b5c97d7ad2244c",
+        "vocabulary": "5ae254fa9b15aa182e70fd2a6186b1333c63a29a48043a9224c6aa4fcac058ad",
+        "shortlist": "7d51237c0a07027dcd61643cfbbb0f8c48597d19907ef53d2cae9d6bec2cf25c"
+      },
+      "es-en": {
+        "model": "4aed7734152ae0045d1a69ae49c86cfda18f53c61f90e95e1d1de1c7c7c3b033",
+        "vocabulary": "5ae254fa9b15aa182e70fd2a6186b1333c63a29a48043a9224c6aa4fcac058ad",
+        "shortlist": "e2610211d3b9577d012638fe7e7e74ed7b4b708ce96b9e792e67c282a6492daa"
+      },
+      "en-et": {
+        "model": "36bdc87f8d500861a5d286ebd3ea58df530da87e31b8a233f5e9c46c300c281d",
+        "vocabulary": "89a3deea4ae7d674fb46a4dae39135dd4dfaac9786f2868d0b5bc5c0aca2ef83",
+        "shortlist": "259c60582f49449c226a6e5a369481c68322013f367e459e54c595686c05d4d8"
+      },
+      "et-en": {
+        "model": "df844b3a6df906b2e0682fb7765694f35b351854db00f964896d9c8c365fbff3",
+        "vocabulary": "89a3deea4ae7d674fb46a4dae39135dd4dfaac9786f2868d0b5bc5c0aca2ef83",
+        "shortlist": "ad9750f3b41cb5686e561608271a0dc935fc827bf43226e579a6f48a3f6b5f11"
+      },
+      "en-fa": {
+        "model": "456ad3952bcc59d208c76baba4dcef340ee4239416bd760d6fec27f9a16228f8",
+        "vocabulary": "6435d3d9d766159fe192ab90892540b438ad7adb7ab4ea4049f68d0b4cdea3bd",
+        "shortlist": "8542e7fb2bfa3a11b89f8392b8adb0dbbf863cd34569488b7c4535a91c3ae6b4"
+      },
+      "fa-en": {
+        "model": "aa326306c177e11129de5bfeba518abc499c0b6005492766748a9c9ea6f4c712",
+        "vocabulary": "bf36943053883d6c0fc98c2985f676a0a37042e796bad0e3df0a813d9d5393f4",
+        "shortlist": "4828cb060bd4375f8aabb85fed39c18aca52b738838394546f2ddbf707a6f28e"
+      },
+      "en-fi": {
+        "model": "3d8250c4c2e57efcf9a8e42fafdbd83ea98cea36fe8e4dafcf99f4d4bfc1dacf",
+        "vocabulary": "57d9f92c28b75f9595df5ce3df68e0216be16522c7a883b9e5ea42c0166f9221",
+        "shortlist": "4c2b197d3225140a6496f400013d83af98c87f0f984185c907e0ac468e37b3a5"
+      },
+      "fi-en": {
+        "model": "e3887341f18bcc7787d9b59eb1229b56eefce18d49b7ebf1e62c55d65a377321",
+        "vocabulary": "6a866911427f2916609ae89c7f2f04a78de3fdd8aa183039ecba986635d4f246",
+        "shortlist": "8bad431e07b062ba47f363b76e4656cc743fd608316d8a4830a4315e44ac9abb"
+      },
+      "en-fr": {
+        "model": "6322e296d4fecfe395a8d5723da4ec37ecbe6d7613bb1dfcf4b28e2a47498b68",
+        "vocabulary": "783abf3abe075afdf8d85d233994bef2c3a064e935ab1bed946820aff6ac002a",
+        "shortlist": "2585ed98d3af0bc949865aedeb390493d591f56870814376e73e4144c41ed059"
+      },
+      "fr-en": {
+        "model": "15f997bc0d13808b0b0fbd0786e684a3c8a52adcd8071844b76123fdacbf2b90",
+        "vocabulary": "783abf3abe075afdf8d85d233994bef2c3a064e935ab1bed946820aff6ac002a",
+        "shortlist": "87c6752ea908f5f0347c10ac0cf7d80d9c2f4f20c81c90168f3e8230b56d4440"
+      },
+      "en-he": {
+        "model": "e37ac6e6f131704c85deb94a657aa20afbb44db2879f44aec9c33a34f4467587",
+        "vocabulary": "672b334afa84011200fdaee02c2fc7810910c35ae9ea7619be073c851703ce9e",
+        "shortlist": "8795f4c5e19b4a196c9ed394c275a28a09e5ddbbf47ae16faa4446bf2b8bc7d9"
+      },
+      "he-en": {
+        "model": "7291cab3ec483b8cf524da96201fe947dca8c550132be21a06badeb946b5c079",
+        "vocabulary": "45f5d413b9208c5f24340ab0e20a63604a572784d289baa2d788deea946f79a2",
+        "shortlist": "427c88732cb93b28d2a947cace79f62aabceb7d6f4438516e85994b14a73b68e"
+      },
+      "en-hr": {
+        "model": "29ba32235778da3e38cfeb0d7f36eaf8dc37c961ff8651d86f7cae7e29e97d88",
+        "vocabulary": "7b75fe5ee12743c787a393489d8810adc3ca6cefe0142e8993227dd125d224b3",
+        "shortlist": "b811d67aca11e12e6bd956c1b4a1e74c6162d71e9ac259bfff415fbb90c3f666"
+      },
+      "hr-en": {
+        "model": "fa6c8220d3f1c41eb75b720859971dbe3acb6bf63691656c58faa4cdc28d918d",
+        "vocabulary": "4e9cc10e8ff4a4ed64fc90b45835385690e55f49b40e8efe471597d2e3a9cd24",
+        "shortlist": "c9ef83603e41f78d41fa601ba9c7196be58518bd964bfe364f325665bc8bc7d0"
+      },
+      "en-hu": {
+        "model": "b1415cd46ba3c45b46570af2fcce243452267b39dfc7116cfd04fd999a8ea73f",
+        "vocabulary": "2eee837cfdcc45c091d025f585d3fcdb293db7794e316b38a0aeff8c47a659e0",
+        "shortlist": "f4c1f6bf21528abe99a24081b61dc726a8ba7c6e6105efe09397a0b8df0499d1"
+      },
+      "hu-en": {
+        "model": "518356dbb0c071739318601963a87580fb41732652f52bd3635246330c186d9e",
+        "vocabulary": "0db772702235b02d1f29abafb7a49ed77e54c60245b3a46e90716e74263aedd6",
+        "shortlist": "fff56b2501258ec4c46a8fc715caee7aeb15d853f859cdfacd3ef9903ed2fff1"
+      },
+      "en-id": {
+        "model": "f81f13eef703a4e0650ffc3138a0f4bab7b6c8bfd173ef1b7bda68d16b8bc7e8",
+        "vocabulary": "61bc7db24d3b6de638a02a280580a273fe0c942ecbe8a8204b2f81978211db22",
+        "shortlist": "d37f72bcab6e7bc52fd223350f95521b5810bb2486a97275f86077988fced3f4"
+      },
+      "id-en": {
+        "model": "eeed3d8c2c78ec7011b31b2419e1d2dfdf2a7cc0ee0dbb1fcd164c934cb5d328",
+        "vocabulary": "a2dd1462abd17cccbbf3fefc562131f06b293f8ff6a5efad73ebb0176810d835",
+        "shortlist": "7a543087d4e9c1fe2f6b6f735b5e31aeadab80235e734c0388278722042ee3a2"
+      },
+      "en-it": {
+        "model": "248f47568788ecc351da7e5e07064d4153b4f71e011364ae2c931ffeec4d1cc2",
+        "vocabulary": "3ef0211d4ae6db21440892f180f2019fe2bfc110a330ffa9d2eca9665e4f2bc5",
+        "shortlist": "8b21914804625b2777dae7fdb636eb78f02a3eb8b7bceaa50f29ac740961da93"
+      },
+      "it-en": {
+        "model": "21b70978ce2f3b4da7a06b5de86a09abe3acd30b9eee1b2ebb3582b9bad790bf",
+        "vocabulary": "3ef0211d4ae6db21440892f180f2019fe2bfc110a330ffa9d2eca9665e4f2bc5",
+        "shortlist": "0700d6d70b30490e68ff9deca0b45b80310745b491855bde3a13e1692d0cbce1"
+      },
+      "en-ja": {
+        "model": "59ae659f9bb63e4f81f474fe3c03d3f4499434b5f9e779fab7c12a45f31fd562",
+        "vocabulary": "970c98d174fc01e0339fbabbf45af36a4be3f26f819ec1a5ea1189f71e091889",
+        "target_vocabulary": "3b3d9f8f3a034d98d0a476f1794fa79c01e4e98a967ceb6777a66ba2d03ec1e1",
+        "shortlist": "edfb7eb47b98a2689b804ab3614c31b24f1257aa54b1154da3d85e1ae8152d9f"
+      },
+      "ja-en": {
+        "model": "70c5d2b523942f6ace524a58bce5f4f7d4585c8adccade4e1bd4f82b9014bf2d",
+        "vocabulary": "5cb217758bae05877bb3f0c2f612e4e7c1e4cb03c10db11f4a47098d7ae62919",
+        "shortlist": "8f858a72fcbaa476c582577b04d6f5f89d645d2335b0b4a794c2706d4b1f75ff"
+      },
+      "en-ko": {
+        "model": "ffe5ef2ce3f2e944055e35310bab186f6a70d533a0ee4394adf716a0e383afbb",
+        "vocabulary": "8d4e3141868efd410eb86c2b60d41aa6bc6b46e4c4b2c0b85e3792493c69d802",
+        "target_vocabulary": "2ece21b28dd7022d36127d17423a74dabf544787dfc1cf614f7b565f93a4a1d3",
+        "shortlist": "96efba97d4bb93ab362e5569bea0f115184d2f68d63b67305ee663c18e32fbeb"
+      },
+      "ko-en": {
+        "model": "053593bc89646ed5b5db3467333cc66d0511c1c8e193d6bafe27b4adac567e1a",
+        "vocabulary": "1c72b740ab793cdc3a8f16913dd6b4e806c77421077dd2d85edeb7be38418598",
+        "shortlist": "471cd980c4ba08c240246f9361f64eb5d627848a135b5731d665f9efaa1e26ae"
+      },
+      "lv-en": {
+        "model": "7a96dd363ae9b4485aa254ddbff042223a565a20bfe5ba0ba29b94d8ded0406a",
+        "vocabulary": "585a265757c071f5694d1bb7e65b73f38b1d065a62cda61510fa6c54fb87d2c9",
+        "shortlist": "dff852d317f80169899e2e1132277cf922fa7a117b060e09a14dd19c0e1a02b8"
+      },
+      "en-nl": {
+        "model": "7e8402da61972dc2fdcf7147c7f1e12f7916a6d9349514ee7a731288357575a9",
+        "vocabulary": "c09588ca5662b230ed65bd39a07f58d9f7dd21c3a19e4aeb1bff39bf3b297c56",
+        "shortlist": "bb4922718f8ca6d746ad090c0a88110a664dc050ee3f311bce33698b4e1679e9"
+      },
+      "nl-en": {
+        "model": "ff987741ff15a5d94fff16cbef28f2b0a85a6e9547d982fad60ac09d16d11270",
+        "vocabulary": "c09588ca5662b230ed65bd39a07f58d9f7dd21c3a19e4aeb1bff39bf3b297c56",
+        "shortlist": "811ac8f9dcbd12706e2d73a7057a7bbe6b9f0607d15170ffe9439977e8229b41"
+      },
+      "en-pl": {
+        "model": "b0b59716bcc8f46b8dc6ab5c32a2732acaad42a5a6d9ae9b472526a1bb0d71d4",
+        "vocabulary": "2000f182efa8ce5f69bc3f9e574666b5bc2c0af684eedd32f69d15aa9021ea85",
+        "shortlist": "d7d7b364673f633763c9f8f2e8ee9c7a184e92f4086e8b84abe870a2a8dbe5d5"
+      },
+      "pl-en": {
+        "model": "06dbab3baa3bbceab746bc6a3bba807878f38536382c03acddf59d3edf3b5d94",
+        "vocabulary": "2000f182efa8ce5f69bc3f9e574666b5bc2c0af684eedd32f69d15aa9021ea85",
+        "shortlist": "b295dfefa7022a62e105276e8c39fdfd67bffe588f4fd78583edd4e04ee0cb3b"
+      },
+      "en-pt": {
+        "model": "07892fd2544ee79dcb643615d8f2debb9793fae16842e87c328e27a3dd26a770",
+        "vocabulary": "d9f46182823d5bbc84201252b2dfcac28f63e561f0ec827ed858f241864c9def",
+        "shortlist": "ccb4c31c9e1899d77a200e71a86958e6ef6c8649627d0bbf3f873b57d9f236bd"
+      },
+      "pt-en": {
+        "model": "7b854f1ec5a485dd33efd7c1bc01dd7d5a57f566957c5e47722af333f0ce9157",
+        "vocabulary": "d9f46182823d5bbc84201252b2dfcac28f63e561f0ec827ed858f241864c9def",
+        "shortlist": "2685d8b6530be92a4db4cc61f15a097eb114552be15cb6c1699e9d2d99d24470"
+      },
+      "en-ro": {
+        "model": "aa98c415e5beb1c5ee2f7d2508a3bbba949be223d7d9e5e1788ad0ae8598dda5",
+        "vocabulary": "d89eedf6cbbcb30d7ed4b0b092189196ac2b010ec0c3ede33a6676b17ea1c95e",
+        "shortlist": "508bce64a8bc906a99043ad2f4855b4662e06f8827c1c6a75ab83181b4f17f81"
+      },
+      "ro-en": {
+        "model": "e7542557fc6dbafacddae7b48e67fcdb07bd67b3fb55a76139edf366eca5dbdb",
+        "vocabulary": "2a690fbcd1b79bc9b99c43d582252720e0900245c82ecc813c8eb05cf063fd0c",
+        "shortlist": "d242745eadff6f345784fccf1d58046061501b28c8190ba5912a9da5f056cd2f"
+      },
+      "en-ru": {
+        "model": "01db60f75a54ef39c617cbdfdd78759a6a216576efa9a9088da8a6433d90af77",
+        "vocabulary": "56ee63e14e8cb926c394242adc3ed7cc602644c3d33058cff2ce2959d52a6258",
+        "shortlist": "3587f93c10c1d457f874c2ba7ff4d5e2686fdaf7f3fd179cfefeacab3c6990b9"
+      },
+      "ru-en": {
+        "model": "b1d85c13cfbb05e1d326dd6f0fb5ef270a2011b547450260f96567a93f446c94",
+        "vocabulary": "93bdc941b16e523695c319f74778bca9fd8b75a25ad75020cdc98aef74cdc0fc",
+        "shortlist": "f654693577505fd38b1f3d220cdd4ffffbb45afb900a60cf751f0724eadc74e0"
+      },
+      "en-sk": {
+        "model": "6806173ad92e25de54bd3eed91248cddeff622dd9e8133dc956d39204c296395",
+        "vocabulary": "cfa6a9e601d74686b117f041eb1ad9de94c34219110b67367d570a9e27026a46",
+        "shortlist": "5cae8b042d1a7eb19cfcebd3bb45fafd2faf2a963a7693775079afdbf0393c9c"
+      },
+      "sk-en": {
+        "model": "1686f94838ace314719e945606a09a66dafd40847dd3fd352ad3f7a969aac62f",
+        "vocabulary": "7d25655bd15f34d77db5d2cb96a51c7943c5528f37f83b677a09bb0ea4e4f59b",
+        "shortlist": "18577a7ded6b9957c948f2a384683f7ce09def42336c8141eee7ba86b79e2c8e"
+      },
+      "en-sl": {
+        "model": "d17b4e7ad9cdf53341b69b388f68919133bb40e009691c2648f635d15622a217",
+        "vocabulary": "7cd295383c46824c05a05db76b543d3595f2516537dd22b77190a45c8919224d",
+        "shortlist": "11b7b9fa6ac9e43f2d34faef239889334b4b57925ffd319fe7f709055338cf06"
+      },
+      "sl-en": {
+        "model": "70b17f5367dbb25903cba54da5250f34fc9dcb5b137f7f24d57a943bcc55c3a2",
+        "vocabulary": "54ed331d3435e2bdc5b02462180197b77631f466fc0e61897b5469449857dd2b",
+        "shortlist": "7df48c47f08c851a72756628860104cc04e9c0e415a15d74cd6974605beb866a"
+      },
+      "en-sv": {
+        "model": "65ea0db8e658435846f297384face62dbf1804cfc92de8388b0e368e6ecc25a7",
+        "vocabulary": "ff7e366ff4228107e58d76ca348e7dea2eb325452363d68e0047e97fb483e40e",
+        "shortlist": "5761c39887a0e0cd3dd38d22cadc31cecd2a43b0514c4bba96b426736e7fd72d"
+      },
+      "sv-en": {
+        "model": "92d79e2725718b84aed486473bdfcbe6bba3e7094922d4bead8a121cfa346372",
+        "vocabulary": "93427195fac4125722ed778707478ef78cb77b3fdf1ed5b93bee9fd36e30a8ec",
+        "shortlist": "1c4640765e806d905cdc4f51158f6f869c78709b9e8a43070877965fa13c160e"
+      },
+      "en-tr": {
+        "model": "ea3cd4ee09de190df265c78d84260e277a9a8a3ddff05eb55d72afe7fc0fdbf4",
+        "vocabulary": "a220363d60391f7ce3df8ec9785424dbc00c24d5786d1a4308cf8ca3ed3385c2",
+        "shortlist": "3aba0be842bd4c192659c781e6fdce8eb9b2b1fff29a40d22f75da369d59f46f"
+      },
+      "tr-en": {
+        "model": "bd18594ac5a7f1d9997e7ea5bd80272082219cf8b1ce604766e4f207eb86abbf",
+        "vocabulary": "ed328e589a3ccd70fd3ce7773fc3c01d8b7b18c687464cacf17fd40a8c0daadd",
+        "shortlist": "d3374ab5267a73ee1aa1d926a298bd349426835f40856991ee959bc5cd4f9fce"
+      },
+      "en-uk": {
+        "model": "66d2bc90cf1079743afb8c71e95182007c884c8f8a511685c1d47edda4a3e8af",
+        "vocabulary": "330fe40da410c7a41fcbf6aa98a2e619600b235b278c186c0f04c8ad1c2fbb7d",
+        "shortlist": "8f63978540e82a2cae89101cab9a35e7ea0abd3de1fe234b2f769ed378b894f9"
+      },
+      "uk-en": {
+        "model": "2e7b8bc9d2569d8b4ae244e964cdc343a0aa3735cc83ecb664be84a37cb45f48",
+        "vocabulary": "8b51480dfc4ca2d7a08d2bfdaa9e57353ca97e6cf3d5f9aba4c0179d3665bfc0",
+        "shortlist": "32b5e0df493671a223cb5cb32430181cbb7fe6b5562c91dbc3d35410d37e5ff6"
+      },
+      "en-vi": {
+        "model": "04fa6044593a404c2aa02b3096f203880852df6f8f41e5eb966ed9f2b4366737",
+        "vocabulary": "76daa9a49e393e50c865c889290e4dc36e9453e5e1ec9df7b9f3bc39ea782537",
+        "shortlist": "18116817fcd3d24dcdfd97cb57e9e60472800dae3b8a007f6f36d61d645f699c"
+      },
+      "vi-en": {
+        "model": "de4bf2b9ffb4d910e32720ec3a43655fb6f4062ce5219332f824fc1bdca7a5f4",
+        "vocabulary": "cb152765d1e71ea3cf96fdb339c764b7201be7b9ab32e20cfebcf16a20fc0939",
+        "shortlist": "3a071ed3d982f6eb6ee116b84067bf70041e4229e43ea65ecb6d7c2796e8851b"
+      },
+      "en-zh": {
+        "model": "4e5accc141373565ddc8fa1565bceaa8d0c3482a82cab8131c719ebcc6c2157c",
+        "vocabulary": "bd9b65504acc6d9726dd281f7defc2adb7c2c22d0688fe2f84697de25197c8c5",
+        "target_vocabulary": "aded6993c36e440284d11cec3f6b8aef9c0e43188a772d80be342a713adf223d",
+        "shortlist": "8575d8daa10e2dbff316dcdf8e1ce475357bcc2c92bdc63b736a2d5add22f681"
+      },
+      "zh-en": {
+        "model": "e4727e7927f905bffc51f173cb769beecf4c8dcaf082da3662bcd5a0e6417b8f",
+        "vocabulary": "dff594318ab7d8b7b60b844ab98ebe6b932ae8045fab15235404c787715965b3",
+        "shortlist": "ebf756d0a38ba20659b1083d0980502ab57b58e0599e504240f7318356a49dd8"
+      }
+    },
+    "bundles": {
+      "ar-en-bundle.tar.gz": {
+        "sha256": "59b28cb0dee8ff9adca3732a2e9ea8cc67d7c5e44bf6bdbe53e397b2cdab0fd5",
+        "url": "https://models.versta.app/translation/v2.0.0/ar-en-bundle.tar.gz"
+      },
+      "bg-en-bundle.tar.gz": {
+        "sha256": "29d66db6cd52615e830ab4eb56fbc596a95d6a9831c7deddf99226e2cd961b6f",
+        "url": "https://models.versta.app/translation/v2.0.0/bg-en-bundle.tar.gz"
+      },
+      "ca-en-bundle.tar.gz": {
+        "sha256": "99852b62ea1630e8b4688712f5381513634f02003957c0bdca7351d05512d4f1",
+        "url": "https://models.versta.app/translation/v2.0.0/ca-en-bundle.tar.gz"
+      },
+      "cs-en-bundle.tar.gz": {
+        "sha256": "20c3a320a0d29d72bd104bb3f11c3160d1f7e19b116a1fd30c96df95a531d9a0",
+        "url": "https://models.versta.app/translation/v2.0.0/cs-en-bundle.tar.gz"
+      },
+      "da-en-bundle.tar.gz": {
+        "sha256": "2035f16458f2460c0cefa7c00a518c06203d9c46efaebd7d29cb6b9dc68dee3b",
+        "url": "https://models.versta.app/translation/v2.0.0/da-en-bundle.tar.gz"
+      },
+      "de-en-bundle.tar.gz": {
+        "sha256": "6ec1778d2cf9fa08483eb24de75bf3866d004baa21bbbe7d98a92c66aa5045d8",
+        "url": "https://models.versta.app/translation/v2.0.0/de-en-bundle.tar.gz"
+      },
+      "el-en-bundle.tar.gz": {
+        "sha256": "b8fb452795e58f5db708ea16682f2f04bbdd5232f659f6b94d69ccad163e98d0",
+        "url": "https://models.versta.app/translation/v2.0.0/el-en-bundle.tar.gz"
+      },
+      "en-es-bundle.tar.gz": {
+        "sha256": "a946fd01f292d123776f191b857da0185b3ce494fce252c65715d99da1ecbd28",
+        "url": "https://models.versta.app/translation/v2.0.0/en-es-bundle.tar.gz"
+      },
+      "en-et-bundle.tar.gz": {
+        "sha256": "d02686ea692a0becab8e816686866829eeafc2080712738b5b691062853c2ba1",
+        "url": "https://models.versta.app/translation/v2.0.0/en-et-bundle.tar.gz"
+      },
+      "en-fa-bundle.tar.gz": {
+        "sha256": "9c671b544c338ac41eed252d9bcc2b0be87f614ac49417057625b7f6b29e2a28",
+        "url": "https://models.versta.app/translation/v2.0.0/en-fa-bundle.tar.gz"
+      },
+      "en-fi-bundle.tar.gz": {
+        "sha256": "0f8a836782bfd02c3073fa05bd53ac2b332369fb1cf46d9cdf4db5783bb24b42",
+        "url": "https://models.versta.app/translation/v2.0.0/en-fi-bundle.tar.gz"
+      },
+      "en-fr-bundle.tar.gz": {
+        "sha256": "c69bd1145857a2e66d30f0d818da536a1e2a73b138e86de50ae592150e38dab8",
+        "url": "https://models.versta.app/translation/v2.0.0/en-fr-bundle.tar.gz"
+      },
+      "en-he-bundle.tar.gz": {
+        "sha256": "3df650c48b476575e53211df565e178d9f1a6bba8911baaeb2db47e8f72ee160",
+        "url": "https://models.versta.app/translation/v2.0.0/en-he-bundle.tar.gz"
+      },
+      "en-hr-bundle.tar.gz": {
+        "sha256": "0f09727c8dc80cc6dd453982b83d4b112763c17be5f4641b6d96e025d6c7d441",
+        "url": "https://models.versta.app/translation/v2.0.0/en-hr-bundle.tar.gz"
+      },
+      "en-hu-bundle.tar.gz": {
+        "sha256": "f4d939c9905ad5982bc07fe4dd4b2f895ab8db01bc0f75fccf12be42c3898b3e",
+        "url": "https://models.versta.app/translation/v2.0.0/en-hu-bundle.tar.gz"
+      },
+      "en-id-bundle.tar.gz": {
+        "sha256": "a7fbe0130804cbd3e1e8abfe6d2e533de86b71837d52155fd3d46e48811036e1",
+        "url": "https://models.versta.app/translation/v2.0.0/en-id-bundle.tar.gz"
+      },
+      "en-it-bundle.tar.gz": {
+        "sha256": "02edd65a172daf1c0adf08ab5a2c307f0b65f75dd72920d89bfd24cccce7467b",
+        "url": "https://models.versta.app/translation/v2.0.0/en-it-bundle.tar.gz"
+      },
+      "en-ja-bundle.tar.gz": {
+        "sha256": "10deae7395c84ff489819b4714c2d851149c6f9c83ae4de763b5534737bbb45d",
+        "url": "https://models.versta.app/translation/v2.0.0/en-ja-bundle.tar.gz"
+      },
+      "en-ko-bundle.tar.gz": {
+        "sha256": "a41577db001638de431fd7dcc90365e9a71ea283652dacd25a845c8c7a272145",
+        "url": "https://models.versta.app/translation/v2.0.0/en-ko-bundle.tar.gz"
+      },
+      "en-lv-bundle.tar.gz": {
+        "sha256": "9a741bc89fe6f4d5c33ebdabaf9ef107938e56e67c8b6431f4d64ef654668777",
+        "url": "https://models.versta.app/translation/v2.0.0/en-lv-bundle.tar.gz"
+      },
+      "en-nl-bundle.tar.gz": {
+        "sha256": "7a9cfd4236f8437ef0cc0e5f93834e499a91f7ee6e1413691faed4026ddfda56",
+        "url": "https://models.versta.app/translation/v2.0.0/en-nl-bundle.tar.gz"
+      },
+      "en-pl-bundle.tar.gz": {
+        "sha256": "421b4267dc1b1212d945a628111fdee4f2c23934c528ec5c66d6864060cd5202",
+        "url": "https://models.versta.app/translation/v2.0.0/en-pl-bundle.tar.gz"
+      },
+      "en-pt-bundle.tar.gz": {
+        "sha256": "3b146bc487aa3bf513ee43e10f08f6dc74d76cfbf326c4636b80f89882501eb4",
+        "url": "https://models.versta.app/translation/v2.0.0/en-pt-bundle.tar.gz"
+      },
+      "en-ro-bundle.tar.gz": {
+        "sha256": "101f2347d7bd1064ecec0ba5c33970cb4cc314c9060c0d4f7a3ad051bf625f08",
+        "url": "https://models.versta.app/translation/v2.0.0/en-ro-bundle.tar.gz"
+      },
+      "en-ru-bundle.tar.gz": {
+        "sha256": "a66ca5b0cd5f6e6ea6108db95f006030409a6d8af537d3c833e81aa7920e6ba9",
+        "url": "https://models.versta.app/translation/v2.0.0/en-ru-bundle.tar.gz"
+      },
+      "en-sk-bundle.tar.gz": {
+        "sha256": "6f3452512789bbfef200b2f3fe328dfc3676059c1ffdd1e5908114e94c36f813",
+        "url": "https://models.versta.app/translation/v2.0.0/en-sk-bundle.tar.gz"
+      },
+      "en-sl-bundle.tar.gz": {
+        "sha256": "3b4f4225ce2b68d2cffff0daab2270e9972209a224e41bea7c7e5f9ef097b8c0",
+        "url": "https://models.versta.app/translation/v2.0.0/en-sl-bundle.tar.gz"
+      },
+      "en-sv-bundle.tar.gz": {
+        "sha256": "b98088c63a060b2179be0bf6ff8b2f3b75f699648b38c7bcb13a337ba243ac47",
+        "url": "https://models.versta.app/translation/v2.0.0/en-sv-bundle.tar.gz"
+      },
+      "en-tr-bundle.tar.gz": {
+        "sha256": "422482e87c1651e0ce0f64b64155c53facc77e0df0cb9ed6669fcc86a6e95622",
+        "url": "https://models.versta.app/translation/v2.0.0/en-tr-bundle.tar.gz"
+      },
+      "en-uk-bundle.tar.gz": {
+        "sha256": "501ce3a19e69017695a39b1f9884ad5af5034f8258b4e34c78763e256138e3b2",
+        "url": "https://models.versta.app/translation/v2.0.0/en-uk-bundle.tar.gz"
+      },
+      "en-vi-bundle.tar.gz": {
+        "sha256": "edb31f09c0c4bda82eaaeb00dd9338e39fc8e28ca53453b0b493a68e9f6b65d4",
+        "url": "https://models.versta.app/translation/v2.0.0/en-vi-bundle.tar.gz"
+      },
+      "en-zh-bundle.tar.gz": {
+        "sha256": "2c1761325acb93297ff3d9f9bb9d1df60224704db078dacf6cb4a53aa22655ee",
+        "url": "https://models.versta.app/translation/v2.0.0/en-zh-bundle.tar.gz"
       }
     }
   }

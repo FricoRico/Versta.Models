@@ -1,6 +1,6 @@
 # pack-acceptance/
 
-Inputs for the pack acceptance harness (NEU-60; runner: `versta.probe`,
+Inputs for the pack acceptance harness (NEU-58; runner: `versta.probe`,
 workflow: `../../.github/workflows/pack-acceptance.yml`).
 
 - `pins.json` — the probe inputs, pinned by content SHA-256 (`directions`)

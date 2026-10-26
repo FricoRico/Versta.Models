@@ -1,0 +1,341 @@
+{
+  "name": "traveler-v1",
+  "source_language": "hu",
+  "target_language": "en",
+  "version": 1,
+  "chrf_floor": 32.0,
+  "chrf_floor_note": "Calibrated from the NEU-61 kickoff sweep: measured corpus chrF 71.2 on the published v2.0.0 pack; floor = max(15.0, min(0.45 * chrF, chrF - 20)). A direction-mislabeled pack collapses far below this value (see the es-en adversarial control).",
+  "entries": [
+    {
+      "id": "num-01",
+      "tags": [
+        "numbers"
+      ],
+      "source": "3 jegyre van szükségem holnap reggelre.",
+      "reference": "I need 3 tickets for tomorrow morning."
+    },
+    {
+      "id": "num-02",
+      "tags": [
+        "numbers"
+      ],
+      "source": "5-en vagyunk, köztük 2 gyermek.",
+      "reference": "There are 5 of us, including 2 children."
+    },
+    {
+      "id": "num-03",
+      "tags": [
+        "numbers"
+      ],
+      "source": "A telefonszámom: 0044 7788 123456.",
+      "reference": "My phone number is 0044 7788 123456."
+    },
+    {
+      "id": "num-04",
+      "tags": [
+        "numbers"
+      ],
+      "source": "A repülőút 9 óra 25 percig tart.",
+      "reference": "The flight takes 9 hours and 25 minutes."
+    },
+    {
+      "id": "num-05",
+      "tags": [
+        "numbers"
+      ],
+      "source": "4-en vagyunk, és 6 bőröndünk van.",
+      "reference": "We are 4 people and we have 6 suitcases."
+    },
+    {
+      "id": "num-06",
+      "tags": [
+        "numbers",
+        "addresses"
+      ],
+      "source": "A 214-es szoba a második emeleten van.",
+      "reference": "Room 214 is on the second floor."
+    },
+    {
+      "id": "num-07",
+      "tags": [
+        "numbers",
+        "times"
+      ],
+      "source": "Október 3-án érkeztem, és október 9-én utazom el.",
+      "reference": "I arrived on October 3 and I leave on October 9."
+    },
+    {
+      "id": "time-01",
+      "tags": [
+        "times"
+      ],
+      "source": "Hánykor nyit a múzeum vasárnaponként?",
+      "reference": "What time does the museum open on Sundays?"
+    },
+    {
+      "id": "time-02",
+      "tags": [
+        "times"
+      ],
+      "source": "A vonatom 18:45-kor indul a 7-es vágányról.",
+      "reference": "My train leaves at 18:45 from platform 7."
+    },
+    {
+      "id": "time-03",
+      "tags": [
+        "times"
+      ],
+      "source": "Az utolsó busz ma este 23:30-kor indul.",
+      "reference": "The last bus leaves at 23:30 tonight."
+    },
+    {
+      "id": "time-04",
+      "tags": [
+        "times"
+      ],
+      "source": "Van foglalásom este 8 órára 2 főre.",
+      "reference": "I have a reservation at 8 pm for 2 people."
+    },
+    {
+      "id": "time-05",
+      "tags": [
+        "times"
+      ],
+      "source": "A gyógyszertár reggel 9 előtt nyit?",
+      "reference": "Does the pharmacy open before 9 in the morning?"
+    },
+    {
+      "id": "time-06",
+      "tags": [
+        "times",
+        "numbers"
+      ],
+      "source": "A túra 14:15-kor kezdődik, és 3 óráig tart.",
+      "reference": "The tour starts at 14:15 and lasts 3 hours."
+    },
+    {
+      "id": "time-07",
+      "tags": [
+        "times"
+      ],
+      "source": "A reggelit 6:30 és 10:00 között szolgálják fel.",
+      "reference": "Breakfast is served from 6:30 to 10:00."
+    },
+    {
+      "id": "price-01",
+      "tags": [
+        "prices",
+        "numbers"
+      ],
+      "source": "Mennyibe kerül egy kétágyas szoba 3 éjszakára?",
+      "reference": "How much is a double room for 3 nights?"
+    },
+    {
+      "id": "price-02",
+      "tags": [
+        "prices"
+      ],
+      "source": "Ez 45 euróba kerül, beleértve az adót.",
+      "reference": "This costs 45 euros, including tax."
+    },
+    {
+      "id": "price-03",
+      "tags": [
+        "prices",
+        "numbers"
+      ],
+      "source": "Van kedvezmény 2 felnőttnek és 1 gyermeknek?",
+      "reference": "Is there a discount for 2 adults and 1 child?"
+    },
+    {
+      "id": "price-04",
+      "tags": [
+        "prices"
+      ],
+      "source": "A jegy 12,50 euró személyenként.",
+      "reference": "The ticket costs 12.50 euros per person."
+    },
+    {
+      "id": "price-05",
+      "tags": [
+        "prices"
+      ],
+      "source": "Kártyával is fizethetek a 78 eurót?",
+      "reference": "Can I pay the 78 euros by card?"
+    },
+    {
+      "id": "price-06",
+      "tags": [
+        "prices"
+      ],
+      "source": "Mennyibe kerül a reptéri transzferváltal 2 főnek?",
+      "reference": "How much is the airport shuttle for 2 people?"
+    },
+    {
+      "id": "price-07",
+      "tags": [
+        "prices"
+      ],
+      "source": "A mai menü 15 euró, ital mellé.",
+      "reference": "The menu of the day is 15 euros with a drink included."
+    },
+    {
+      "id": "addr-01",
+      "tags": [
+        "addresses"
+      ],
+      "source": "A cím: Calle Mayor 15, harmadik emelet.",
+      "reference": "The address is Calle Mayor 15, third floor."
+    },
+    {
+      "id": "addr-02",
+      "tags": [
+        "addresses"
+      ],
+      "source": "A szállodám a Gran Vía 28 alatt van, a metró közelében.",
+      "reference": "My hotel is at 28 Gran Vía, near the metro."
+    },
+    {
+      "id": "addr-03",
+      "tags": [
+        "addresses"
+      ],
+      "source": "A nagykövetség a Paseo de la Castellana 259 szám alatt található.",
+      "reference": "The embassy is at Paseo de la Castellana 259."
+    },
+    {
+      "id": "addr-04",
+      "tags": [
+        "addresses"
+      ],
+      "source": "Kérem, jegyezze fel a címet: 42-es szám, 5B lakás.",
+      "reference": "Please write down the address: number 42, apartment 5B."
+    },
+    {
+      "id": "addr-05",
+      "tags": [
+        "addresses"
+      ],
+      "source": "A találkozóhely a Plaza del Sol, a 3-as kapu.",
+      "reference": "The meeting point is Plaza del Sol, gate 3."
+    },
+    {
+      "id": "addr-06",
+      "tags": [
+        "addresses",
+        "directions"
+      ],
+      "source": "Ez az út a Carrer de Balmes 112 felé?",
+      "reference": "Is this the way to Carrer de Balmes 112?"
+    },
+    {
+      "id": "dir-01",
+      "tags": [
+        "directions"
+      ],
+      "source": "Hol van a legközelebbi buszmegálló?",
+      "reference": "Where is the nearest bus stop?"
+    },
+    {
+      "id": "dir-02",
+      "tags": [
+        "directions",
+        "numbers"
+      ],
+      "source": "A lámpánál forduljon balra, majd menjen 200 métert egyenesen.",
+      "reference": "Turn left at the traffic lights, then go straight for 200 meters."
+    },
+    {
+      "id": "dir-03",
+      "tags": [
+        "directions"
+      ],
+      "source": "Át lehet gyalog menni a pályaudvarról a szállodába?",
+      "reference": "Is the station within walking distance of the hotel?"
+    },
+    {
+      "id": "dir-04",
+      "tags": [
+        "directions",
+        "numbers"
+      ],
+      "source": "Melyik járat megy a repülőtérre, az 5-ös vagy a 8-as?",
+      "reference": "Which line goes to the airport, line 5 or line 8?"
+    },
+    {
+      "id": "dir-05",
+      "tags": [
+        "directions"
+      ],
+      "source": "Elnézést, ez a 14A ülés?",
+      "reference": "Excuse me, is this seat 14A?"
+    },
+    {
+      "id": "dir-06",
+      "tags": [
+        "directions"
+      ],
+      "source": "Hogyan juthatok el innen az óvárosba?",
+      "reference": "How do I get to the old town from here?"
+    },
+    {
+      "id": "dir-07",
+      "tags": [
+        "directions",
+        "times"
+      ],
+      "source": "A múzeum a tértől körülbelül 15 percre van gyalog.",
+      "reference": "The museum is about 15 minutes on foot from the square."
+    },
+    {
+      "id": "emerg-01",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Kérem, hívjon mentőt, valaki eszméletlen.",
+      "reference": "Please call an ambulance, someone is unconscious."
+    },
+    {
+      "id": "emerg-02",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Elvesztettem az útlevelemet és a pénztárcámat.",
+      "reference": "I have lost my passport and my wallet."
+    },
+    {
+      "id": "emerg-03",
+      "tags": [
+        "emergencies",
+        "directions"
+      ],
+      "source": "Hol van a legközelebbi kórház vagy klinika?",
+      "reference": "Where is the nearest hospital or clinic?"
+    },
+    {
+      "id": "emerg-04",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Allergiás vagyok a földimogyoróra; tartalmaz ez az étel ilyet?",
+      "reference": "I am allergic to peanuts; does this dish contain any?"
+    },
+    {
+      "id": "emerg-05",
+      "tags": [
+        "emergencies",
+        "prices"
+      ],
+      "source": "Valaki ellopta a táskámat, benne 200 euróval.",
+      "reference": "Someone stole my bag with 200 euros inside."
+    },
+    {
+      "id": "emerg-06",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Hívja a rendőrséget, kérem. Baleset történt.",
+      "reference": "Call the police, please. There has been an accident."
+    }
+  ]
+}

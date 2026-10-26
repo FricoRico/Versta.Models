@@ -1,0 +1,341 @@
+{
+  "name": "traveler-v1",
+  "source_language": "el",
+  "target_language": "en",
+  "version": 1,
+  "chrf_floor": 36.7,
+  "chrf_floor_note": "Calibrated from the NEU-61 kickoff sweep: measured corpus chrF 81.6 on the published v2.0.0 pack; floor = max(15.0, min(0.45 * chrF, chrF - 20)). A direction-mislabeled pack collapses far below this value (see the es-en adversarial control).",
+  "entries": [
+    {
+      "id": "num-01",
+      "tags": [
+        "numbers"
+      ],
+      "source": "Χρειάζομαι 3 εισιτήρια για αύριο το πρωί.",
+      "reference": "I need 3 tickets for tomorrow morning."
+    },
+    {
+      "id": "num-02",
+      "tags": [
+        "numbers"
+      ],
+      "source": "Είμαστε 5 άτομα, μαζί με 2 παιδιά.",
+      "reference": "There are 5 of us, including 2 children."
+    },
+    {
+      "id": "num-03",
+      "tags": [
+        "numbers"
+      ],
+      "source": "Ο αριθμός τηλεφώνου μου είναι 0044 7788 123456.",
+      "reference": "My phone number is 0044 7788 123456."
+    },
+    {
+      "id": "num-04",
+      "tags": [
+        "numbers"
+      ],
+      "source": "Η πτήση διαρκεί 9 ώρες και 25 λεπτά.",
+      "reference": "The flight takes 9 hours and 25 minutes."
+    },
+    {
+      "id": "num-05",
+      "tags": [
+        "numbers"
+      ],
+      "source": "Είμαστε 4 άτομα και έχουμε 6 βαλίτσες.",
+      "reference": "We are 4 people and we have 6 suitcases."
+    },
+    {
+      "id": "num-06",
+      "tags": [
+        "numbers",
+        "addresses"
+      ],
+      "source": "Το δωμάτιο 214 είναι στον δεύτερο όροφο.",
+      "reference": "Room 214 is on the second floor."
+    },
+    {
+      "id": "num-07",
+      "tags": [
+        "numbers",
+        "times"
+      ],
+      "source": "Έφτασα στις 3 Οκτωβρίου και φεύγω στις 9 Οκτωβρίου.",
+      "reference": "I arrived on October 3 and I leave on October 9."
+    },
+    {
+      "id": "time-01",
+      "tags": [
+        "times"
+      ],
+      "source": "Τι ώρα ανοίγει το μουσείο τις Κυριακές;",
+      "reference": "What time does the museum open on Sundays?"
+    },
+    {
+      "id": "time-02",
+      "tags": [
+        "times"
+      ],
+      "source": "Το τρένο μου φεύγει στις 18:45 από την αποβάθρα 7.",
+      "reference": "My train leaves at 18:45 from platform 7."
+    },
+    {
+      "id": "time-03",
+      "tags": [
+        "times"
+      ],
+      "source": "Το τελευταίο λεωφορείο φεύγει στις 23:30 απόψε.",
+      "reference": "The last bus leaves at 23:30 tonight."
+    },
+    {
+      "id": "time-04",
+      "tags": [
+        "times"
+      ],
+      "source": "Έχω κράτηση στις 8 το βράδυ για 2 άτομα.",
+      "reference": "I have a reservation at 8 pm for 2 people."
+    },
+    {
+      "id": "time-05",
+      "tags": [
+        "times"
+      ],
+      "source": "Ανοίγει το φαρμακείο πριν τις 9 το πρωί;",
+      "reference": "Does the pharmacy open before 9 in the morning?"
+    },
+    {
+      "id": "time-06",
+      "tags": [
+        "times",
+        "numbers"
+      ],
+      "source": "Η ξενάγηση ξεκινά στις 14:15 και διαρκεί 3 ώρες.",
+      "reference": "The tour starts at 14:15 and lasts 3 hours."
+    },
+    {
+      "id": "time-07",
+      "tags": [
+        "times"
+      ],
+      "source": "Το πρωινό σερβίρεται από 6:30 έως 10:00.",
+      "reference": "Breakfast is served from 6:30 to 10:00."
+    },
+    {
+      "id": "price-01",
+      "tags": [
+        "prices",
+        "numbers"
+      ],
+      "source": "Πόσο κοστίζει ένα δίκλινο δωμάτιο για 3 διανυκτερεύσεις;",
+      "reference": "How much is a double room for 3 nights?"
+    },
+    {
+      "id": "price-02",
+      "tags": [
+        "prices"
+      ],
+      "source": "Αυτό κοστίζει 45 ευρώ, συμπεριλαμβανομένου του φόρου.",
+      "reference": "This costs 45 euros, including tax."
+    },
+    {
+      "id": "price-03",
+      "tags": [
+        "prices",
+        "numbers"
+      ],
+      "source": "Υπάρχει έκπτωση για 2 ενήλικες και 1 παιδί;",
+      "reference": "Is there a discount for 2 adults and 1 child?"
+    },
+    {
+      "id": "price-04",
+      "tags": [
+        "prices"
+      ],
+      "source": "Το εισιτήριο κοστίζει 12,50 ευρώ ανά άτομο.",
+      "reference": "The ticket costs 12.50 euros per person."
+    },
+    {
+      "id": "price-05",
+      "tags": [
+        "prices"
+      ],
+      "source": "Μπορώ να πληρώσω τα 78 ευρώ με κάρτα;",
+      "reference": "Can I pay the 78 euros by card?"
+    },
+    {
+      "id": "price-06",
+      "tags": [
+        "prices"
+      ],
+      "source": "Πόσο κοστίζει το λεωφορείο του αεροδρομίου για 2 άτομα;",
+      "reference": "How much is the airport shuttle for 2 people?"
+    },
+    {
+      "id": "price-07",
+      "tags": [
+        "prices"
+      ],
+      "source": "Το μενού της ημέρας κοστίζει 15 ευρώ με ποτό.",
+      "reference": "The menu of the day is 15 euros with a drink included."
+    },
+    {
+      "id": "addr-01",
+      "tags": [
+        "addresses"
+      ],
+      "source": "Η διεύθυνση είναι Calle Mayor 15, τρίτος όροφος.",
+      "reference": "The address is Calle Mayor 15, third floor."
+    },
+    {
+      "id": "addr-02",
+      "tags": [
+        "addresses"
+      ],
+      "source": "Το ξενοδοχείο μου είναι στη Gran Vía 28, κοντά στο μετρό.",
+      "reference": "My hotel is at 28 Gran Vía, near the metro."
+    },
+    {
+      "id": "addr-03",
+      "tags": [
+        "addresses"
+      ],
+      "source": "Η πρεσβεία είναι στη Paseo de la Castellana 259.",
+      "reference": "The embassy is at Paseo de la Castellana 259."
+    },
+    {
+      "id": "addr-04",
+      "tags": [
+        "addresses"
+      ],
+      "source": "Παρακαλώ σημειώστε τη διεύθυνση: αριθμός 42, διαμέρισμα 5B.",
+      "reference": "Please write down the address: number 42, apartment 5B."
+    },
+    {
+      "id": "addr-05",
+      "tags": [
+        "addresses"
+      ],
+      "source": "Το σημείο συνάντησης είναι η Plaza del Sol, πύλη 3.",
+      "reference": "The meeting point is Plaza del Sol, gate 3."
+    },
+    {
+      "id": "addr-06",
+      "tags": [
+        "addresses",
+        "directions"
+      ],
+      "source": "Είναι αυτός ο δρόμος προς Carrer de Balmes 112;",
+      "reference": "Is this the way to Carrer de Balmes 112?"
+    },
+    {
+      "id": "dir-01",
+      "tags": [
+        "directions"
+      ],
+      "source": "Πού είναι η πλησιέστερη στάση λεωφορείου;",
+      "reference": "Where is the nearest bus stop?"
+    },
+    {
+      "id": "dir-02",
+      "tags": [
+        "directions",
+        "numbers"
+      ],
+      "source": "Στρίψτε αριστερά στο φανάρι και μετά συνεχίστε ευθεία 200 μέτρα.",
+      "reference": "Turn left at the traffic lights, then go straight for 200 meters."
+    },
+    {
+      "id": "dir-03",
+      "tags": [
+        "directions"
+      ],
+      "source": "Μπορεί κανείς να πάει από τον σταθμό στο ξενοδοχείο με τα πόδια;",
+      "reference": "Is the station within walking distance of the hotel?"
+    },
+    {
+      "id": "dir-04",
+      "tags": [
+        "directions",
+        "numbers"
+      ],
+      "source": "Ποια γραμμή πάει στο αεροδρόμιο, η γραμμή 5 ή η γραμμή 8;",
+      "reference": "Which line goes to the airport, line 5 or line 8?"
+    },
+    {
+      "id": "dir-05",
+      "tags": [
+        "directions"
+      ],
+      "source": "Συγγνώμη, αυτή είναι η θέση 14A;",
+      "reference": "Excuse me, is this seat 14A?"
+    },
+    {
+      "id": "dir-06",
+      "tags": [
+        "directions"
+      ],
+      "source": "Πώς πάω στην παλιά πόλη από εδώ;",
+      "reference": "How do I get to the old town from here?"
+    },
+    {
+      "id": "dir-07",
+      "tags": [
+        "directions",
+        "times"
+      ],
+      "source": "Το μουσείο είναι περίπου 15 λεπτά με τα πόδια από την πλατεία.",
+      "reference": "The museum is about 15 minutes on foot from the square."
+    },
+    {
+      "id": "emerg-01",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Παρακαλώ καλέστε ασθενοφόρο, κάποιος είναι αναίσθητος.",
+      "reference": "Please call an ambulance, someone is unconscious."
+    },
+    {
+      "id": "emerg-02",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Έχασα το διαβατήριο και το πορτοφόλι μου.",
+      "reference": "I have lost my passport and my wallet."
+    },
+    {
+      "id": "emerg-03",
+      "tags": [
+        "emergencies",
+        "directions"
+      ],
+      "source": "Πού είναι το πλησιέστερο νοσοκομείο ή κλινική;",
+      "reference": "Where is the nearest hospital or clinic?"
+    },
+    {
+      "id": "emerg-04",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Είμαι αλλεργικός στα φιστίκια· περιέχει αυτό το πιάτο κάποια;",
+      "reference": "I am allergic to peanuts; does this dish contain any?"
+    },
+    {
+      "id": "emerg-05",
+      "tags": [
+        "emergencies",
+        "prices"
+      ],
+      "source": "Κάποιος έκλεψε την τσάντα μου με 200 ευρώ μέσα.",
+      "reference": "Someone stole my bag with 200 euros inside."
+    },
+    {
+      "id": "emerg-06",
+      "tags": [
+        "emergencies"
+      ],
+      "source": "Καλέστε την αστυνομία, παρακαλώ. Έγινε ατύχημα.",
+      "reference": "Call the police, please. There has been an accident."
+    }
+  ]
+}

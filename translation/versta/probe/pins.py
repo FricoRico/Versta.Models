@@ -13,7 +13,7 @@ only in a dedicated commit with the measured scorecard diff attached.
 import json
 
 from pathlib import Path
-from typing import Any, Dict, List, TypedDict
+from typing import Any, Dict, List, TypedDict, cast
 
 from .install import sha256_of
 
@@ -26,6 +26,53 @@ class DirectionPins(TypedDict):
 
 class PinsError(ValueError):
     """A downloaded file's content diverged from its pin."""
+
+
+def load_published_pins(pins_path: Path) -> Dict[str, Any]:
+    """
+    Loads the ``published`` section: tar checksums for the served bundles plus
+    the per-file payload pins measured on them at first-sweep time. Used by the
+    full-catalog sweep (NEU-59) so a silent re-publish of models.versta.app is
+    caught deliberately, same discipline as registry drift.
+
+    Args:
+        pins_path (Path): path to pack-acceptance/pins.json.
+
+    Returns:
+        Dict[str, Any]: the raw ``published`` document.
+
+    Raises:
+        PinsError: on a malformed document.
+    """
+    with open(pins_path, "r", encoding="utf-8") as handle:
+        data: Any = json.load(handle)
+    published: Any = data.get("published")
+    if not isinstance(published, dict):
+        raise PinsError(f"{pins_path}: missing 'published' section")
+    for required in ("bundle_base_url", "directions", "bundles"):
+        if required not in published:
+            raise PinsError(f"{pins_path}: 'published' lacks {required!r}")
+    return cast(Dict[str, Any], published)
+
+
+def verify_published_bundle(bundle_path: Path, expected_sha256: str) -> None:
+    """
+    Verifies one served bundle tarball against its pinned sha256.
+
+    Args:
+        bundle_path (Path): the downloaded ``<slug>-bundle.tar.gz``.
+        expected_sha256 (str): the pin from pins.json ``published.bundles``.
+
+    Raises:
+        PinsError: on digest mismatch.
+    """
+    actual = sha256_of(bundle_path)
+    if actual != expected_sha256:
+        raise PinsError(
+            f"{bundle_path.name}: served bundle sha256 {actual} != pinned "
+            f"{expected_sha256} — the catalog artifact was re-published; "
+            "re-pin deliberately (bench-baseline discipline)"
+        )
 
 
 def load_pins(pins_path: Path) -> Dict[str, DirectionPins]:
