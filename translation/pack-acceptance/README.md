@@ -24,6 +24,8 @@ diff in the PR.
 cd translation
 uv sync
 uv run python -m versta.download --source en --target es --architecture base-memory
-# … (all four directions; see the workflow for the full loop)
+# … (all four directions; use --architecture tiny for ja-en — the v2.0.0
+# catalog ships the tiny export for that direction, see pins.json; see the
+# workflow for the full loop)
 uv run python -m versta.probe.pins --downloads_dir output
 ```
