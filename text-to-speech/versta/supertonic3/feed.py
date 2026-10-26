@@ -54,6 +54,10 @@ def build_feed_entry(
         base_url (str): Publish root; the version path segment is appended.
     """
     bundle_url = f"{base_url}/{version}/{BUNDLE_FILENAME}"
+    # Same envelope as the Kokoro/OCR entries: the sidecar replaces the
+    # trailing ".gz" (supertonic3-bundle.tar.sha256), matching the bundler's
+    # Path.with_suffix(".sha256") output name.
+    checksum_url = bundle_url.removesuffix(".gz") + ".sha256"
     return {
         "id": BUNDLE_ID,
         "name": BUNDLE_NAME,
@@ -63,7 +67,7 @@ def build_feed_entry(
         "voices": voice_rows(),
         "architectures": ["Supertonic3"],
         "bundle": bundle_url,
-        "checksum": bundle_url + ".sha256",
+        "checksum": checksum_url,
     }
 
 

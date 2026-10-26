@@ -333,6 +333,6 @@
       "Supertonic3"
     ],
     "bundle": "https://models.versta.app/text-to-speech/v2.0.0/supertonic3-bundle.tar.gz",
-    "checksum": "https://models.versta.app/text-to-speech/v2.0.0/supertonic3-bundle.tar.gz.sha256"
+    "checksum": "https://models.versta.app/text-to-speech/v2.0.0/supertonic3-bundle.tar.sha256"
   }
 ]

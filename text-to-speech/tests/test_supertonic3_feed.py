@@ -43,7 +43,9 @@ def test_feed_entry_envelope_matches_kokoro_shape():
     assert entry["bundle"] == (
         "https://models.versta.app/text-to-speech/v2.0.0/supertonic3-bundle.tar.gz"
     )
-    assert entry["checksum"] == entry["bundle"] + ".sha256"
+    assert entry["checksum"] == (
+        "https://models.versta.app/text-to-speech/v2.0.0/supertonic3-bundle.tar.sha256"
+    )
     assert len(entry["voices"]) == 62
 
 
