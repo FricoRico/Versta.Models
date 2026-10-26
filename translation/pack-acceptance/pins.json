@@ -1,16 +1,16 @@
 {
   "version": 1,
-  "note": "Pack-acceptance content pins (NEU-60). Changes to this file are deliberate re-baselining: dedicated commit, measured scorecard diff attached. Downloads are verified against these content SHA-256 values by `uv run python -m versta.probe.pins` after the registry's own uncompressedHash gate; a mismatch here means upstream re-published without us noticing — investigate before re-pinning.",
+  "note": "Pack-acceptance content pins (NEU-60). Changes to this file are deliberate re-baselining: dedicated commit, measured scorecard diff attached. Downloads are verified against these content SHA-256 values by `uv run python -m versta.probe.pins` after the registry's own uncompressedHash gate; a mismatch here means upstream re-published without us noticing \u2014 investigate before re-pinning.",
   "registry_url": "https://storage.googleapis.com/moz-fx-translations-data--303e-prod-translations-data/db/models.json",
   "architecture": "base-memory",
   "leanmt": {
     "repo": "https://github.com/FricoRico/Versta.Leanmt.git",
-    "commit": "f26e42621fc76b485c55fc2c886a123dc515d436",
-    "note": "leanmt-probe lives on tomasz/neu-60-leanmt-probe until that PR merges; once on main, re-pin to the merge commit."
+    "commit": "07015949c7e201932a24cc6e53affbc4e35127aa",
+    "note": "leanmt-probe merge commit on main (PR #10, NEU-60)."
   },
   "directions": {
     "en-es": {
-      "catalog_entry": "Firefox/en-es (catalog v2.0.0 is BergamotTinyModel; the current registry carries this pair as base-memory — architecture is a probe-input property, not a verdict)",
+      "catalog_entry": "Firefox/en-es (catalog v2.0.0 is BergamotTinyModel; the current registry carries this pair as base-memory \u2014 architecture is a probe-input property, not a verdict)",
       "files": {
         "model": "3b1c399511c01c84c36fae5c0524df44096288efdc8236e182b5c97d7ad2244c",
         "vocabulary": "5ae254fa9b15aa182e70fd2a6186b1333c63a29a48043a9224c6aa4fcac058ad",
