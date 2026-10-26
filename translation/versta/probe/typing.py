@@ -5,7 +5,7 @@ what ``scorecard.py`` actually writes — the scorecard schema is
 manifest-adjacent and is agreed with the pipeline pair (review on the PR).
 """
 
-from typing import List, Optional, TypedDict
+from typing import Dict, List, Optional, TypedDict
 
 # Named schema string for the scorecard document. Every pipeline contract
 # dispatches on a named string (``versta.eval-result/1``,
@@ -13,6 +13,11 @@ from typing import List, Optional, TypedDict
 # a type. Bump on incompatible shape changes, in lockstep with
 # ``SCORECARD_VERSION``.
 SCORECARD_SCHEMA = "versta.pack-scorecard/1"
+
+# Named schema string for the golden-band document pinned under
+# ``pack-acceptance/bands.json`` (NEU-60). Manifest-adjacent like the
+# scorecard schema: agreed with the pipeline pair before it lands.
+BANDS_SCHEMA = "versta.pack-bands/1"
 
 
 class CorpusEntry(TypedDict):
@@ -136,6 +141,51 @@ class Gates(TypedDict):
     direction_chrf_floor: bool
     digit_preservation: bool
     latency_rss: bool
+
+
+class BandBaseline(TypedDict):
+    """Where a direction band's golden measurement was taken."""
+
+    scorecard: str  # repo-relative path of the champion scorecard
+    bundle_sha256: str  # sha256 of the (re-packed) bundle that was measured
+    leanmt_commit: Optional[str]
+    measured_on: str  # e.g. "ubuntu-24.04-arm (aarch64)"
+
+
+class DirectionBand(TypedDict):
+    """
+    The pinned acceptable band for one direction's chrF, derived from the
+    golden measurement on the previously published bundle.
+
+    ``golden_chrf`` is the measurement; ``chrf_min`` is the publish-blocking
+    lower edge (``golden_chrf - bands.chrf_max_drop``); ``chrf_floor`` is the
+    corpus-carried direction-sanity floor kept alongside for context and
+    defense in depth (a mislabeled pack collapses through both).
+    """
+
+    golden_chrf: float
+    chrf_min: float
+    chrf_floor: float
+    baseline: BandBaseline
+
+
+class Bands(TypedDict):
+    """
+    Golden-output bands for every shipped direction (NEU-60), pinned in
+    ``pack-acceptance/bands.json`` and consumed by the publish gate in
+    ``versta.batch`` and the weekly sweep. The document is derivable from
+    the committed baseline scorecards via ``versta.probe.bands``; it moves
+    only in dedicated re-pin commits (bench-baseline discipline, NEU-16/22/23).
+    """
+
+    schema: str
+    bands_version: int
+    corpus: str  # corpus name every banded card must have been scored against
+    chrf_max_drop: float  # publish-allowed absolute chrF drop below golden
+    digit_preservation_required: float  # fraction; 1.0 = 100% (NEU-30)
+    metrics: ScorecardMetrics
+    directions: Dict[str, DirectionBand]
+    note: str
 
 
 class Scorecard(TypedDict):
