@@ -10,9 +10,9 @@
             ],
             "score": 86.0,
             "version": "v2.0.0",
-            "size": 50713079,
-            "bundle": "https://models.versta.app/translation/ar-en-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/ar-en-bundle.tar.sha256"
+            "size": 50713114,
+            "bundle": "https://models.versta.app/translation/v2.0.0/ar-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/ar-en-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-ar",
@@ -24,9 +24,9 @@
             ],
             "score": 86.0,
             "version": "v2.0.0",
-            "size": 50713079,
-            "bundle": "https://models.versta.app/translation/ar-en-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/ar-en-bundle.tar.sha256"
+            "size": 50713114,
+            "bundle": "https://models.versta.app/translation/v2.0.0/ar-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/ar-en-bundle.tar.sha256"
         }
     ],
     [
@@ -40,9 +40,9 @@
             ],
             "score": 87.2,
             "version": "v2.0.0",
-            "size": 50339953,
-            "bundle": "https://models.versta.app/translation/bg-en-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/bg-en-bundle.tar.sha256"
+            "size": 50339902,
+            "bundle": "https://models.versta.app/translation/v2.0.0/bg-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/bg-en-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-bg",
@@ -54,9 +54,9 @@
             ],
             "score": 89.8,
             "version": "v2.0.0",
-            "size": 50339953,
-            "bundle": "https://models.versta.app/translation/bg-en-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/bg-en-bundle.tar.sha256"
+            "size": 50339902,
+            "bundle": "https://models.versta.app/translation/v2.0.0/bg-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/bg-en-bundle.tar.sha256"
         }
     ],
     [
@@ -70,9 +70,9 @@
             ],
             "score": 87.8,
             "version": "v2.0.0",
-            "size": 40887052,
-            "bundle": "https://models.versta.app/translation/ca-en-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/ca-en-bundle.tar.sha256"
+            "size": 40887086,
+            "bundle": "https://models.versta.app/translation/v2.0.0/ca-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/ca-en-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-ca",
@@ -84,9 +84,9 @@
             ],
             "score": 85.8,
             "version": "v2.0.0",
-            "size": 40887052,
-            "bundle": "https://models.versta.app/translation/ca-en-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/ca-en-bundle.tar.sha256"
+            "size": 40887086,
+            "bundle": "https://models.versta.app/translation/v2.0.0/ca-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/ca-en-bundle.tar.sha256"
         }
     ],
     [
@@ -100,9 +100,12 @@
             ],
             "score": 84.8,
             "version": "v2.0.0",
-            "size": 61178156,
-            "bundle": "https://models.versta.app/translation/en-zh-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-zh-bundle.tar.sha256"
+            "size": 61178067,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-zh-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-zh-bundle.tar.sha256",
+            "known_issues": [
+                "Numeral fidelity: the int8 pack can merge, convert or drop numerals in this direction (confirmed reproduction: '机场巴士2个人多少钱？' loses '2 people' — root-caused model-side in NEU-134; there is no engine decode fix). chrF does not catch this class: this direction passes its aggregate floor (66.3 vs floor 29.8). Digit preservation on the NEU-59 traveler-v1 sweep corpus: 39/40 probes (failing: price-06). The reverse en->zh-Hans direction of this bundle is affected as well (31/40 there)."
+            ]
         },
         {
             "base_model": "Firefox/en-zh-Hans",
@@ -114,9 +117,12 @@
             ],
             "score": 86.3,
             "version": "v2.0.0",
-            "size": 61178156,
-            "bundle": "https://models.versta.app/translation/en-zh-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-zh-bundle.tar.sha256"
+            "size": 61178067,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-zh-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-zh-bundle.tar.sha256",
+            "known_issues": [
+                "Numeral fidelity: the int8 pack can merge, convert or drop numerals in this direction (same model-side class NEU-134 reproduced on the reverse direction; there is no engine decode fix). chrF does not catch this class: this direction passes its aggregate floor (34.5 vs floor 15.0). Digit preservation on the NEU-59 traveler-v1 sweep corpus: 31/40 probes (failing: num-01, num-02, time-02, time-03, time-04, time-06, time-07, price-01, price-06)."
+            ]
         }
     ],
     [
@@ -130,9 +136,9 @@
             ],
             "score": 85.6,
             "version": "v2.0.0",
-            "size": 29886488,
-            "bundle": "https://models.versta.app/translation/en-hr-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-hr-bundle.tar.sha256"
+            "size": 29886447,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-hr-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-hr-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-hr",
@@ -144,9 +150,9 @@
             ],
             "score": 87.4,
             "version": "v2.0.0",
-            "size": 29886488,
-            "bundle": "https://models.versta.app/translation/en-hr-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-hr-bundle.tar.sha256"
+            "size": 29886447,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-hr-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-hr-bundle.tar.sha256"
         }
     ],
     [
@@ -160,9 +166,9 @@
             ],
             "score": 86.7,
             "version": "v2.0.0",
-            "size": 29672786,
-            "bundle": "https://models.versta.app/translation/cs-en-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/cs-en-bundle.tar.sha256"
+            "size": 29672767,
+            "bundle": "https://models.versta.app/translation/v2.0.0/cs-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/cs-en-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-cs",
@@ -174,9 +180,9 @@
             ],
             "score": 87.5,
             "version": "v2.0.0",
-            "size": 29672786,
-            "bundle": "https://models.versta.app/translation/cs-en-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/cs-en-bundle.tar.sha256"
+            "size": 29672767,
+            "bundle": "https://models.versta.app/translation/v2.0.0/cs-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/cs-en-bundle.tar.sha256"
         }
     ],
     [
@@ -190,9 +196,9 @@
             ],
             "score": 89.1,
             "version": "v2.0.0",
-            "size": 29719942,
-            "bundle": "https://models.versta.app/translation/da-en-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/da-en-bundle.tar.sha256"
+            "size": 29719947,
+            "bundle": "https://models.versta.app/translation/v2.0.0/da-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/da-en-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-da",
@@ -204,9 +210,9 @@
             ],
             "score": 89.1,
             "version": "v2.0.0",
-            "size": 29719942,
-            "bundle": "https://models.versta.app/translation/da-en-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/da-en-bundle.tar.sha256"
+            "size": 29719947,
+            "bundle": "https://models.versta.app/translation/v2.0.0/da-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/da-en-bundle.tar.sha256"
         }
     ],
     [
@@ -220,9 +226,9 @@
             ],
             "score": 86.6,
             "version": "v2.0.0",
-            "size": 51507268,
-            "bundle": "https://models.versta.app/translation/en-nl-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-nl-bundle.tar.sha256"
+            "size": 51507232,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-nl-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-nl-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-nl",
@@ -234,9 +240,9 @@
             ],
             "score": 86.5,
             "version": "v2.0.0",
-            "size": 51507268,
-            "bundle": "https://models.versta.app/translation/en-nl-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-nl-bundle.tar.sha256"
+            "size": 51507232,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-nl-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-nl-bundle.tar.sha256"
         }
     ],
     [
@@ -250,9 +256,9 @@
             ],
             "score": 88.1,
             "version": "v2.0.0",
-            "size": 50639328,
-            "bundle": "https://models.versta.app/translation/en-et-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-et-bundle.tar.sha256"
+            "size": 50639324,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-et-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-et-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-et",
@@ -264,9 +270,9 @@
             ],
             "score": 90.4,
             "version": "v2.0.0",
-            "size": 50639328,
-            "bundle": "https://models.versta.app/translation/en-et-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-et-bundle.tar.sha256"
+            "size": 50639324,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-et-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-et-bundle.tar.sha256"
         }
     ],
     [
@@ -280,9 +286,9 @@
             ],
             "score": 85.7,
             "version": "v2.0.0",
-            "size": 30531725,
-            "bundle": "https://models.versta.app/translation/en-fa-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-fa-bundle.tar.sha256"
+            "size": 30531691,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-fa-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-fa-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-fa",
@@ -294,9 +300,9 @@
             ],
             "score": 84.6,
             "version": "v2.0.0",
-            "size": 30531725,
-            "bundle": "https://models.versta.app/translation/en-fa-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-fa-bundle.tar.sha256"
+            "size": 30531691,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-fa-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-fa-bundle.tar.sha256"
         }
     ],
     [
@@ -310,9 +316,9 @@
             ],
             "score": 88.6,
             "version": "v2.0.0",
-            "size": 40178795,
-            "bundle": "https://models.versta.app/translation/en-fi-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-fi-bundle.tar.sha256"
+            "size": 40178784,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-fi-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-fi-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-fi",
@@ -324,9 +330,9 @@
             ],
             "score": 88.2,
             "version": "v2.0.0",
-            "size": 40178795,
-            "bundle": "https://models.versta.app/translation/en-fi-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-fi-bundle.tar.sha256"
+            "size": 40178784,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-fi-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-fi-bundle.tar.sha256"
         }
     ],
     [
@@ -340,9 +346,9 @@
             ],
             "score": 88.6,
             "version": "v2.0.0",
-            "size": 51867459,
-            "bundle": "https://models.versta.app/translation/en-fr-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-fr-bundle.tar.sha256"
+            "size": 51867466,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-fr-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-fr-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-fr",
@@ -354,9 +360,9 @@
             ],
             "score": 86.5,
             "version": "v2.0.0",
-            "size": 51867459,
-            "bundle": "https://models.versta.app/translation/en-fr-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-fr-bundle.tar.sha256"
+            "size": 51867466,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-fr-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-fr-bundle.tar.sha256"
         }
     ],
     [
@@ -370,9 +376,9 @@
             ],
             "score": 88.1,
             "version": "v2.0.0",
-            "size": 51037668,
-            "bundle": "https://models.versta.app/translation/de-en-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/de-en-bundle.tar.sha256"
+            "size": 51037608,
+            "bundle": "https://models.versta.app/translation/v2.0.0/de-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/de-en-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-de",
@@ -384,9 +390,9 @@
             ],
             "score": 86.7,
             "version": "v2.0.0",
-            "size": 51037668,
-            "bundle": "https://models.versta.app/translation/de-en-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/de-en-bundle.tar.sha256"
+            "size": 51037608,
+            "bundle": "https://models.versta.app/translation/v2.0.0/de-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/de-en-bundle.tar.sha256"
         }
     ],
     [
@@ -400,9 +406,9 @@
             ],
             "score": 85.5,
             "version": "v2.0.0",
-            "size": 29468041,
-            "bundle": "https://models.versta.app/translation/el-en-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/el-en-bundle.tar.sha256"
+            "size": 29468072,
+            "bundle": "https://models.versta.app/translation/v2.0.0/el-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/el-en-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-el",
@@ -414,9 +420,9 @@
             ],
             "score": 87.2,
             "version": "v2.0.0",
-            "size": 29468041,
-            "bundle": "https://models.versta.app/translation/el-en-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/el-en-bundle.tar.sha256"
+            "size": 29468072,
+            "bundle": "https://models.versta.app/translation/v2.0.0/el-en-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/el-en-bundle.tar.sha256"
         }
     ],
     [
@@ -430,9 +436,9 @@
             ],
             "score": 85.7,
             "version": "v2.0.0",
-            "size": 30500260,
-            "bundle": "https://models.versta.app/translation/en-he-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-he-bundle.tar.sha256"
+            "size": 30500282,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-he-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-he-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-he",
@@ -444,9 +450,9 @@
             ],
             "score": 86.8,
             "version": "v2.0.0",
-            "size": 30500260,
-            "bundle": "https://models.versta.app/translation/en-he-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-he-bundle.tar.sha256"
+            "size": 30500282,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-he-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-he-bundle.tar.sha256"
         }
     ],
     [
@@ -460,9 +466,9 @@
             ],
             "score": 85.9,
             "version": "v2.0.0",
-            "size": 30710434,
-            "bundle": "https://models.versta.app/translation/en-hu-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-hu-bundle.tar.sha256"
+            "size": 30710404,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-hu-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-hu-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-hu",
@@ -474,9 +480,9 @@
             ],
             "score": 85.2,
             "version": "v2.0.0",
-            "size": 30710434,
-            "bundle": "https://models.versta.app/translation/en-hu-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-hu-bundle.tar.sha256"
+            "size": 30710404,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-hu-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-hu-bundle.tar.sha256"
         }
     ],
     [
@@ -490,9 +496,9 @@
             ],
             "score": 87.4,
             "version": "v2.0.0",
-            "size": 29742739,
-            "bundle": "https://models.versta.app/translation/en-id-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-id-bundle.tar.sha256"
+            "size": 29742708,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-id-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-id-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-id",
@@ -504,9 +510,9 @@
             ],
             "score": 90.5,
             "version": "v2.0.0",
-            "size": 29742739,
-            "bundle": "https://models.versta.app/translation/en-id-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-id-bundle.tar.sha256"
+            "size": 29742708,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-id-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-id-bundle.tar.sha256"
         }
     ],
     [
@@ -520,9 +526,9 @@
             ],
             "score": 86.9,
             "version": "v2.0.0",
-            "size": 52623440,
-            "bundle": "https://models.versta.app/translation/en-it-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-it-bundle.tar.sha256"
+            "size": 52623398,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-it-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-it-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-it",
@@ -534,9 +540,9 @@
             ],
             "score": 86.6,
             "version": "v2.0.0",
-            "size": 52623440,
-            "bundle": "https://models.versta.app/translation/en-it-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-it-bundle.tar.sha256"
+            "size": 52623398,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-it-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-it-bundle.tar.sha256"
         }
     ],
     [
@@ -550,9 +556,12 @@
             ],
             "score": 85.1,
             "version": "v2.0.0",
-            "size": 60504133,
-            "bundle": "https://models.versta.app/translation/en-ja-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-ja-bundle.tar.sha256"
+            "size": 60504099,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-ja-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-ja-bundle.tar.sha256",
+            "known_issues": [
+                "Numeral fidelity: the int8 pack can merge, convert or drop numerals in this direction (confirmed reproduction: 'Room 214 is on the second floor.' renders as 'My room is the 214th floor' — root-caused model-side in NEU-134; there is no engine decode fix). chrF does not catch this class: this direction passes its aggregate floor (63.8 vs floor 28.7). Digit preservation on the NEU-59 traveler-v1 sweep corpus: 36/40 probes (failing: num-06, time-06, time-07, price-04)."
+            ]
         },
         {
             "base_model": "Firefox/en-ja",
@@ -564,9 +573,12 @@
             ],
             "score": 90.0,
             "version": "v2.0.0",
-            "size": 60504133,
-            "bundle": "https://models.versta.app/translation/en-ja-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-ja-bundle.tar.sha256"
+            "size": 60504099,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-ja-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-ja-bundle.tar.sha256",
+            "known_issues": [
+                "Numeral fidelity: the ja->en direction shipped in this same bundle can merge, convert or drop numerals (see the ja-en catalog entry; model-side per NEU-134) and chrF does not catch that class. This en->ja direction itself measured clean in the NEU-59 traveler-v1 sweep: digit preservation 40/40 probes."
+            ]
         }
     ],
     [
@@ -580,9 +592,9 @@
             ],
             "score": 85.0,
             "version": "v2.0.0",
-            "size": 62005703,
-            "bundle": "https://models.versta.app/translation/en-ko-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-ko-bundle.tar.sha256"
+            "size": 62005729,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-ko-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-ko-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-ko",
@@ -594,9 +606,9 @@
             ],
             "score": 87.1,
             "version": "v2.0.0",
-            "size": 62005703,
-            "bundle": "https://models.versta.app/translation/en-ko-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-ko-bundle.tar.sha256"
+            "size": 62005729,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-ko-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-ko-bundle.tar.sha256"
         }
     ],
     [
@@ -610,9 +622,9 @@
             ],
             "score": 85.0,
             "version": "v2.0.0",
-            "size": 15162852,
-            "bundle": "https://models.versta.app/translation/en-lv-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-lv-bundle.tar.sha256"
+            "size": 15162836,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-lv-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-lv-bundle.tar.sha256"
         }
     ],
     [
@@ -626,9 +638,9 @@
             ],
             "score": 84.7,
             "version": "v2.0.0",
-            "size": 50278916,
-            "bundle": "https://models.versta.app/translation/en-pl-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-pl-bundle.tar.sha256"
+            "size": 50278922,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-pl-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-pl-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-pl",
@@ -640,9 +652,9 @@
             ],
             "score": 86.8,
             "version": "v2.0.0",
-            "size": 50278916,
-            "bundle": "https://models.versta.app/translation/en-pl-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-pl-bundle.tar.sha256"
+            "size": 50278922,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-pl-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-pl-bundle.tar.sha256"
         }
     ],
     [
@@ -656,9 +668,9 @@
             ],
             "score": 88.7,
             "version": "v2.0.0",
-            "size": 51348973,
-            "bundle": "https://models.versta.app/translation/en-pt-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-pt-bundle.tar.sha256"
+            "size": 51348941,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-pt-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-pt-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-pt",
@@ -670,9 +682,9 @@
             ],
             "score": 88.9,
             "version": "v2.0.0",
-            "size": 51348973,
-            "bundle": "https://models.versta.app/translation/en-pt-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-pt-bundle.tar.sha256"
+            "size": 51348941,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-pt-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-pt-bundle.tar.sha256"
         }
     ],
     [
@@ -686,9 +698,9 @@
             ],
             "score": 87.7,
             "version": "v2.0.0",
-            "size": 29622460,
-            "bundle": "https://models.versta.app/translation/en-ro-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-ro-bundle.tar.sha256"
+            "size": 29622441,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-ro-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-ro-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-ro",
@@ -700,9 +712,9 @@
             ],
             "score": 88.5,
             "version": "v2.0.0",
-            "size": 29622460,
-            "bundle": "https://models.versta.app/translation/en-ro-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-ro-bundle.tar.sha256"
+            "size": 29622441,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-ro-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-ro-bundle.tar.sha256"
         }
     ],
     [
@@ -716,9 +728,9 @@
             ],
             "score": 84.2,
             "version": "v2.0.0",
-            "size": 29066605,
-            "bundle": "https://models.versta.app/translation/en-ru-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-ru-bundle.tar.sha256"
+            "size": 29066634,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-ru-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-ru-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-ru",
@@ -730,9 +742,9 @@
             ],
             "score": 84.6,
             "version": "v2.0.0",
-            "size": 29066605,
-            "bundle": "https://models.versta.app/translation/en-ru-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-ru-bundle.tar.sha256"
+            "size": 29066634,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-ru-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-ru-bundle.tar.sha256"
         }
     ],
     [
@@ -746,9 +758,9 @@
             ],
             "score": 85.6,
             "version": "v2.0.0",
-            "size": 30083981,
-            "bundle": "https://models.versta.app/translation/en-sk-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-sk-bundle.tar.sha256"
+            "size": 30083987,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-sk-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-sk-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-sk",
@@ -760,9 +772,9 @@
             ],
             "score": 85.5,
             "version": "v2.0.0",
-            "size": 30083981,
-            "bundle": "https://models.versta.app/translation/en-sk-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-sk-bundle.tar.sha256"
+            "size": 30083987,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-sk-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-sk-bundle.tar.sha256"
         }
     ],
     [
@@ -776,9 +788,9 @@
             ],
             "score": 84.7,
             "version": "v2.0.0",
-            "size": 30012146,
-            "bundle": "https://models.versta.app/translation/en-sl-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-sl-bundle.tar.sha256"
+            "size": 30012163,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-sl-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-sl-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-sl",
@@ -790,9 +802,9 @@
             ],
             "score": 85.6,
             "version": "v2.0.0",
-            "size": 30012146,
-            "bundle": "https://models.versta.app/translation/en-sl-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-sl-bundle.tar.sha256"
+            "size": 30012163,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-sl-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-sl-bundle.tar.sha256"
         }
     ],
     [
@@ -806,9 +818,9 @@
             ],
             "score": 85.7,
             "version": "v2.0.0",
-            "size": 51493339,
-            "bundle": "https://models.versta.app/translation/en-es-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-es-bundle.tar.sha256"
+            "size": 51493433,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-es-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-es-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-es",
@@ -820,9 +832,9 @@
             ],
             "score": 85.4,
             "version": "v2.0.0",
-            "size": 51493339,
-            "bundle": "https://models.versta.app/translation/en-es-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-es-bundle.tar.sha256"
+            "size": 51493433,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-es-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-es-bundle.tar.sha256"
         }
     ],
     [
@@ -836,9 +848,9 @@
             ],
             "score": 88.5,
             "version": "v2.0.0",
-            "size": 30401531,
-            "bundle": "https://models.versta.app/translation/en-sv-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-sv-bundle.tar.sha256"
+            "size": 30401462,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-sv-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-sv-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-sv",
@@ -850,9 +862,9 @@
             ],
             "score": 89.2,
             "version": "v2.0.0",
-            "size": 30401531,
-            "bundle": "https://models.versta.app/translation/en-sv-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-sv-bundle.tar.sha256"
+            "size": 30401462,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-sv-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-sv-bundle.tar.sha256"
         }
     ],
     [
@@ -866,9 +878,9 @@
             ],
             "score": 86.6,
             "version": "v2.0.0",
-            "size": 30222780,
-            "bundle": "https://models.versta.app/translation/en-tr-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-tr-bundle.tar.sha256"
+            "size": 30222813,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-tr-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-tr-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-tr",
@@ -880,9 +892,9 @@
             ],
             "score": 87.5,
             "version": "v2.0.0",
-            "size": 30222780,
-            "bundle": "https://models.versta.app/translation/en-tr-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-tr-bundle.tar.sha256"
+            "size": 30222813,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-tr-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-tr-bundle.tar.sha256"
         }
     ],
     [
@@ -896,9 +908,9 @@
             ],
             "score": 84.6,
             "version": "v2.0.0",
-            "size": 29249149,
-            "bundle": "https://models.versta.app/translation/en-uk-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-uk-bundle.tar.sha256"
+            "size": 29249163,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-uk-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-uk-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-uk",
@@ -910,9 +922,9 @@
             ],
             "score": 86.1,
             "version": "v2.0.0",
-            "size": 29249149,
-            "bundle": "https://models.versta.app/translation/en-uk-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-uk-bundle.tar.sha256"
+            "size": 29249163,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-uk-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-uk-bundle.tar.sha256"
         }
     ],
     [
@@ -926,9 +938,9 @@
             ],
             "score": 84.9,
             "version": "v2.0.0",
-            "size": 41934829,
-            "bundle": "https://models.versta.app/translation/en-vi-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-vi-bundle.tar.sha256"
+            "size": 41934803,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-vi-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-vi-bundle.tar.sha256"
         },
         {
             "base_model": "Firefox/en-vi",
@@ -940,9 +952,9 @@
             ],
             "score": 87.1,
             "version": "v2.0.0",
-            "size": 41934829,
-            "bundle": "https://models.versta.app/translation/en-vi-bundle.tar.gz",
-            "checksum": "https://models.versta.app/translation/en-vi-bundle.tar.sha256"
+            "size": 41934803,
+            "bundle": "https://models.versta.app/translation/v2.0.0/en-vi-bundle.tar.gz",
+            "checksum": "https://models.versta.app/translation/v2.0.0/en-vi-bundle.tar.sha256"
         }
     ]
 ]
