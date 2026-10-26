@@ -48,13 +48,16 @@ MNN_SOURCE_DIR = MODULE_ROOT / "vendor" / "mnn"
 MNN_TAG = "3.6.1"
 MNNCONVERT_BINARY = MNN_SOURCE_DIR / "build-convert" / "MNNConvert"
 
-#: Files downloaded from the upstream repo per run.
-ALL_UPSTREAM_FILES: Dict[str, str] = {
-    **ONNX_FILES,
-    **PASSTHROUGH_FILES,
-    **VOICE_STYLE_FILES,
-    "__license__": LICENSE_UPSTREAM_PATH,
-}
+#: Files downloaded from the upstream repo per run, as upstream paths.
+#: ONNX_FILES is keyed by stage and passthrough/style dicts by upstream
+#: path, so the pattern set must be assembled explicitly (neither keys nor
+#: values of a merged dict give the right list).
+ALL_UPSTREAM_PATTERNS: List[str] = [
+    *ONNX_FILES.values(),
+    *PASSTHROUGH_FILES,
+    *VOICE_STYLE_FILES,
+    LICENSE_UPSTREAM_PATH,
+]
 
 
 class PinVerificationError(RuntimeError):
@@ -155,7 +158,7 @@ def download_upstream(revision: str, cache_dir: Path) -> Path:
         snapshot_download(
             repo_id=UPSTREAM_REPO,
             revision=revision,
-            allow_patterns=list(ALL_UPSTREAM_FILES.values()),
+            allow_patterns=ALL_UPSTREAM_PATTERNS,
             cache_dir=str(cache_dir),
         )
     )
