@@ -77,7 +77,7 @@
     "id": "supertonic3",
     "name": "Supertonic 3",
     "base_model": "Supertone/supertonic-3",
-    "size": 99840987,
+    "size": 99840842,
     "version": "v2.0.0",
     "voices": [
       {
