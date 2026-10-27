@@ -8,7 +8,10 @@ LanguageModelMetadata.kt and ExternalLanguageModel.kt):
   * per-direction ``metadata.json``     -> LanguageModelMetadata
   * bundle-level ``metadata.json``      -> LanguageBundleMetadata
   * checked-in ``models.json`` catalog  -> ExternalLanguageModelDefinition
-    (grouped, with the consistency rules of ExternalLanguageModelDefinitions.isValid)
+    (grouped, with the consistency rules of ExternalLanguageModelDefinitions.isValid;
+    additionally the catalog↔bundle code alignment of NEU-133: bundle archive
+    names must be the deterministic slug of the group's registry-normalized
+    language codes — see versta/language_codes.py)
 
 Validation is stdlib-only and fail-fast: the first violation raises
 ``ValidationError`` with a dotted path to the offending field. Keep these
@@ -23,6 +26,7 @@ from pathlib import Path
 from typing import Any, Dict, NoReturn, Optional, Sequence, Set, cast
 from urllib.parse import urlparse
 
+from .language_codes import bundle_slug
 from .leanmt import (
     LEANMT_BINARY_VERSION,
     LeanmtFormatError,
@@ -293,12 +297,66 @@ def validate_catalog_entry(entry: Any, path: str = "entry") -> None:
             )
 
 
+def _url_basename(uri: str) -> str:
+    """Returns the final path segment of an absolute URL."""
+    return urlparse(uri).path.rsplit("/", 1)[-1]
+
+
+def validate_catalog_bundle_alignment(group: Any, path: str = "group") -> None:
+    """
+    Enforces the NEU-133 language-code contract between catalog and bundles:
+    the catalog layer may carry BCP-47 display codes (e.g. "zh-Hans"), but
+    bundle archives are named from registry-normalized boundary codes
+    deterministically (``versta.bundle`` derives ``<slug>-bundle.tar.gz``
+    from the sorted, normalized direction codes). Every entry in a group must
+    therefore point at exactly the archive its normalized codes derive to —
+    this makes the app's join of catalog codes to bundle-declared languages
+    unambiguous (``normalize_language`` equivalence, never string equality).
+
+    Args:
+        group (Any): One catalog language group with already entry-validated
+            shape (``source_language``/``target_language``/``bundle``/
+            ``checksum`` present).
+        path (str): Dotted path prefix for error messages.
+
+    Raises:
+        ValidationError: When an entry's bundle or checksum basename does not
+            match the deterministic slug of the group's normalized codes.
+    """
+    codes = [
+        code
+        for entry in group
+        for code in (entry["source_language"], entry["target_language"])
+    ]
+    slug = bundle_slug(codes)
+    expected_bundle = f"{slug}-bundle.tar.gz"
+    expected_checksum = f"{slug}-bundle.tar.sha256"
+
+    for index, entry in enumerate(group):
+        bundle_name = _url_basename(entry["bundle"])
+        if bundle_name != expected_bundle:
+            _fail(
+                f"{path}[{index}].bundle",
+                f"expected archive {expected_bundle!r} for the group's "
+                f"registry-normalized codes, got {bundle_name!r} (bundle "
+                f"boundary codes are normalize_language-normalized, NEU-133)",
+            )
+        checksum_name = _url_basename(entry["checksum"])
+        if checksum_name != expected_checksum:
+            _fail(
+                f"{path}[{index}].checksum",
+                f"expected checksum {expected_checksum!r} for archive "
+                f"{expected_bundle!r}, got {checksum_name!r}",
+            )
+
+
 def validate_catalog_group(group: Any, path: str = "group") -> None:
     """
     Validates one catalog language group (a list of directions) against the
     app's ExternalLanguageModelDefinitions.isValid() rules: groups where every
     direction is bidirectional must contain exactly two mirrored entries
-    sharing size, version, bundle and checksum.
+    sharing size, version, bundle and checksum. Also enforces the
+    catalog↔bundle code alignment of validate_catalog_bundle_alignment.
     """
     if not isinstance(group, list) or not group:
         _fail(path, "expected non-empty array of catalog entries")
@@ -306,21 +364,21 @@ def validate_catalog_group(group: Any, path: str = "group") -> None:
     for index, entry in enumerate(group):
         validate_catalog_entry(entry, f"{path}[{index}]")
 
-    if not all(entry["bidirectional"] for entry in group):
-        return
+    if all(entry["bidirectional"] for entry in group):
+        if len(group) != 2:
+            _fail(path, "bidirectional groups must contain exactly two entries")
 
-    if len(group) != 2:
-        _fail(path, "bidirectional groups must contain exactly two entries")
+        first, second = group
+        if (
+            first["source_language"] != second["target_language"]
+            or first["target_language"] != second["source_language"]
+        ):
+            _fail(path, "bidirectional entries are not mirrored language pairs")
+        for key in ("size", "version", "bundle", "checksum"):
+            if first[key] != second[key]:
+                _fail(path, f"bidirectional entries disagree on '{key}'")
 
-    first, second = group
-    if (
-        first["source_language"] != second["target_language"]
-        or first["target_language"] != second["source_language"]
-    ):
-        _fail(path, "bidirectional entries are not mirrored language pairs")
-    for key in ("size", "version", "bundle", "checksum"):
-        if first[key] != second[key]:
-            _fail(path, f"bidirectional entries disagree on '{key}'")
+    validate_catalog_bundle_alignment(group, path)
 
 
 def validate_catalog(catalog: Any, path: str = "catalog") -> None:

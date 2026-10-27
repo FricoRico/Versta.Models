@@ -4,7 +4,7 @@ from json import load
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from ..download.download import normalize_language
+from ..language_codes import normalize_language
 from ..schema import validate_catalog, validate_generated_catalog
 from .typing import CatalogEntry, ExportedBundle, ModelFile
 
@@ -104,6 +104,9 @@ def save_model_file(
 
 
 def _entry_key(source_language: str, target_language: str) -> Tuple[str, str]:
+    # The catalog speaks BCP-47-style codes while generated bundles speak
+    # registry codes, so matching always goes through the shared normalization
+    # — the same join the app must apply at install time (NEU-133).
     return (normalize_language(source_language), normalize_language(target_language))
 
 
