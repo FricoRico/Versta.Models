@@ -601,7 +601,7 @@
     ],
     [
         {
-            "base_model": "Firefox/mt-lv",
+            "base_model": "Firefox/lv-en",
             "source_language": "lv",
             "target_language": "en",
             "bidirectional": false,
