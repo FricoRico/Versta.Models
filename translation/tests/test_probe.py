@@ -176,6 +176,53 @@ def test_corpus_chrf_rejects_misaligned_input():
         ("The museum opens at 10:00.", "박물관은 10시에 문을 엽니다.", True),
         # duration stays out of the clock extractor
         ("여행은 9시간 걸립니다.", "The journey takes 9 hours.", True),
+        # English word-clock forms (ko-en time-04; NEU-145): word-hours 1-12
+        # in explicit clock contexts only, compared as (h % 12, 0)
+        (
+            "저는 저녁 8시에 2명 예약을 했습니다.",
+            "I made two reservations at eight in the evening.",
+            True,
+        ),
+        ("저는 8시에 2명과 만납니다.", "I meet two people at eight o'clock.", True),
+        # the word branch fires on a raw English source too (en -> ko)
+        (
+            "The pharmacy opens at nine in the morning.",
+            "약국은 아침 9시에 문을 엽니다.",
+            True,
+        ),
+        # an unmatched source clock falls back to the plain-run comparison:
+        # es/fr lexicalize the clock in a surface no extractor covers, and
+        # the digit value still has to survive as a plain run (NEU-145
+        # follow-up — the en->* pack-sweep positive control gates on this)
+        (
+            "Does the pharmacy open before 9 in the morning?",
+            "¿Abre la farmacia antes de las 9 de la mañana?",
+            True,
+        ),
+        (
+            "Does the pharmacy open before 9 in the morning?",
+            "La pharmacie ouvre-t-elle avant 9 h du matin ?",
+            True,
+        ),
+        # the fallback still checks the value: 9 -> 10 corruption stays
+        # failing even without a target-side clock form
+        (
+            "Does the pharmacy open before 9 in the morning?",
+            "¿Abre la farmacia antes de las 10 de la mañana?",
+            False,
+        ),
+        # word-clock corruption stays failing
+        (
+            "저는 저녁 8시에 2명 예약을 했습니다.",
+            "I made two reservations at nine in the evening.",
+            False,
+        ),
+        # count corruption stays failing next to a word-clock
+        (
+            "저는 저녁 8시에 2명 예약을 했습니다.",
+            "I made three reservations at eight in the evening.",
+            False,
+        ),
         # Catalan / Spanish / French number words (NEU-135)
         (
             "I need 5 tickets and 2 coffees.",
