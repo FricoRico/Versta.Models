@@ -74,6 +74,10 @@ publish rules (`versta.probe.regress` → `output/sweep/defects.json`, schema
 one GitHub issue per regressed slug (label `pack-acceptance`). Run it by
 hand any time via Actions → pack-sweep-weekly → Run workflow.
 
+The same-day device twin — the weekly pack-acceptance pass on the redroid
+device lab (Monday 08:15 UTC), its canonical endpoints, and lab
+etiquette — lives in `DEVICE-LAB-RUNBOOK.md`.
+
 ## Re-pin procedure (bands, scorecards, pins)
 
 Same discipline the bench baselines follow (NEU-16/22/23). Pins move only
