@@ -275,6 +275,24 @@ class TestCatalog:
                 ]
             )
 
+    def test_accepts_known_issues_notes(self) -> None:
+        """NEU-136: additive per-entry known-issue notes pass validation."""
+        validate_catalog_entry(
+            _catalog_entry(
+                known_issues=[
+                    "Numeral fidelity: the pack can merge, convert or drop numerals."
+                ]
+            )
+        )
+
+    def test_rejects_empty_known_issues(self) -> None:
+        with pytest.raises(ValidationError, match="known_issues"):
+            validate_catalog_entry(_catalog_entry(known_issues=[]))
+
+    def test_rejects_blank_known_issue_note(self) -> None:
+        with pytest.raises(ValidationError, match="known_issues"):
+            validate_catalog_entry(_catalog_entry(known_issues=["  "]))
+
     def test_rejects_empty_catalog(self) -> None:
         with pytest.raises(ValidationError, match="non-empty"):
             validate_catalog([])
