@@ -110,4 +110,7 @@ jobs:
       # NEU-60: the pinned golden bands must still derive from the committed
       # baseline scorecards — a stale pin is never "fixed up" by moving bands;
       # investigate, then re-pin deliberately (PACK-ACCEPTANCE-RUNBOOK.md).
-      - run: uv run python -m versta.probe.bands --check
+      # `versta.probe` is a `translation/` package, so this step can only run
+      # in the translation matrix leg (NEU-142).
+      - if: matrix.module == 'translation'
+        run: uv run python -m versta.probe.bands --check
