@@ -102,8 +102,11 @@ class TestSaveModelFile:
         entry = generated["models"][0][0]
         assert generated["version"] == "v2.0.0"
         assert entry["size"] == len(b"bundle-bytes")
-        assert entry["bundle"] == "https://models.example/en-es-bundle.tar.gz"
-        assert entry["checksum"] == "https://models.example/en-es-bundle.tar.sha256"
+        # Served layout carries the deployment version as a path segment.
+        assert entry["bundle"] == "https://models.example/v2.0.0/en-es-bundle.tar.gz"
+        assert (
+            entry["checksum"] == "https://models.example/v2.0.0/en-es-bundle.tar.sha256"
+        )
 
 
 class TestUpdateModelsJson:
@@ -163,6 +166,20 @@ class TestUpdateModelsJson:
 
         # A backup was written alongside the updated catalog.
         assert (tmp_path / "models.json.bak").is_file()
+
+    def test_sync_preserves_known_issues(self, tmp_path: Path) -> None:
+        """NEU-136: known-issue notes survive regeneration syncs unchanged."""
+        catalog_path = tmp_path / "models.json"
+        _write_input_catalog(catalog_path)
+        catalog = json.loads(catalog_path.read_text())
+        catalog[0][0]["known_issues"] = ["Numeral fidelity note"]
+        catalog_path.write_text(json.dumps(catalog, indent=4))
+
+        update_models_json(catalog_path, self._generated(tmp_path), "v2.0.0")
+
+        updated = json.loads(catalog_path.read_text())
+        assert updated[0][0]["known_issues"] == ["Numeral fidelity note"]
+        validate_catalog(updated)
 
     def test_bidirectional_reverse_lookup(self, tmp_path: Path) -> None:
         """Catalog entries match the generated reverse direction when their own

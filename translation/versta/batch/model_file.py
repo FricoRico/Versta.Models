@@ -63,7 +63,9 @@ def save_model_file(
 
     Args:
         bundles (List[List[ExportedBundle]]): List of model bundles to be saved.
-        link_prefix (str): Prefix for the model file links.
+        link_prefix (str): Prefix for the model file links; the deployment
+            ``version`` is appended as a path segment (``<prefix><version>/
+            <name>``), matching the served models.versta.app layout.
         output_dir (Path): Directory where the model file will be saved.
 
     Returns:
@@ -74,6 +76,11 @@ def save_model_file(
         "version": version,
         "models": list(),
     }
+
+    # Served layout on models.versta.app is "<prefix><version>/<name>" (e.g.
+    # translation/v2.0.0/en-es-bundle.tar.gz); the bare prefix misses the
+    # version segment and 404s for every bundle (NEU-136).
+    link_base = link_prefix if link_prefix.endswith("/") else link_prefix + "/"
 
     for pairs in bundles:
         model_pairs: List[CatalogEntry] = list()
@@ -87,8 +94,8 @@ def save_model_file(
                     score=bundle["score"],
                     version=bundle["version"],
                     size=Path(bundle["path"]).stat().st_size,
-                    bundle=link_prefix + bundle["path"].name,
-                    checksum=link_prefix + bundle["checksum"].name,
+                    bundle=link_base + version + "/" + bundle["path"].name,
+                    checksum=link_base + version + "/" + bundle["checksum"].name,
                 )
             )
 

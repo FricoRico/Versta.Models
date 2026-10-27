@@ -74,6 +74,10 @@ publish rules (`versta.probe.regress` → `output/sweep/defects.json`, schema
 one GitHub issue per regressed slug (label `pack-acceptance`). Run it by
 hand any time via Actions → pack-sweep-weekly → Run workflow.
 
+The same-day device twin — the weekly pack-acceptance pass on the redroid
+device lab (Monday 08:15 UTC), its canonical endpoints, and lab
+etiquette — lives in `DEVICE-LAB-RUNBOOK.md`.
+
 ## Re-pin procedure (bands, scorecards, pins)
 
 Same discipline the bench baselines follow (NEU-16/22/23). Pins move only
@@ -108,7 +112,8 @@ in dedicated commits; CI must never be "made green" by moving them.
 | Metric-signature drift | `chrf_signature` mismatch | dependency bump changed chrF parameterization; deliberate re-baseline required | on-device + pipeline pair |
 | Missing/unproven scorecard | gate refuses, "no passing scorecard" | the bundle was built but never probed; run the pack-acceptance workflow, land the card | whoever wants the publish |
 | Harness defect | negative control passes, or probe crashes | the gate proves nothing; page Maya immediately, stop all publishes | Maya Lindqvist |
-| Serving outage | fetch-report `missing` entries | CDN/registry problem; a pack that stops serving is paged as a defect | on-device pair |
+| Serving outage | fetch-report `missing` entries with kind `artifact-missing` (CDN answered 404-class) | CDN/registry problem; a pack that stops serving is paged as a defect | on-device pair |
+| Transient CDN flake | fetch step exits 2, `cdn-fetch-flake` annotations + labeled step summary | infrastructure, not pack signal: re-run the job; only repeated flakes across runs are a serving outage | QA (Priya Nair) |
 
 ## Who gets paged
 

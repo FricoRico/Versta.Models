@@ -81,12 +81,34 @@ jobs:
 
       - name: Fetch published bundles (32 packs, v2.0.0 catalog)
         working-directory: translation
-        # Retry/backoff fetch (NEU-60): one transient CDN 503 must not kill a
-        # 32-bundle sweep. Fetch is strict here — content pins are verified
-        # next, so a missing artifact fails deliberately.
+        # Retry/backoff fetch (NEU-60, hardened NEU-148): one transient CDN
+        # 503 must not kill a 32-bundle sweep, so transient errors
+        # (5xx/429/timeout/connection) are retried with exponential backoff.
+        # A non-retryable answer (404) fails fast: a missing artifact is a
+        # deliberate defect signal. When every missing fetch is transient
+        # exhaustion, fetch exits 2 and the failure is labeled cdn-fetch-flake
+        # — infrastructure, not pack signal — so a red check here is not
+        # mistaken for a pack regression.
         run: |
           uv sync
+          set +e
           uv run python -m versta.probe.fetch --pins pack-acceptance/pins.json --output_dir output/published
+          status=$?
+          set -e
+          if [ "$status" -eq 2 ]; then
+            {
+              echo "### cdn-fetch-flake — infrastructure failure, not pack signal"
+              echo ""
+              echo "Bundle fetch from models.versta.app exhausted retries on transient"
+              echo "CDN errors (5xx/timeout). No pack was verified as broken."
+              echo ""
+              echo "- Safe to re-run this job; see \`output/published/fetch-report.json\`."
+              echo "- Persistent repeats are a serving outage: PACK-ACCEPTANCE-RUNBOOK.md,"
+              echo "  failure taxonomy (paged as a defect, weekly sweep)."
+            } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error title=cdn-fetch-flake::pack sweep aborted before verification: bundle fetch exhausted retries on transient CDN errors — re-run the job; not a pack regression"
+          fi
+          exit "$status"
 
       - name: Verify served bundles against published pins
         working-directory: translation

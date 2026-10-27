@@ -296,6 +296,17 @@ def validate_catalog_entry(entry: Any, path: str = "entry") -> None:
                 f"(expected one of {sorted(CATALOG_ARCHITECTURES)})",
             )
 
+    # Additive packet-quality notes (NEU-136): optional list of human-readable
+    # known-issue strings (e.g. confirmed numeral-fidelity failures with their
+    # measured digit counts). Deserializers must tolerate unknown fields for
+    # this to stay backward compatible.
+    known_issues = entry.get("known_issues")
+    if known_issues is not None:
+        if not isinstance(known_issues, list) or not known_issues:
+            _fail(f"{path}.known_issues", "expected non-empty array of strings")
+        for index, note in enumerate(known_issues):
+            _require_string(note, f"{path}.known_issues[{index}]")
+
 
 def _url_basename(uri: str) -> str:
     """Returns the final path segment of an absolute URL."""

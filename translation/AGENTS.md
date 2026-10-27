@@ -56,7 +56,7 @@ uv run python -m versta.batch --input_file models.json --output_dir ./output/exp
 ```
 
 - `--input_file`: JSON list of pairs, each pair a list of `{"source_language", "target_language", "architecture"}` entries.
-- `--link_prefix`: URL prefix written into the generated catalog (default `https://models.versta.app/translation/`).
+- `--link_prefix`: URL prefix written into the generated catalog (default `https://models.versta.app/translation/`); the deployment version is appended as a path segment, matching the served `<prefix><version>/<name>` layout.
 - `--scorecards_dir` / `--bands_file`: pack-acceptance scorecards + pinned golden bands (NEU-60); defaults `scorecards/` and `pack-acceptance/bands.json`.
 - `--skip_publish_gate`: development/dry-run exports only — never for artifacts meant for models.versta.app.
 - **Publish gate (NEU-60)**: before any catalog write, every produced bundle must have a passing scorecard for its exact bytes inside the pinned golden bands (loads, direction/chrF sanity, digit preservation 100%, chrF ≥ golden − `chrf_max_drop`); any failure refuses the run without touching catalogs. Implementation: `versta/batch/publish_gate.py`; ops: `PACK-ACCEPTANCE-RUNBOOK.md`. The gate's data shapes are manifest-adjacent and owned jointly with the pipeline pair (NEU-38).
