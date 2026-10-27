@@ -308,9 +308,13 @@ def digit_preservation(source: str, output: str) -> bool:
     Value-level digit preservation (the NEU-30 harm class): every number the
     source carries must survive the translation with its value intact. Clock
     values compare as 12h-normalized H:MM pairs ("10:00" -> "10時" passes,
-    "6:30" -> "6 pm" fails), and all other digit runs compare as multisets
-    after digit-script and number-word normalization ("3枚" -> "three" passes,
-    "قیمت ۴۵۰۰ ریال" -> "4500" passes, "3" -> "4" fails).
+    "6:30" -> "6 pm" fails); a source clock whose value no output clock
+    carries falls back to the plain-run comparison, so a target-side clock
+    surface with no matching extractor ("9 in the morning" -> "las 9 de la
+    mañana") passes while a value change ("9" -> "10") still fails. All other
+    digit runs compare as multisets after digit-script and number-word
+    normalization ("3枚" -> "three" passes, "قیمت ۴۵۰۰ ریال" -> "4500"
+    passes, "3" -> "4" fails).
 
     Args:
         source (str): probe source sentence.
@@ -324,20 +328,34 @@ def digit_preservation(source: str, output: str) -> bool:
     source_clocks = _clock_values(source)
     output_clocks = _clock_values(normalized_output)
 
-    # Every source clock must find an output clock of the same value; its span
-    # is then excluded from the plain-run comparison on both sides. Output
-    # clocks that match no source clock keep their digits in the run
-    # comparison (the source may express the same value as plain text).
+    # A source clock that finds an output clock of the same value is compared
+    # 12h-normalized and both spans leave the plain-run comparison. A source
+    # clock WITHOUT an output match is not consumed: its span falls back to
+    # the plain-run comparison, where the value must survive as plain digit
+    # runs (NEU-145 follow-up: targets may lexicalize the clock in a surface
+    # no extractor covers, e.g. es "las 9 de la mañana" for en "9 in the
+    # morning" — treating that as an unmatched clock regressed every en->*
+    # direction, while a genuine 9 -> 10 corruption still mismatches the
+    # runs). Only matched source spans are excluded, so corruption ("8시" ->
+    # "at nine in the evening") still fails: the source digits have no run to
+    # match. Output clocks that match no source clock keep their digits in
+    # the run comparison (the source may express the same value as plain
+    # text).
     unmatched_source = Counter(value for _, value in source_clocks)
     consumed_output_spans: List[str] = []
     for span, value in output_clocks:
         if unmatched_source.get(value, 0) > 0:
             unmatched_source[value] -= 1
             consumed_output_spans.append(span)
-    if any(count > 0 for count in unmatched_source.values()):
-        return False
 
-    source_rest = _without_spans(source, [span for span, _ in source_clocks])
+    matched_source = Counter(value for _, value in source_clocks) - unmatched_source
+    consumed_source_spans: List[str] = []
+    for span, value in source_clocks:
+        if matched_source.get(value, 0) > 0:
+            matched_source[value] -= 1
+            consumed_source_spans.append(span)
+
+    source_rest = _without_spans(source, consumed_source_spans)
     output_rest = _without_spans(normalized_output, consumed_output_spans)
 
     output_runs = Counter(digit_runs(output_rest))
