@@ -164,7 +164,9 @@ jobs:
                           'slug': slug,
                           'card': '',
                           'bundle_sha256': None,
-                          'failures': [f"published artifact not served: {entry['url']} ({entry['error']})"],
+                          # kind: cdn-fetch-flake (transient, retries exhausted)
+                          # vs artifact-missing (not served) — NEU-148.
+                          'failures': [f"published artifact not served [{entry.get('kind', 'artifact-missing')}]: {entry['url']} ({entry['error']})"],
                       })
                       known.add(slug)
               census['defects'].sort(key=lambda d: d['slug'])

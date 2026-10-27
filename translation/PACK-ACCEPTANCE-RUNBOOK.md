@@ -108,7 +108,8 @@ in dedicated commits; CI must never be "made green" by moving them.
 | Metric-signature drift | `chrf_signature` mismatch | dependency bump changed chrF parameterization; deliberate re-baseline required | on-device + pipeline pair |
 | Missing/unproven scorecard | gate refuses, "no passing scorecard" | the bundle was built but never probed; run the pack-acceptance workflow, land the card | whoever wants the publish |
 | Harness defect | negative control passes, or probe crashes | the gate proves nothing; page Maya immediately, stop all publishes | Maya Lindqvist |
-| Serving outage | fetch-report `missing` entries | CDN/registry problem; a pack that stops serving is paged as a defect | on-device pair |
+| Serving outage | fetch-report `missing` entries with kind `artifact-missing` (CDN answered 404-class) | CDN/registry problem; a pack that stops serving is paged as a defect | on-device pair |
+| Transient CDN flake | fetch step exits 2, `cdn-fetch-flake` annotations + labeled step summary | infrastructure, not pack signal: re-run the job; only repeated flakes across runs are a serving outage | QA (Priya Nair) |
 
 ## Who gets paged
 
