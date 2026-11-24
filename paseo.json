@@ -1,0 +1,23 @@
+{
+  "worktree": {
+    "setup": [
+      "python3 -m venv .venv && ./.venv/bin/pip install --quiet --upgrade pip",
+      "echo 'models env ready — uv is not installed in this image, so use .venv/bin/pip or `python3 -m pip install --user uv` for a uv-based subproject'"
+    ],
+    "teardown": [
+      "rm -rf .venv"
+    ],
+    "teardownTimeoutMs": 60000
+  },
+  "metadataGeneration": {
+    "branchName": {
+      "instructions": "Branch names come from the Kaneo card: MOD-<number>, e.g. MOD-12. Base is main and the PR targets main."
+    },
+    "commitMessage": {
+      "instructions": "Imperative subject under 72 characters, naming the pipeline the change touches (translation, speech-recognition, text-to-speech, object-character-recognition). Never commit model binaries, bundles, downloaded corpora or credentials; those belong in storage, not git."
+    },
+    "pullRequest": {
+      "instructions": "Open against main. Body: which pipeline and which language pack the change affects, how it was verified (pack-acceptance / pack-sweep output or the exact command run), expected artifact or bundle size changes, and anything left unverified."
+    }
+  }
+}
