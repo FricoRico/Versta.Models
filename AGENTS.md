@@ -22,6 +22,21 @@ produces tarball bundles deployable to the cloud object storage
 - Source-available under the Source First License 1.1 (see `LICENSE.md`). Attribution and license notices must be preserved; never remove or alter licensing headers or notices.
 - Python is the only primary language here. Every module is an independent [uv](https://docs.astral.sh/uv/) project: a PEP 621 `pyproject.toml` (hatchling backend) declares metadata and dependencies, and `uv sync` manages the module's virtual environment. There is no shared workspace — each module resolves and pins independently.
 
+## Machine storage policy (NEU-93)
+
+The build machine's main disk is small (32 GB, chronically >90% full); a large
+volume is mounted at `/mnt/storage`. **Keep all bulk storage under
+`/mnt/storage/paperclip/`, not in `~/`** — model downloads and exports, uv/pip
+caches when bulky, datasets, tarball outputs, heavy scratch workspaces. The
+canonical layout and rules live in `/mnt/storage/paperclip/STORAGE.md` (loaded
+into every OpenCode session via global instructions — follow it).
+
+**Never change host configuration** (storage size, mounts, partitions, quotas,
+VM/CPU/RAM limits, swap, kernel/sysctl, system services, network) to achieve a
+goal. If you hit a resource limit, apply the storage policy first; if the
+constraint is genuinely host-level, comment on your issue naming the exact
+change needed and mark it blocked with a human/admin as unblock owner.
+
 ## Repo map
 
 Each module directory is fully self-contained with its own `pyproject.toml`,
